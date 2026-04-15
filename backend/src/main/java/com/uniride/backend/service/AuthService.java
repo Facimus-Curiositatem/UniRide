@@ -1,0 +1,57 @@
+package com.uniride.backend.service;
+
+import com.uniride.backend.dto.*;
+import com.uniride.backend.model.User;
+import com.uniride.backend.model.UserRole;
+import com.uniride.backend.repository.UserRepository;
+import com.uniride.backend.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+    public User register(RegisterRequest request) {
+
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .phone(request.getPhone())
+                .role(UserRole.PASSENGER)
+                .build();
+
+        //Maybe?
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        return userRepository.save(user);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        return AuthResponse.builder()
+                .token(token)
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
+    }
+
+
+}

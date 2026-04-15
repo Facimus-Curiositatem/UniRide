@@ -1,0 +1,19 @@
+package com.uniride.backend.repository;
+
+import com.uniride.backend.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
+}
+
+//Se crean los métodos save(), findById(), findAll(), deleteById(), spring los crea automáticamente
