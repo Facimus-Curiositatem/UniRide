@@ -1,9 +1,9 @@
 package com.uniride.backend.model;
 
-@Entity
-@Table(name = "bookings")
+//@Entity
+//@Table(name = "bookings")
 public class Booking {
-    @Id
+/*    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -18,5 +18,5 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status; // PENDING, CONFIRMED, CANCELLED
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; */
 }
