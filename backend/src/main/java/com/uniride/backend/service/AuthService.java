@@ -17,7 +17,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public User register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("El correo institucional ya está registrado");
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new RuntimeException("El número de teléfono ya está registrado");
+        }
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -27,12 +35,15 @@ public class AuthService {
                 .role(UserRole.PASSENGER)
                 .build();
 
-        //Maybe?
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
-        }
+        User saved = userRepository.save(user);
 
-        return userRepository.save(user);
+        return RegisterResponse.builder()
+                .id(saved.getId())
+                .fullName(saved.getFullName())
+                .email(saved.getEmail())
+                .phone(saved.getPhone())
+                .role(saved.getRole().name())
+                .build();
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -52,6 +63,4 @@ public class AuthService {
                 .role(user.getRole().name())
                 .build();
     }
-
-
 }
