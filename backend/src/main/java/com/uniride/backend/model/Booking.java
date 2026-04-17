@@ -1,22 +1,40 @@
 package com.uniride.backend.model;
 
-//@Entity
-//@Table(name = "bookings")
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "bookings")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Booking {
-/*    @Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "trip_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id", nullable = false)
     private Trip trip;
 
-    @ManyToOne
-    @JoinColumn(name = "passenger_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "passenger_id", nullable = false)
     private User passenger;
 
-    @Enumerated(EnumType.STRING)
-    private BookingStatus status; // PENDING, CONFIRMED, CANCELLED
+    @Builder.Default
+    @Column(nullable = false)
+    private String status = "PENDING"; // PENDING, CONFIRMED, CANCELLED
 
-    private LocalDateTime createdAt; */
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
