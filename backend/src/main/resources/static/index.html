@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>UniRide – Prueba US-01</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 420px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1a1a2e; margin-bottom: 0.25rem; font-size: 1.5rem; }
+        .subtitle { color: #666; font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .tab {
+            flex: 1; padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 0.35rem; }
+        input {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: #4f46e5; }
+        button.submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+        button.submit:hover { background: #4338ca; }
+        button.submit:disabled { background: #a5b4fc; cursor: not-allowed; }
+        .result {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: none;
+        }
+        .result.success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+        .result.error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+        .hidden { display: none; }
+        .hint { font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚗 UniRide</h1>
+    <p class="subtitle">Prueba local – US-01: Registro y verificación institucional</p>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('register')">Registrarse</button>
+        <button class="tab" onclick="switchTab('login')">Iniciar sesión</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm">
+        <div class="form-group">
+            <label>Nombre completo</label>
+            <input id="reg-name" type="text" placeholder="Juan Pérez" />
+        </div>
+        <div class="form-group">
+            <label>Correo institucional</label>
+            <input id="reg-email" type="email" placeholder="usuario@javeriana.edu.co" />
+            <p class="hint">Solo se aceptan correos @javeriana.edu.co</p>
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input id="reg-password" type="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input id="reg-phone" type="text" placeholder="3001234567" />
+        </div>
+        <button class="submit" onclick="register()">Crear cuenta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm" class="hidden">
+        <div class="form-group">
+            <label>Correo institucional</label>
+            <input id="log-email" type="email" placeholder="usuario@javeriana.edu.co" />
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input id="log-password" type="password" placeholder="Tu contraseña" />
+        </div>
+        <button class="submit" onclick="login()">Iniciar sesión</button>
+    </div>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const API = 'http://localhost:8080/api/auth';
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', (i === 0 && tab === 'register') || (i === 1 && tab === 'login'));
+        });
+        document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+        document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+        clearResult();
+    }
+
+    function showResult(data, isError) {
+        const el = document.getElementById('result');
+        el.style.display = 'block';
+        el.className = 'result ' + (isError ? 'error' : 'success');
+        el.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function clearResult() {
+        const el = document.getElementById('result');
+        el.style.display = 'none';
+        el.textContent = '';
+    }
+
+    async function register() {
+    const body = {
+        fullName: document.getElementById('reg-name').value,
+        email:    document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        phone:    document.getElementById('reg-phone').value,
+    };
+
+    // Validación local antes de enviar
+    if (!body.fullName || !body.email || !body.password || !body.phone) {
+        showResult({ error: 'Por favor completa todos los campos.' }, true);
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        showResult(data, !res.ok);
+    } catch (e) {
+        showResult({ error: 'No se pudo conectar con el backend. ¿Está corriendo en :8080?' }, true);
+    }
+}
+
+async function login() {
+    const body = {
+        email:    document.getElementById('log-email').value,
+        password: document.getElementById('log-password').value,
+    };
+
+    // Validación local antes de enviar
+    if (!body.email || !body.password) {
+        showResult({ error: 'Por favor completa todos los campos.' }, true);
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        showResult(data, !res.ok);
+        if (res.ok && data.token) {
+            localStorage.setItem('uniride_token', data.token);
+        }
+    } catch (e) {
+        showResult({ error: 'No se pudo conectar con el backend. ¿Está corriendo en :8080?' }, true);
+    }
+}
+
+
+</script>
+</body>
+</html>
