@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UniRide – Mi Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px; min-height: 100vh;
+            background: #0d1f35;
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            position: fixed; top: 0; left: 0; height: 100vh;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
+        .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; border-radius: 12px; color: #7a8fa6; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: #1e3a5a; color: #fff; }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .nav-bottom { margin-top: auto; }
+        .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+
+        /* MAIN */
+        .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; }
+
+        /* HEADER */
+        .page-header { margin-bottom: 1.75rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+        .page-header p { font-size: 0.9rem; color: #5a7a99; }
+
+        /* PROFILE GRID */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; }
+
+        /* CARD */
+        .card {
+            background: #0d1f35;
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* PROFILE HEADER */
+        .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .profile-avatar {
+            width: 80px; height: 80px;
+            background: #f5a623;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 2rem; color: #0d1f35;
+        }
+        .profile-info h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+        .profile-info .faculty { font-size: 0.85rem; color: #f5a623; margin-bottom: 0.5rem; }
+        .rating { display: flex; align-items: center; gap: 0.5rem; }
+        .rating-number { font-size: 1.3rem; font-weight: 800; color: #f5a623; }
+        .rating-stars { color: #f5a623; font-size: 0.9rem; letter-spacing: 2px; }
+        .rating-count { font-size: 0.75rem; color: #5a7a99; }
+
+        /* VEHICLE CARD */
+        .vehicle-card { background: #0a1628; border-radius: 16px; padding: 1.25rem; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.06); }
+        .vehicle-title { font-size: 0.8rem; font-weight: 700; color: #f5a623; text-transform: uppercase; margin-bottom: 1rem; }
+        .vehicle-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .vehicle-row:last-child { border-bottom: none; }
+        .vehicle-label { color: #5a7a99; font-size: 0.85rem; }
+        .vehicle-value { color: #fff; font-weight: 600; font-size: 0.85rem; }
+
+        /* STATS MINI */
+        .stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .stat-mini { background: #0a1628; border-radius: 14px; padding: 1rem; text-align: center; }
+        .stat-mini-number { font-size: 1.6rem; font-weight: 800; color: #f5a623; }
+        .stat-mini-label { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
+
+        /* RATING BARS */
+        .rating-bars { margin: 1rem 0; }
+        .rating-bar-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; }
+        .rating-bar-label { width: 30px; color: #7a8fa6; }
+        .rating-bar-bg { flex: 1; height: 6px; background: #1e3a5a; border-radius: 3px; overflow: hidden; }
+        .rating-bar-fill { height: 100%; background: #f5a623; border-radius: 3px; }
+        .rating-bar-count { width: 30px; color: #5a7a99; text-align: right; }
+
+        /* REVIEW */
+        .review-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .review-item:last-child { border-bottom: none; }
+        .review-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .review-avatar { width: 40px; height: 40px; background: #1e3a5a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .review-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
+        .review-faculty { font-size: 0.7rem; color: #5a7a99; }
+        .review-stars { color: #f5a623; font-size: 0.75rem; margin-left: auto; }
+        .review-text { font-size: 0.85rem; color: #a0b4c8; line-height: 1.4; margin-left: 3rem; }
+
+        .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+        
+        @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">U</div>
+        <span class="logo-text">UniRide</span>
+    </div>
+    <nav class="nav">
+        <a class="nav-item" href="dashboard.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Inicio
+        </a>
+        <a class="nav-item" href="buscar-viajes.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
+            Buscar viajes
+        </a>
+        <a class="nav-item" href="publicar-viaje.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Publicar viaje
+        </a>
+        <a class="nav-item" href="en-vivo.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            En vivo
+        </a>
+        <a class="nav-item active" href="perfil.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Mi perfil
+        </a>
+        <div class="nav-bottom">
+            <a class="nav-item logout" href="index.html" onclick="logout()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Cerrar sesión
+            </a>
+        </div>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+    <div class="page-header">
+        <h1>Mi perfil</h1>
+        <p>Gestiona tu información y revisa tu reputación</p>
+    </div>
+
+    <div class="profile-grid">
+        <!-- COLUMNA IZQUIERDA -->
+        <div>
+            <!-- INFO PERSONAL -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">U</div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">Usuario</h2>
+                        <div class="faculty" id="profile-faculty">Ingeniería de Sistemas • 7mo semestre</div>
+                        <div class="rating">
+                            <span class="rating-number" id="profile-rating">4.9</span>
+                            <span class="rating-stars" id="profile-stars">★★★★★</span>
+                            <span class="rating-count" id="profile-reviews">(47 reseñas)</span>
+                        </div>
+                    </div>
+                </div>
+                <div><span class="badge">⭐ Conductor activo</span> <span class="badge" style="margin-left:0.5rem;">🌱 Eco-friendly</span> <span class="badge" style="margin-left:0.5rem;">🏆 Top rated</span></div>
+            </div>
+
+            <!-- VEHÍCULO REGISTRADO -->
+            <div class="card">
+                <div class="vehicle-title">🚗 Vehículo registrado</div>
+                <div class="vehicle-card">
+                    <div class="vehicle-row"><span class="vehicle-label">Marca y modelo</span><span class="vehicle-value" id="vehicle-model">Mazda 3 2022</span></div>
+                    <div class="vehicle-row"><span class="vehicle-label">Placa</span><span class="vehicle-value" id="vehicle-plate">ABC-123</span></div>
+                    <div class="vehicle-row"><span class="vehicle-label">Color</span><span class="vehicle-value" id="vehicle-color">Gris</span></div>
+                    <div class="vehicle-row"><span class="vehicle-label">Capacidad</span><span class="vehicle-value" id="vehicle-capacity">4 pasajeros</span></div>
+                </div>
+                <div class="stats-mini">
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-trips">47</div><div class="stat-mini-label">Viajes completados</div></div>
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-earnings">$287K</div><div class="stat-mini-label">Ganancia total</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div>
+            <!-- CALIFICACIÓN DETALLADA -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;">Calificación general</h3>
+                <div class="rating-bars">
+                    <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 89%"></div></div><span class="rating-bar-count" id="count-5">42</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 9%"></div></div><span class="rating-bar-count" id="count-4">4</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 2%"></div></div><span class="rating-bar-count" id="count-3">1</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">2★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-2" style="width: 0%"></div></div><span class="rating-bar-count" id="count-2">0</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">1★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-1" style="width: 0%"></div></div><span class="rating-bar-count" id="count-1">0</span></div>
+                </div>
+            </div>
+
+            <!-- RESEÑAS RECIENTES -->
+            <div class="card">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;">Reseñas recientes</h3>
+                <div id="reviews-list">
+                    <div class="review-item">
+                        <div class="review-header"><div class="review-avatar">MR</div><div><div class="review-name">María Rodríguez</div><div class="review-faculty">Ingeniería</div></div><div class="review-stars">★★★★★</div></div>
+                        <div class="review-text">Excelente conductor, muy puntual y amable. El viaje fue muy cómodo y seguro.</div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-header"><div class="review-avatar">LG</div><div><div class="review-name">Laura Gómez</div><div class="review-faculty">Medicina</div></div><div class="review-stars">★★★★★</div></div>
+                        <div class="review-text">Súper recomendado! Muy conversador y respetuoso. Siempre escucha la música a buen volumen.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    const token = localStorage.getItem('uniride_token');
+    const userName = localStorage.getItem('uniride_name') || 'Usuario';
+    const userEmail = localStorage.getItem('uniride_email') || '';
+
+    if (!token) window.location.href = 'index.html';
+
+    // Avatar
+    const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('profile-avatar').textContent = initials;
+    document.getElementById('profile-name').textContent = userName;
+
+    function logout() {
+        localStorage.removeItem('uniride_token');
+        localStorage.removeItem('uniride_email');
+        localStorage.removeItem('uniride_name');
+    }
+</script>
+</body>
+</html>

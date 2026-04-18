@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UniRide – En vivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px; min-height: 100vh;
+            background: #0d1f35;
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            position: fixed; top: 0; left: 0; height: 100vh;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
+        .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; border-radius: 12px; color: #7a8fa6; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: #1e3a5a; color: #fff; }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .nav-bottom { margin-top: auto; }
+        .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+
+        /* MAIN */
+        .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; }
+
+        /* HEADER */
+        .page-header { margin-bottom: 1.75rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+        .page-header p { font-size: 0.9rem; color: #5a7a99; }
+
+        /* GRID */
+        .live-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem; }
+
+        /* MAPA */
+        .map-card {
+            background: #0d1f35;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .map-placeholder {
+            background: #0a1a2e;
+            border-radius: 16px;
+            height: 320px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .map-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(245,166,35,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .car-marker {
+            position: absolute;
+            width: 32px; height: 32px;
+            background: #f5a623;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(245,166,35,0.8);
+            transition: all 0.5s ease;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .car-marker svg { width: 20px; height: 20px; color: #0d1f35; }
+        .route-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .map-label {
+            position: absolute; bottom: 1rem; left: 1rem;
+            font-size: 0.75rem; color: #5a7a99;
+            background: rgba(10,26,46,0.9);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        /* INFO VIAJE */
+        .info-card {
+            background: #0d1f35;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 1.5rem;
+        }
+        .live-badge {
+            background: #f5a623;
+            color: #0d1f35;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 1rem;
+            animation: pulse 1.5s infinite;
+        }
+        .trip-stats {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .trip-stat { flex: 1; }
+        .trip-stat-value { font-size: 1.5rem; font-weight: 800; color: #f5a623; }
+        .trip-stat-label { font-size: 0.7rem; color: #5a7a99; }
+
+        .progress-section { margin: 1rem 0; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #7a8fa6; margin-bottom: 0.5rem; }
+        .progress-bar { height: 6px; background: #1e3a5a; border-radius: 3px; overflow: hidden; }
+        .progress-fill { width: 65%; height: 100%; background: #f5a623; border-radius: 3px; }
+
+        /* CONDUCTOR */
+        .driver-card {
+            background: #0d1f35;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .driver-avatar {
+            width: 60px; height: 60px;
+            background: #f5a623;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.3rem; color: #0d1f35;
+        }
+        .driver-info h3 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .driver-info .rating { font-size: 0.8rem; color: #f5a623; }
+        .driver-info .plate { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
+        .action-buttons { display: flex; gap: 0.75rem; margin-left: auto; }
+        .btn-action { background: #1e3a5a; border: none; padding: 0.5rem 1rem; border-radius: 10px; color: #fff; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; }
+        .btn-action:hover { background: #2a4a6e; }
+
+        @media (max-width: 900px) { .live-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">U</div>
+        <span class="logo-text">UniRide</span>
+    </div>
+    <nav class="nav">
+        <a class="nav-item" href="dashboard.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Inicio
+        </a>
+        <a class="nav-item" href="buscar-viajes.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
+            Buscar viajes
+        </a>
+        <a class="nav-item" href="publicar-viaje.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Publicar viaje
+        </a>
+        <a class="nav-item active" href="en-vivo.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            En vivo
+        </a>
+        <a class="nav-item" href="perfil.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Mi perfil
+        </a>
+        <div class="nav-bottom">
+            <a class="nav-item logout" href="index.html" onclick="logout()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Cerrar sesión
+            </a>
+        </div>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+    <div class="page-header">
+        <h1>Viaje en vivo</h1>
+        <p>Seguimiento en tiempo real de tu viaje compartido</p>
+    </div>
+
+    <div class="live-grid">
+        <!-- MAPA -->
+        <div class="map-card">
+            <div class="map-placeholder">
+                <div class="map-grid"></div>
+                <svg class="route-line" viewBox="0 0 500 320" fill="none">
+                    <path d="M80 260 Q180 180 250 200 Q320 220 400 120" stroke="#f5a623" stroke-width="3" stroke-dasharray="8 6" opacity="0.6"/>
+                    <circle cx="80" cy="260" r="5" fill="#f5a623" opacity="0.8"/>
+                    <circle cx="400" cy="120" r="5" fill="#f5a623" opacity="0.8"/>
+                </svg>
+                <div class="car-marker" style="top: 55%; left: 48%;">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14v-4M5 17H3a2 2 0 01-2-2v-2a2 2 0 012-2h1m14 0h1a2 2 0 012 2v2a2 2 0 01-2 2h-1m-6-4h-3"/></svg>
+                </div>
+                <div class="map-label">Autopista Norte, Km 8</div>
+            </div>
+            <div style="font-size: 0.
