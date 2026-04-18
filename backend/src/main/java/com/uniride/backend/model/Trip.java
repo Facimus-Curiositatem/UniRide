@@ -37,17 +37,14 @@ public class Trip {
     @Column(nullable = false)
     private Double price;
 
-    @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "only_women", nullable = false)
     private Boolean onlyWomen = false;
 
-    @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "has_ac", nullable = false)
     private Boolean hasAC = false;
 
-    @Builder.Default
     @Column(nullable = false)
-    private String status = "ACTIVE"; // ACTIVE, FULL, CANCELLED
+    private String status = "ACTIVE";
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -55,5 +52,9 @@ public class Trip {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+
+        if (onlyWomen == null) onlyWomen = false;
+        if (hasAC == null) hasAC = false;
+        if (status == null) status = "ACTIVE";
     }
 }

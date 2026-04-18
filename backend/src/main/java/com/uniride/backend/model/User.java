@@ -51,9 +51,6 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column
-    private String faculty; // Ej: "Ingeniería", "Medicina", "Administración"
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

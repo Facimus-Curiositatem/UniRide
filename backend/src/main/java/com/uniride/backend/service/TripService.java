@@ -38,7 +38,6 @@ public class TripService {
         return TripResponse.builder()
                 .id(trip.getId())
                 .driverName(trip.getDriver().getFullName())
-                .driverFaculty(trip.getDriver().getFaculty())
                 .driverRating(trip.getDriver().getRating())
                 .driverTotalRatings(trip.getDriver().getTotalRatings())
                 .origin(trip.getOrigin())

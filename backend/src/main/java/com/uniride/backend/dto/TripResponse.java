@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public class TripResponse {
     private Long id;
     private String driverName;
-    private String driverFaculty;
     private Double driverRating;
     private Integer driverTotalRatings;
     private String origin;

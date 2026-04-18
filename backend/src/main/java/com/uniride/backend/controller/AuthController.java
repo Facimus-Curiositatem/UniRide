@@ -1,5 +1,7 @@
 package com.uniride.backend.controller;
 
+//Puente entre Postman (front) y back
+
 import com.uniride.backend.dto.*;
 import com.uniride.backend.service.AuthService;
 import jakarta.validation.Valid;
