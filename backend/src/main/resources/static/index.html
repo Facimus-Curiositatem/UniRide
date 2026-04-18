@@ -459,6 +459,8 @@
             showResult(data, !res.ok);
             if (res.ok && data.token) {
                 localStorage.setItem('uniride_token', data.token);
+                localStorage.setItem('uniride_email', body.email);
+                window.location.href = 'dashboard.html';
             }
         } catch (e) {
             showResult({ error: 'No se pudo conectar con el backend. ¿Está corriendo en :8080?' }, true);

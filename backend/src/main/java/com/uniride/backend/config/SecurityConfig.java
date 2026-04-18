@@ -43,7 +43,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/", "/index.html", "/**.css", "/**.js", "/**.ico").permitAll()
+                        .requestMatchers("/", "/index.html", "/dashboard.html", "/**.css", "/**.js", "/**.ico").permitAll()
+                        .requestMatchers("/", "/index.html", "/dashboard.html", "/buscar-viajes.html", "/**.css", "/**.js", "/**.ico").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
