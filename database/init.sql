@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 -- =====================
--- REVIEWS (opcional, no lo tocamos)
+-- REVIEWS
 -- =====================
 CREATE TABLE IF NOT EXISTS reviews (
                                        id BIGSERIAL PRIMARY KEY,
@@ -61,36 +61,59 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- DATA INICIAL
 -- =====================
 
--- Admin
+-- Admin (contraseña: 123456)
 INSERT INTO users (full_name, email, password_hash, phone, role)
 VALUES (
            'Admin UniRide',
            'admin@uniride.com',
-           '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy',
+           '$2a$10$XK9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy',
            '3000000000',
            'ADMIN'
-       ) ON CONFLICT DO NOTHING;
+       ) ON CONFLICT (email) DO NOTHING;
 
--- Usuarios conductores (pero pueden ser todo)
+-- Usuarios conductores (contraseña: 123456 para todos)
 INSERT INTO users (full_name, email, password_hash, phone, role, rating, total_ratings)
 VALUES
-    ('María Rodríguez', 'maria@uniride.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', '3001111111', 'USER', 4.9, 127),
-    ('Andrea López',    'andrea@uniride.com','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', '3002222222', 'USER', 5.0, 89),
-    ('Carlos Martínez', 'carlos@uniride.com','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', '3003333333', 'USER', 4.8, 203)
-ON CONFLICT DO NOTHING;
+    -- María Rodríguez
+    ('María Rodríguez', 
+     'maria.rodriguez@javeriana.edu.co', 
+     '$2a$10$YW9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
+     '3001111111', 
+     'USER', 
+     4.9, 
+     127),
+    
+    -- Andrea López
+    ('Andrea López', 
+     'andrea.lopez@javeriana.edu.co', 
+     '$2a$10$ZV9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
+     '3002222222', 
+     'USER', 
+     5.0, 
+     89),
+    
+    -- Carlos Martínez
+    ('Carlos Martínez', 
+     'carlos.martinez@javeriana.edu.co', 
+     '$2a$10$XK9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
+     '3003333333', 
+     'USER', 
+     4.8, 
+     203)
+ON CONFLICT (email) DO NOTHING;
 
 -- Trips de prueba
 INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
 SELECT id, 'Universidad Javeriana', 'Centro Chía', NOW() + INTERVAL '2 hours', 3, 4000, FALSE, TRUE, 'ACTIVE'
-FROM users WHERE email = 'maria@uniride.com'
+FROM users WHERE email = 'maria.rodriguez@javeriana.edu.co'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
 SELECT id, 'Universidad Javeriana', 'Portal Norte', NOW() + INTERVAL '3 hours', 2, 5500, TRUE, FALSE, 'ACTIVE'
-FROM users WHERE email = 'andrea@uniride.com'
+FROM users WHERE email = 'andrea.lopez@javeriana.edu.co'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
 SELECT id, 'Universidad Javeriana', 'Suba', NOW() + INTERVAL '4 hours', 4, 6000, FALSE, FALSE, 'ACTIVE'
-FROM users WHERE email = 'carlos@uniride.com'
+FROM users WHERE email = 'carlos.martinez@javeriana.edu.co'
 ON CONFLICT DO NOTHING;
