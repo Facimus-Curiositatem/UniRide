@@ -8,14 +8,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 260px; min-height: 100vh; background: #0d1f35;
-            display: flex; flex-direction: column; padding: 1.5rem 1rem;
-            border-right: 1px solid rgba(255,255,255,0.06);
-            position: fixed; top: 0; left: 0; height: 100vh;
-        }
+        .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
         .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
         .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
         .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
@@ -26,63 +19,27 @@
         .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
         .nav-bottom { margin-top: auto; }
         .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
-
-        /* MAIN */
         .main { margin-left: 260px; flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
-
-        /* LEFT PANEL */
         .left-panel { padding: 2rem 2rem 2rem 2.5rem; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; max-height: 100vh; }
         .left-panel h1 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 1.5rem; }
-
-        /* INPUTS */
         .input-group { position: relative; margin-bottom: 0.75rem; }
         .input-group svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #f5a623; }
-        .input-group input {
-            width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem;
-            background: #162840; border: 1.5px solid rgba(255,255,255,0.08);
-            border-radius: 12px; color: #fff; font-size: 0.92rem;
-            font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s;
-        }
+        .input-group input { width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; background: #162840; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; color: #fff; font-size: 0.92rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
         .input-group input::placeholder { color: #3a5a7a; }
         .input-group input:focus { border-color: #f5a623; }
-
-        /* FILTROS */
         .filtros { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1.25rem; }
-        .filtro-btn {
-            padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem;
-            font-weight: 600; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.04); color: #7a8fa6;
-            font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
-        }
+        .filtro-btn { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #7a8fa6; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
         .filtro-btn.active { background: #f5a623; color: #0d1f35; border-color: #f5a623; }
         .filtro-btn:hover:not(.active) { border-color: rgba(255,255,255,0.25); color: #fff; }
         .filtro-x { font-size: 0.75rem; opacity: 0.7; }
-
-        /* RESULTADOS */
         .resultados-header { font-size: 0.85rem; color: #5a7a99; margin-bottom: 1rem; }
         .resultados-header span { color: #f5a623; font-weight: 600; }
-
-        /* TRIP CARD */
-        .trip-card {
-            background: #0d1f35; border-radius: 16px; padding: 1.2rem;
-            border: 1.5px solid rgba(255,255,255,0.06); margin-bottom: 1rem;
-            transition: border-color 0.2s, transform 0.2s; cursor: pointer;
-        }
+        .trip-card { background: #0d1f35; border-radius: 16px; padding: 1.2rem; border: 1.5px solid rgba(255,255,255,0.06); margin-bottom: 1rem; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
         .trip-card:hover { border-color: rgba(245,166,35,0.4); transform: translateY(-2px); }
         .trip-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
         .driver-info { display: flex; align-items: center; gap: 0.75rem; }
-        .driver-avatar {
-            width: 46px; height: 46px; border-radius: 50%;
-            background: #1e3a5a; display: flex; align-items: center;
-            justify-content: center; font-weight: 700; font-size: 1rem; color: #f5a623;
-            position: relative; flex-shrink: 0;
-        }
-        .driver-verified {
-            position: absolute; bottom: 0; right: 0;
-            width: 16px; height: 16px; background: #f5a623;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            border: 2px solid #0d1f35;
-        }
+        .driver-avatar { width: 46px; height: 46px; border-radius: 50%; background: #1e3a5a; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #f5a623; position: relative; flex-shrink: 0; }
+        .driver-verified { position: absolute; bottom: 0; right: 0; width: 16px; height: 16px; background: #f5a623; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #0d1f35; }
         .driver-verified svg { width: 8px; height: 8px; color: #0d1f35; }
         .driver-name { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
         .driver-badge { font-size: 0.72rem; padding: 0.15rem 0.6rem; border-radius: 20px; font-weight: 500; display: inline-block; margin-bottom: 0.3rem; }
@@ -94,77 +51,43 @@
         .trip-price-wrap { text-align: right; }
         .trip-price { font-size: 1.3rem; font-weight: 800; color: #f5a623; }
         .trip-price-label { font-size: 0.72rem; color: #5a7a99; }
-
-        /* RUTA */
         .trip-route { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
         .route-point { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #aabbcc; }
         .route-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         .route-dot.origen { background: #5a7a99; }
         .route-dot.destino { background: #f5a623; }
         .route-line { width: 1px; height: 16px; background: rgba(255,255,255,0.1); margin-left: 4.5px; }
-
-        /* TAGS */
         .trip-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
         .tag { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 6px; font-weight: 500; }
         .tag-ac { background: rgba(53,130,221,0.12); color: #85b7eb; }
         .tag-women { background: rgba(212,83,126,0.12); color: #ed93b1; }
         .tag-seats { background: rgba(255,255,255,0.06); color: #7a8fa6; }
         .tag-time { background: rgba(245,166,35,0.1); color: #f5a623; }
-
-        .btn-reservar {
-            width: 100%; padding: 0.7rem; background: #f5a623; color: #0d1f35;
-            border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700;
-            cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s;
-        }
-        .btn-reservar:hover { background: #e09516; }
-
-        /* EMPTY / LOADING */
+        .btn-reservar { width: 100%; padding: 0.7rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
+        .btn-reservar:hover:not(:disabled) { background: #e09516; }
+        .btn-reservar:disabled { background: #3a5a7a; color: #7a8fa6; cursor: not-allowed; }
         .state-msg { text-align: center; padding: 3rem 1rem; color: #5a7a99; font-size: 0.9rem; }
         .state-msg svg { width: 40px; height: 40px; margin: 0 auto 1rem; display: block; opacity: 0.3; }
-
-        /* RIGHT PANEL — MAPA */
         .right-panel { padding: 2rem; display: flex; flex-direction: column; gap: 1rem; position: sticky; top: 0; height: 100vh; }
-
         .map-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .map-stat { background: #0d1f35; border-radius: 12px; padding: 1rem 1.2rem; border: 1px solid rgba(255,255,255,0.06); }
         .map-stat-value { font-size: 1.5rem; font-weight: 800; color: #f5a623; }
         .map-stat-label { font-size: 0.75rem; color: #5a7a99; margin-top: 0.2rem; }
-
-        .map-wrap {
-            flex: 1; background: #0a1a2e; border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden;
-        }
-        .map-grid {
-            position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(245,166,35,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.04) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
+        .map-wrap { flex: 1; background: #0a1a2e; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+        .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,166,35,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.04) 1px, transparent 1px); background-size: 50px 50px; }
         .map-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-        .map-label-pin {
-            position: absolute; background: #0d1f35; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.72rem; color: #aabbcc;
-            white-space: nowrap; pointer-events: none;
-        }
+        .map-label-pin { position: absolute; background: #0d1f35; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.72rem; color: #aabbcc; white-space: nowrap; pointer-events: none; }
         .pin-origen { bottom: 30%; left: 12%; }
         .pin-destino { top: 25%; right: 8%; }
-        .map-dot {
-            position: absolute; width: 16px; height: 16px; border-radius: 50%;
-            border: 2px solid #0d1f35; transform: translate(-50%, -50%);
-        }
+        .map-dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #0d1f35; }
         .map-dot.origen { background: #7a8fa6; box-shadow: 0 0 10px rgba(122,143,166,0.4); bottom: 30%; left: 12%; transform: translate(0, 50%); }
         .map-dot.destino { background: #f5a623; box-shadow: 0 0 14px rgba(245,166,35,0.6); top: 25%; right: 8%; transform: translate(0, -50%); }
-        .map-truck {
-            position: absolute; width: 32px; height: 32px; background: #1e3a5a;
-            border-radius: 50%; border: 2px solid #f5a623; display: flex; align-items: center;
-            justify-content: center; top: 48%; left: 50%; transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px rgba(245,166,35,0.3);
-        }
+        .map-truck { position: absolute; width: 32px; height: 32px; background: #1e3a5a; border-radius: 50%; border: 2px solid #f5a623; display: flex; align-items: center; justify-content: center; top: 48%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px rgba(245,166,35,0.3); }
         .map-truck svg { width: 16px; height: 16px; color: #f5a623; }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon">U</div>
@@ -175,19 +98,19 @@
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Inicio
         </a>
-        <a class="nav-item active" href="#">
+        <a class="nav-item active" href="buscar-viajes.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
             Buscar viajes
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="publicar-viaje.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Publicar viaje
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="en-vivo.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             En vivo
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="perfil.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             Mi perfil
         </a>
@@ -200,12 +123,9 @@
     </nav>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
-    <!-- LEFT -->
     <div class="left-panel">
         <h1>Buscar viajes</h1>
-
         <div class="input-group">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
             <input type="text" id="input-origen" placeholder="Universidad Javeriana" oninput="buscar()"/>
@@ -216,22 +136,15 @@
         </div>
 
         <div class="filtros">
-            <button class="filtro-btn active" id="filtro-ahora" onclick="toggleFiltro('ahora')">
-                Ahora <span class="filtro-x">×</span>
-            </button>
-            <button class="filtro-btn active" id="filtro-ac" onclick="toggleFiltro('ac')">
-                A/C <span class="filtro-x">×</span>
-            </button>
-            <button class="filtro-btn" id="filtro-hoy" onclick="toggleFiltro('hoy')">+ Hoy</button>
+            <button class="filtro-btn" id="filtro-ac" onclick="toggleFiltro('ac')">A/C</button>
             <button class="filtro-btn" id="filtro-mujeres" onclick="toggleFiltro('mujeres')">+ Mujeres</button>
-            <button class="filtro-btn" id="filtro-precio" onclick="toggleFiltro('precio')">+ Precio</button>
+            <button class="filtro-btn" id="filtro-precio" onclick="toggleFiltro('precio')">+ Precio &lt;$5K</button>
         </div>
 
         <div class="resultados-header" id="resultados-header">Buscando viajes...</div>
         <div id="trips-list"></div>
     </div>
 
-    <!-- RIGHT — MAPA -->
     <div class="right-panel">
         <div class="map-stats">
             <div class="map-stat">
@@ -243,11 +156,10 @@
                 <div class="map-stat-label">Duración</div>
             </div>
         </div>
-
         <div class="map-wrap">
             <div class="map-grid"></div>
             <svg class="map-svg" viewBox="0 0 400 300" fill="none">
-                <path id="map-route-path" d="M60 220 Q150 180 200 150 Q270 110 340 70" stroke="#f5a623" stroke-width="2.5" stroke-dasharray="8 5" opacity="0.7"/>
+                <path d="M60 220 Q150 180 200 150 Q270 110 340 70" stroke="#f5a623" stroke-width="2.5" stroke-dasharray="8 5" opacity="0.7"/>
             </svg>
             <div class="map-dot origen"></div>
             <div class="map-label-pin pin-origen" id="label-origen">Universidad Javeriana</div>
@@ -265,14 +177,13 @@
     const token = localStorage.getItem('uniride_token');
     if (!token) window.location.href = 'index.html';
 
-    const filtros = { ahora: true, ac: true, hoy: false, mujeres: false, precio: false };
-    const badges = ['badge-ing', 'badge-der', 'badge-med'];
+    const filtros = { ac: false, mujeres: false, precio: false };
+    const badges     = ['badge-ing', 'badge-der', 'badge-med'];
     const facultades = ['Ingeniería', 'Derecho', 'Medicina'];
 
     function toggleFiltro(nombre) {
         filtros[nombre] = !filtros[nombre];
-        const btn = document.getElementById('filtro-' + nombre);
-        btn.classList.toggle('active', filtros[nombre]);
+        document.getElementById('filtro-' + nombre).classList.toggle('active', filtros[nombre]);
         buscar();
     }
 
@@ -283,22 +194,22 @@
     }
 
     async function cargarViajes() {
-        const origen = document.getElementById('input-origen').value;
-        const destino = document.getElementById('input-destino').value;
+        const origen  = document.getElementById('input-origen').value.trim();
+        const destino = document.getElementById('input-destino').value.trim();
 
         if (destino) {
             document.getElementById('label-destino').textContent = destino;
-            document.getElementById('stat-km').textContent = '8.4 km';
+            document.getElementById('stat-km').textContent  = '8.4 km';
             document.getElementById('stat-min').textContent = '~18 min';
         }
         if (origen) document.getElementById('label-origen').textContent = origen;
 
         const body = {};
-        if (origen) body.origin = origen;
-        if (destino) body.destination = destino;
-        if (filtros.ac) body.hasAC = true;
-        if (filtros.mujeres) body.onlyWomen = true;
-        if (filtros.precio) body.maxPrice = 5000;
+        if (origen)          body.origin      = origen;
+        if (destino)         body.destination = destino;
+        if (filtros.ac)      body.hasAC       = true;
+        if (filtros.mujeres) body.onlyWomen   = true;
+        if (filtros.precio)  body.maxPrice    = 5000;
 
         document.getElementById('resultados-header').textContent = 'Buscando viajes...';
         document.getElementById('trips-list').innerHTML = '';
@@ -312,14 +223,13 @@
                 },
                 body: JSON.stringify(body)
             });
-
             if (!res.ok) throw new Error();
             const trips = await res.json();
 
             document.getElementById('resultados-header').innerHTML =
                 `<span>${trips.length}</span> viaje${trips.length !== 1 ? 's' : ''} encontrado${trips.length !== 1 ? 's' : ''}`;
 
-            if (trips.length === 0) {
+            if (!trips.length) {
                 document.getElementById('trips-list').innerHTML = `
                     <div class="state-msg">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -330,14 +240,13 @@
 
             document.getElementById('trips-list').innerHTML = trips.map((t, i) => {
                 const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0,2) || 'U';
-                const badge = badges[i % 3];
-                const fac = facultades[i % 3];
-                const hora = new Date(t.departure).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-                const precio = Number(t.price).toLocaleString('es-CO');
-                const rating = t.driverRating?.toFixed(1) || '4.9';
-                const reviews = t.driverTotalRatings || 127;
+                const hora      = new Date(t.departure).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+                const precio    = Number(t.price).toLocaleString('es-CO');
+                const rating    = t.driverRating?.toFixed(1) || '5.0';
+                const reviews   = t.driverTotalRatings || 0;
+                const sinCupos  = t.seats <= 0;
                 return `
-                <div class="trip-card" onclick="seleccionarViaje(${t.id})">
+                <div class="trip-card">
                     <div class="trip-card-top">
                         <div class="driver-info">
                             <div class="driver-avatar">
@@ -348,7 +257,7 @@
                             </div>
                             <div>
                                 <div class="driver-name">${t.driverName || 'Conductor'}</div>
-                                <span class="driver-badge ${badge}">${fac}</span>
+                                <span class="driver-badge ${badges[i%3]}">${facultades[i%3]}</span>
                                 <div class="driver-rating">⭐ ${rating} <span>(${reviews})</span></div>
                             </div>
                         </div>
@@ -364,40 +273,50 @@
                     </div>
                     <div class="trip-tags">
                         <span class="tag tag-time">🕐 ${hora}</span>
-                        <span class="tag tag-seats">💺 ${t.seats} asientos</span>
-                        ${t.hasAC ? '<span class="tag tag-ac">❄️ A/C</span>' : ''}
-                        ${t.onlyWomen ? '<span class="tag tag-women">👩 Solo mujeres</span>' : ''}
+                        <span class="tag tag-seats">💺 ${t.seats} asiento${t.seats !== 1 ? 's' : ''}</span>
+                        ${t.hasAC      ? '<span class="tag tag-ac">❄️ A/C</span>'           : ''}
+                        ${t.onlyWomen  ? '<span class="tag tag-women">👩 Solo mujeres</span>' : ''}
                     </div>
-                    <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${t.id})">Reservar</button>
+                    <button class="btn-reservar" onclick="reservar(${t.id}, this)" ${sinCupos ? 'disabled' : ''}>
+                        ${sinCupos ? 'Sin cupos disponibles' : 'Reservar'}
+                    </button>
                 </div>`;
             }).join('');
 
         } catch(e) {
             document.getElementById('resultados-header').textContent = 'Error al cargar viajes';
-            document.getElementById('trips-list').innerHTML = `
-                <div class="state-msg">No se pudo conectar con el servidor</div>`;
+            document.getElementById('trips-list').innerHTML = `<div class="state-msg">No se pudo conectar con el servidor</div>`;
         }
     }
 
-    function seleccionarViaje(id) {
-        console.log('Viaje seleccionado:', id);
-    }
-
-    async function reservar(tripId) {
+    // FIX: antes era POST /api/bookings/{tripId} (incorrecto)
+    // ahora es POST /api/bookings con body { tripId } (correcto según BookingController)
+    async function reservar(tripId, btn) {
+        btn.disabled = true;
+        btn.textContent = 'Reservando...';
         try {
-            const res = await fetch(`${API_BASE}/api/bookings/${tripId}`, {
+            const res = await fetch(`${API_BASE}/api/bookings`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ tripId })
             });
             if (res.ok) {
-                alert('¡Reserva exitosa!');
-                cargarViajes();
+                btn.textContent = '✓ Reservado';
+                btn.style.background = '#3a7a3a';
+                cargarViajes(); // refresca cupos
             } else {
-                const data = await res.json();
+                const data = await res.json().catch(() => ({}));
                 alert(data.message || 'Error al reservar');
+                btn.disabled = false;
+                btn.textContent = 'Reservar';
             }
         } catch(e) {
             alert('No se pudo completar la reserva');
+            btn.disabled = false;
+            btn.textContent = 'Reservar';
         }
     }
 
@@ -406,6 +325,11 @@
         localStorage.removeItem('uniride_email');
         localStorage.removeItem('uniride_name');
     }
+
+    // Leer parámetros del dashboard
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('origen'))  document.getElementById('input-origen').value  = urlParams.get('origen');
+    if (urlParams.get('destino')) document.getElementById('input-destino').value = urlParams.get('destino');
 
     cargarViajes();
 </script>
