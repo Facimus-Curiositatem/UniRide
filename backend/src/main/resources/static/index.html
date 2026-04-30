@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>UniRide</title>
+    <title>UniRide - Comunidad de Viajes Javeriana</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,32 +21,36 @@
         .stat-icon { font-size: 1.3rem; color: #f5a623; margin-bottom: 0.5rem; }
         .stat-number { font-size: 1.6rem; font-weight: 800; color: #ffffff; line-height: 1; }
         .stat-label { font-size: 0.75rem; color: #667788; margin-top: 0.2rem; }
-        .right { width: 460px; background: #111d2e; padding: 2.5rem 2.8rem; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid rgba(255,255,255,0.06); }
+        .right { width: 520px; background: #111d2e; padding: 2rem 2.5rem; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid rgba(255,255,255,0.06); overflow-y: auto; max-height: 100vh; }
         .right h2 { font-size: 1.8rem; font-weight: 800; color: #ffffff; margin-bottom: 0.35rem; }
-        .right .subtitle { font-size: 0.9rem; color: #667788; margin-bottom: 1.8rem; }
-        .divider { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .right .subtitle { font-size: 0.9rem; color: #667788; margin-bottom: 1.5rem; }
+        .divider { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; }
         .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
         .divider span { font-size: 0.8rem; color: #667788; white-space: nowrap; }
-        .tabs { display: flex; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 4px; margin-bottom: 1.5rem; }
+        .tabs { display: flex; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 4px; margin-bottom: 1.2rem; }
         .tab { flex: 1; padding: 0.55rem; border: none; background: none; color: #667788; font-size: 0.9rem; font-weight: 500; cursor: pointer; border-radius: 8px; transition: all 0.2s; font-family: 'Inter', sans-serif; }
         .tab.active { background: rgba(255,255,255,0.1); color: #ffffff; font-weight: 600; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 0.82rem; font-weight: 600; color: #aabbcc; margin-bottom: 0.4rem; }
-        input { width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 10px; font-size: 0.92rem; color: #ffffff; outline: none; transition: border-color 0.2s, background 0.2s; font-family: 'Inter', sans-serif; }
+        .form-group { margin-bottom: 0.8rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: #aabbcc; margin-bottom: 0.3rem; }
+        label .required { color: #f5a623; margin-left: 3px; }
+        input, select { width: 100%; padding: 0.7rem 1rem; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 10px; font-size: 0.85rem; color: #ffffff; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; }
         input::placeholder { color: #445566; }
-        input:focus { border-color: #f5a623; background: rgba(245,166,35,0.04); }
-        .hint { font-size: 0.73rem; color: #445566; margin-top: 0.3rem; }
-        .btn-submit { width: 100%; padding: 0.82rem; background: #f5a623; color: #0d1b2e; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; }
-        .btn-submit:hover { background: #e09516; transform: translateY(-1px); }
+        input:focus, select:focus { border-color: #f5a623; background: rgba(245,166,35,0.04); }
+        select option { background: #0d1b2e; }
+        .hint { font-size: 0.7rem; color: #445566; margin-top: 0.2rem; }
+        .btn-submit { width: 100%; padding: 0.75rem; background: #f5a623; color: #0d1b2e; border: none; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .btn-submit:hover { background: #e09516; transform: translateY(-2px); }
         .btn-submit:disabled { background: #1a2a3a; color: #445566; cursor: not-allowed; transform: none; }
-        .register-link { text-align: center; margin-top: 1.2rem; font-size: 0.83rem; color: #667788; }
+        .register-link { text-align: center; margin-top: 1rem; font-size: 0.8rem; color: #667788; }
         .register-link a { color: #f5a623; text-decoration: none; font-weight: 600; cursor: pointer; }
         .register-link a:hover { text-decoration: underline; }
         .hidden { display: none; }
-        .result { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.82rem; display: none; }
+        .result { margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.8rem; display: none; }
         .result.success { background: rgba(16,185,129,0.1); color: #6ee7b7; border: 1px solid rgba(110,231,183,0.2); }
-        .result.error   { background: rgba(239,68,68,0.1);  color: #fca5a5; border: 1px solid rgba(252,165,165,0.2); }
-        @media (max-width: 768px) { body { flex-direction: column; } .left { padding: 2rem 1.5rem; min-height: 50vh; } .right { width: 100%; padding: 2rem 1.5rem; } .stats { flex-wrap: wrap; } }
+        .result.error { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(252,165,165,0.2); }
+        .vehicle-fields { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 0.8rem; padding-top: 0.8rem; }
+        .vehicle-fields h4 { color: #f5a623; margin-bottom: 0.8rem; font-size: 0.85rem; }
+        @media (max-width: 768px) { body { flex-direction: column; } .left { padding: 1.5rem; min-height: 40vh; } .right { width: 100%; padding: 1.5rem; } .stats { flex-wrap: wrap; } }
     </style>
 </head>
 <body>
@@ -69,9 +73,7 @@
 
 <div class="right">
     <h2>Bienvenido</h2>
-    <p class="subtitle">Inicia sesión para continuar</p>
-
-    <div class="divider"><span>Acceso con email institucional</span></div>
+    <p class="subtitle">Inicia sesión o regístrate para continuar</p>
 
     <div class="tabs">
         <button class="tab active" onclick="switchTab('login')">Iniciar sesión</button>
@@ -81,153 +83,292 @@
     <!-- LOGIN -->
     <div id="loginForm">
         <div class="form-group">
-            <label>Correo institucional</label>
-            <input id="log-email" type="email" placeholder="nombre@javeriana.edu.co" />
+            <label>Correo institucional <span class="required">*</span></label>
+            <input id="loginEmail" type="email" placeholder="nombre@javeriana.edu.co" />
         </div>
         <div class="form-group">
-            <label>Contraseña</label>
-            <input id="log-password" type="password" placeholder="••••••••" />
+            <label>Contraseña <span class="required">*</span></label>
+            <input id="loginPassword" type="password" placeholder="••••••••" />
         </div>
-        <button class="btn-submit" id="btn-login" onclick="login()">Iniciar sesión</button>
+        <button class="btn-submit" id="btnLogin" onclick="login()">Iniciar sesión</button>
         <p class="register-link">¿No tienes cuenta? <a onclick="switchTab('register')">Regístrate aquí</a></p>
     </div>
 
     <!-- REGISTER -->
     <div id="registerForm" class="hidden">
         <div class="form-group">
-            <label>Nombre completo</label>
-            <input id="reg-name" type="text" placeholder="Juan Pérez" />
+            <label>Nombre completo <span class="required">*</span></label>
+            <input id="regFullName" type="text" placeholder="Juan Pérez" />
         </div>
+        
         <div class="form-group">
-            <label>Correo institucional</label>
-            <input id="reg-email" type="email" placeholder="usuario@javeriana.edu.co" />
+            <label>Correo institucional <span class="required">*</span></label>
+            <input id="regEmail" type="email" placeholder="usuario@javeriana.edu.co" />
             <p class="hint">Solo se aceptan correos @javeriana.edu.co</p>
         </div>
+        
         <div class="form-group">
-            <label>Contraseña</label>
-            <input id="reg-password" type="password" placeholder="Mínimo 6 caracteres" />
+            <label>Contraseña <span class="required">*</span></label>
+            <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" />
         </div>
+        
         <div class="form-group">
-            <label>Teléfono</label>
-            <input id="reg-phone" type="text" placeholder="3001234567" />
+            <label>Teléfono <span class="required">*</span></label>
+            <input id="regPhone" type="text" placeholder="3001234567" />
+            <p class="hint">Formato: 3001234567</p>
         </div>
-        <button class="btn-submit" id="btn-register" onclick="register()">Crear cuenta</button>
+        
+        <div class="form-group">
+            <label>Tipo de usuario <span class="required">*</span></label>
+            <select id="regRol" onchange="toggleVehicleFields()">
+                <option value="">Selecciona...</option>
+                <option value="PASAJERO">Solo pasajero</option>
+                <option value="CONDUCTOR">Solo conductor</option>
+                <option value="AMBOS">Conductor y pasajero</option>
+            </select>
+        </div>
+        
+        <!-- Campos de vehículo (solo para conductores) -->
+        <div id="vehicleFields" class="vehicle-fields" style="display: none;">
+            <h4>🚗 Datos del vehículo</h4>
+            <div class="form-group">
+                <label>Placa <span class="required">*</span></label>
+                <input id="regVehiclePlate" type="text" placeholder="ABC123" />
+                <p class="hint">Formato: ABC123 (3 letras y 3 números)</p>
+            </div>
+            <div class="form-group">
+                <label>Color del vehículo <span class="required">*</span></label>
+                <input id="regVehicleColor" type="text" placeholder="Rojo, Blanco, Gris..." />
+            </div>
+        </div>
+        
+        <button class="btn-submit" id="btnRegister" onclick="register()">Crear cuenta</button>
         <p class="register-link">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
     </div>
 
-    <div id="result" class="result"></div>
+    <div id="resultMessage" class="result"></div>
 </div>
 
 <script>
-    const API = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev/api/auth';
+    // Configuración - CAMBIAR SEGÚN ENTORNO
+    // Para local: 'http://localhost:8080'
+    // Para Codespaces: 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev'
+    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    const API_URL = `${API_BASE}/api/auth`;
 
-    // Si ya hay sesión activa, ir directo al dashboard
-    if (localStorage.getItem('uniride_token')) window.location.href = 'dashboard.html';
+    // Redirigir si ya está logueado
+    if (localStorage.getItem('uniride_token')) {
+        window.location.href = 'dashboard.html';
+    }
 
     function switchTab(tab) {
-        document.querySelectorAll('.tab').forEach((t, i) =>
-            t.classList.toggle('active', (i === 0) === (tab === 'login')));
-        document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-        document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+        const loginTab = document.querySelector('.tab:first-child');
+        const registerTab = document.querySelector('.tab:last-child');
+        
+        if (tab === 'login') {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        } else {
+            loginTab.classList.remove('active');
+            registerTab.classList.add('active');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
         clearResult();
     }
 
-    function showResult(msg, isError) {
-        const el = document.getElementById('result');
+    function toggleVehicleFields() {
+        const rol = document.getElementById('regRol').value;
+        const vehicleDiv = document.getElementById('vehicleFields');
+        const isDriverOrBoth = (rol === 'CONDUCTOR' || rol === 'AMBOS');
+        vehicleDiv.style.display = isDriverOrBoth ? 'block' : 'none';
+    }
+
+    function showResult(message, isError) {
+        const el = document.getElementById('resultMessage');
         el.style.display = 'block';
         el.className = 'result ' + (isError ? 'error' : 'success');
-        el.textContent = msg;
+        el.textContent = message;
+        
+        if (!isError) {
+            setTimeout(() => {
+                if (el.style.display === 'block') {
+                    el.style.display = 'none';
+                }
+            }, 5000);
+        }
     }
+
     function clearResult() {
-        const el = document.getElementById('result');
+        const el = document.getElementById('resultMessage');
         el.style.display = 'none';
+        el.textContent = '';
     }
 
     async function login() {
-        const email    = document.getElementById('log-email').value.trim();
-        const password = document.getElementById('log-password').value;
-        if (!email || !password) return showResult('Por favor completa todos los campos.', true);
-
-        const btn = document.getElementById('btn-login');
-        btn.disabled = true; btn.textContent = 'Entrando...';
-
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!email || !password) {
+            return showResult('Por favor completa todos los campos.', true);
+        }
+        
+        const btn = document.getElementById('btnLogin');
+        btn.disabled = true;
+        btn.textContent = 'Ingresando...';
+        
         try {
-            const res  = await fetch(`${API}/login`, {
+            const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            const data = await res.json();
-            if (!res.ok) {
-                showResult(data.message || 'Correo o contraseña incorrectos.', true);
-                btn.disabled = false; btn.textContent = 'Iniciar sesión';
-                return;
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Credenciales incorrectas');
             }
-            // FIX: guardamos el fullName que viene en AuthResponse si existe,
-            // si no, lo derivamos del email
-            const name = data.fullName || email.split('@')[0].replace('.', ' ')
-                .replace(/\b\w/g, l => l.toUpperCase());
+            
+            // Guardar datos en localStorage
             localStorage.setItem('uniride_token', data.token);
             localStorage.setItem('uniride_email', data.email);
-            localStorage.setItem('uniride_name',  name);
-            window.location.href = 'dashboard.html';
-        } catch(e) {
-            showResult('No se pudo conectar con el backend.', true);
-            btn.disabled = false; btn.textContent = 'Iniciar sesión';
+            localStorage.setItem('uniride_name', data.fullName);
+            localStorage.setItem('uniride_rol', data.rol);
+            
+            showResult('✅ Inicio de sesión exitoso. Redirigiendo...', false);
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+            
+        } catch (error) {
+            showResult(error.message, true);
+            btn.disabled = false;
+            btn.textContent = 'Iniciar sesión';
         }
     }
 
     async function register() {
-        const fullName = document.getElementById('reg-name').value.trim();
-        const email    = document.getElementById('reg-email').value.trim();
-        const password = document.getElementById('reg-password').value;
-        const phone    = document.getElementById('reg-phone').value.trim();
-
-        if (!fullName || !email || !password || !phone)
-            return showResult('Por favor completa todos los campos.', true);
-        if (!email.endsWith('@javeriana.edu.co'))
+        const fullName = document.getElementById('regFullName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const phone = document.getElementById('regPhone').value.trim();
+        const rol = document.getElementById('regRol').value;
+        
+        // Validaciones
+        if (!fullName || !email || !password || !phone) {
+            return showResult('Por favor completa todos los campos obligatorios.', true);
+        }
+        
+        if (!rol) {
+            return showResult('Por favor selecciona un tipo de usuario.', true);
+        }
+        
+        if (!email.endsWith('@javeriana.edu.co')) {
             return showResult('Solo se aceptan correos @javeriana.edu.co', true);
-
-        const btn = document.getElementById('btn-register');
-        btn.disabled = true; btn.textContent = 'Creando cuenta...';
-
+        }
+        
+        if (password.length < 6) {
+            return showResult('La contraseña debe tener al menos 6 caracteres.', true);
+        }
+        
+        if (!phone.match(/^3\d{9}$/)) {
+            return showResult('El teléfono debe tener formato 3001234567', true);
+        }
+        
+        // Validar datos del vehículo si es CONDUCTOR o AMBOS
+        const isDriverOrBoth = (rol === 'CONDUCTOR' || rol === 'AMBOS');
+        let vehiclePlate = null;
+        let vehicleColor = null;
+        
+        if (isDriverOrBoth) {
+            vehiclePlate = document.getElementById('regVehiclePlate').value.trim();
+            vehicleColor = document.getElementById('regVehicleColor').value.trim();
+            
+            if (!vehiclePlate || !vehicleColor) {
+                return showResult('La placa y el color del vehículo son obligatorios para conductores.', true);
+            }
+            
+            if (!vehiclePlate.match(/^[A-Z]{3}\d{3}$/)) {
+                return showResult('La placa debe tener formato ABC123 (3 letras y 3 números)', true);
+            }
+        }
+        
+        const btn = document.getElementById('btnRegister');
+        btn.disabled = true;
+        btn.textContent = 'Creando cuenta...';
+        
+        // Construir objeto de registro
+        const registerData = {
+            fullName,
+            email,
+            password,
+            phone,
+            rol,
+            vehiclePlate,
+            vehicleColor
+        };
+        
         try {
-            const res  = await fetch(`${API}/register`, {
+            const response = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, email, password, phone })
+                body: JSON.stringify(registerData)
             });
-            const data = await res.json();
-            if (!res.ok) {
-                showResult(data.message || 'Error al crear la cuenta.', true);
-                btn.disabled = false; btn.textContent = 'Crear cuenta';
-                return;
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al crear la cuenta');
             }
-
-            // FIX: registro exitoso → auto-login para obtener token
-            showResult('Cuenta creada. Iniciando sesión...', false);
-            const loginRes  = await fetch(`${API}/login`, {
+            
+            showResult('✅ Cuenta creada exitosamente. Iniciando sesión...', false);
+            
+            // Auto-login
+            const loginResponse = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            const loginData = await loginRes.json();
-            // FIX: guardamos fullName real que viene del RegisterResponse
+            
+            const loginData = await loginResponse.json();
+            
+            if (!loginResponse.ok) {
+                showResult('Cuenta creada. Por favor inicia sesión manualmente.', false);
+                switchTab('login');
+                btn.disabled = false;
+                btn.textContent = 'Crear cuenta';
+                return;
+            }
+            
             localStorage.setItem('uniride_token', loginData.token);
-            localStorage.setItem('uniride_email', email);
-            localStorage.setItem('uniride_name',  data.fullName || fullName);
-            window.location.href = 'dashboard.html';
-        } catch(e) {
-            showResult('No se pudo conectar con el backend.', true);
-            btn.disabled = false; btn.textContent = 'Crear cuenta';
+            localStorage.setItem('uniride_email', loginData.email);
+            localStorage.setItem('uniride_name', loginData.fullName);
+            localStorage.setItem('uniride_rol', loginData.rol);
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+            
+        } catch (error) {
+            showResult(error.message, true);
+            btn.disabled = false;
+            btn.textContent = 'Crear cuenta';
         }
     }
-
-    // Enter key
-    document.addEventListener('keydown', e => {
-        if (e.key !== 'Enter') return;
-        if (!document.getElementById('loginForm').classList.contains('hidden')) login();
-        else register();
+    
+    // Enter key support
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                login();
+            } else if (!document.getElementById('registerForm').classList.contains('hidden')) {
+                register();
+            }
+        }
     });
 </script>
 </body>

@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -33,12 +38,19 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    @Column(nullable = false, length = 20)
+    private UserRole rol;  
+
+    @Column(name = "vehicle_plate", length = 10)
+    private String vehiclePlate;
+
+    @Column(name = "vehicle_color", length = 30)
+    private String vehicleColor;
 
     @Builder.Default
     @Column(nullable = false)

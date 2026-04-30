@@ -8,16 +8,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
-
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width: 260px; min-height: 100vh;
-            background: #0d1f35;
-            display: flex; flex-direction: column;
-            padding: 1.5rem 1rem;
-            border-right: 1px solid rgba(255,255,255,0.06);
-            position: fixed; top: 0; left: 0; height: 100vh;
-        }
+        .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
         .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
         .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
         .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
@@ -28,18 +19,12 @@
         .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
         .nav-bottom { margin-top: auto; }
         .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
-
-        /* ── MAIN ── */
         .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; display: flex; gap: 1.5rem; align-items: flex-start; }
         .form-col { flex: 1; min-width: 0; }
         .side-col { width: 300px; flex-shrink: 0; position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
-
-        /* ── PAGE HEADER ── */
         .page-header { margin-bottom: 1.75rem; }
         .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
         .page-header p { font-size: 0.9rem; color: #5a7a99; }
-
-        /* ── STEPPER ── */
         .stepper { display: flex; align-items: center; margin-bottom: 2rem; }
         .step { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
         .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; background: #1e3a5a; color: #5a7a99; border: 2px solid #1e3a5a; transition: all 0.3s; position: relative; z-index: 1; }
@@ -48,16 +33,12 @@
         .step.done .step-label, .step.active .step-label { color: #f5a623; }
         .step-line { flex: 1; height: 2px; background: #1e3a5a; margin: 0 0.5rem 1.4rem; transition: background 0.3s; }
         .step-line.done { background: #f5a623; }
-
-        /* ── SECTION CARD ── */
         .section-card { background: #0d1f35; border-radius: 16px; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.25rem; display: none; }
         .section-card.visible { display: block; }
         .section-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
         .section-icon { width: 38px; height: 38px; background: rgba(245,166,35,0.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .section-icon svg { width: 20px; height: 20px; color: #f5a623; }
         .section-title h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
-
-        /* ── FORM FIELDS ── */
         .field-group { margin-bottom: 1.25rem; }
         .field-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #7a8fa6; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
         .field-input { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -71,8 +52,6 @@
         .price-hint { margin-top: 0.65rem; background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2); border-radius: 10px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: #a0b4c8; }
         .price-hint svg { width: 16px; height: 16px; color: #f5a623; flex-shrink: 0; }
         .price-hint strong { color: #f5a623; }
-
-        /* ── SEATS ── */
         .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
         .seat-btn { background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1rem 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; transition: all 0.2s; color: #5a7a99; }
         .seat-btn:hover { border-color: rgba(245,166,35,0.4); color: #a0b4c8; }
@@ -80,8 +59,6 @@
         .seat-btn svg { width: 24px; height: 24px; }
         .seat-btn span { font-size: 1.1rem; font-weight: 800; }
         .seat-btn small { font-size: 0.7rem; font-weight: 500; }
-
-        /* ── PREFERENCES ── */
         .pref-item { background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; cursor: pointer; transition: border-color 0.2s; }
         .pref-item:hover { border-color: rgba(245,166,35,0.3); }
         .pref-item.checked { border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.04); }
@@ -94,13 +71,9 @@
         .pref-item.checked .pref-check { background: #f5a623; border-color: #f5a623; }
         .pref-check svg { width: 14px; height: 14px; color: #0d1f35; display: none; }
         .pref-item.checked .pref-check svg { display: block; }
-
-        /* ── TEXTAREA ── */
         .field-textarea { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.92rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; resize: vertical; min-height: 90px; }
         .field-textarea::placeholder { color: #3a5a7a; }
         .field-textarea:focus { border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,0.1); }
-
-        /* ── BUTTONS ── */
         .form-nav { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem; }
         .btn-secondary { padding: 0.8rem 1.6rem; background: transparent; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 50px; color: #7a8fa6; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
         .btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
@@ -110,8 +83,6 @@
         .btn-publish { width: 100%; padding: 1rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
         .btn-publish:hover { background: #e09516; transform: translateY(-1px); }
         .btn-publish:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        /* ── PREVIEW CARD ── */
         .preview-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1.5px solid rgba(245,166,35,0.3); }
         .preview-label { font-size: 0.75rem; font-weight: 700; color: #f5a623; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
         .preview-driver { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; }
@@ -128,8 +99,6 @@
         .preview-meta svg { width: 14px; height: 14px; }
         .preview-price { font-size: 1.4rem; font-weight: 900; color: #f5a623; }
         .preview-price-label { font-size: 0.7rem; color: #5a7a99; font-weight: 400; }
-
-        /* ── CHECKLIST ── */
         .checklist-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1px solid rgba(255,255,255,0.06); }
         .checklist-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
         .check-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.4rem 0; font-size: 0.83rem; color: #5a7a99; transition: color 0.3s; }
@@ -137,8 +106,6 @@
         .check-circle { width: 22px; height: 22px; border-radius: 50%; background: #1e3a5a; border: 2px solid #1e3a5a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; }
         .check-item.ok .check-circle { background: #f5a623; border-color: #f5a623; }
         .check-circle svg { width: 12px; height: 12px; color: #0d1f35; }
-
-        /* ── SUCCESS ── */
         .success-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.92); display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px); }
         .success-overlay.show { display: flex; }
         .success-box { background: #0d1f35; border-radius: 20px; padding: 2.5rem; text-align: center; border: 1px solid rgba(245,166,35,0.3); max-width: 380px; width: 90%; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -149,17 +116,13 @@
         .success-box p { font-size: 0.88rem; color: #5a7a99; margin-bottom: 1.5rem; }
         .btn-go-home { display: block; width: 100%; padding: 0.9rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; transition: background 0.2s; }
         .btn-go-home:hover { background: #e09516; }
-
-        /* ── ERROR ── */
         .error-msg { background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.25); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.83rem; color: #ff8080; margin-top: 0.75rem; display: none; }
         .error-msg.show { display: block; }
-
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon">U</div>
@@ -174,15 +137,15 @@
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
             Buscar viajes
         </a>
-        <a class="nav-item active" href="#">
+        <a class="nav-item active" href="publicar-viaje.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Publicar viaje
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="en-vivo.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             En vivo
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="perfil.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             Mi perfil
         </a>
@@ -195,48 +158,26 @@
     </nav>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
-    <!-- FORM COLUMN -->
     <div class="form-col">
         <div class="page-header">
             <h1>Publicar un viaje</h1>
             <p>Comparte tu trayecto con la comunidad Javeriana</p>
         </div>
 
-        <!-- STEPPER -->
         <div class="stepper">
-            <div class="step active" id="step-1">
-                <div class="step-circle">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <span class="step-label">Ruta</span>
-            </div>
+            <div class="step active" id="step-1"><div class="step-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span class="step-label">Ruta</span></div>
             <div class="step-line" id="line-1"></div>
-            <div class="step" id="step-2">
-                <div class="step-circle">2</div>
-                <span class="step-label">Horario</span>
-            </div>
+            <div class="step" id="step-2"><div class="step-circle">2</div><span class="step-label">Horario</span></div>
             <div class="step-line" id="line-2"></div>
-            <div class="step" id="step-3">
-                <div class="step-circle">3</div>
-                <span class="step-label">Detalles</span>
-            </div>
+            <div class="step" id="step-3"><div class="step-circle">3</div><span class="step-label">Detalles</span></div>
             <div class="step-line" id="line-3"></div>
-            <div class="step" id="step-4">
-                <div class="step-circle">4</div>
-                <span class="step-label">Publicar</span>
-            </div>
+            <div class="step" id="step-4"><div class="step-circle">4</div><span class="step-label">Publicar</span></div>
         </div>
 
         <!-- PASO 1: RUTA -->
         <div class="section-card visible" id="card-ruta">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                </div>
-                <h2>Ruta del viaje</h2>
-            </div>
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><h2>Ruta del viaje</h2></div>
             <div class="field-group">
                 <label>Punto de salida</label>
                 <input type="text" class="field-input" id="input-origin" placeholder="Universidad Javeriana – Sede Central" oninput="updatePreview()"/>
@@ -247,134 +188,75 @@
             </div>
             <div class="error-msg" id="err-ruta">Por favor completa el origen y destino.</div>
             <div class="form-nav" style="margin-top:1.25rem;">
-                <button class="btn-primary" onclick="goStep(2)">
-                    Siguiente
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
+                <button class="btn-primary" onclick="goStep(2)">Siguiente <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
             </div>
         </div>
 
         <!-- PASO 2: HORARIO -->
         <div class="section-card" id="card-horario">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
-                </div>
-                <h2>Fecha y hora</h2>
-            </div>
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg></div><h2>Fecha y hora</h2></div>
             <div class="field-row">
-                <div class="field-group">
-                    <label>Fecha de salida</label>
-                    <input type="date" class="field-input" id="input-date" oninput="updatePreview()"/>
-                </div>
-                <div class="field-group">
-                    <label>Hora de salida</label>
-                    <input type="time" class="field-input" id="input-time" oninput="updatePreview()"/>
-                </div>
+                <div class="field-group"><label>Fecha de salida</label><input type="date" class="field-input" id="input-date" oninput="updatePreview()"/></div>
+                <div class="field-group"><label>Hora de salida</label><input type="time" class="field-input" id="input-time" oninput="updatePreview()"/></div>
             </div>
             <div class="error-msg" id="err-horario">Por favor selecciona fecha y hora de salida.</div>
         </div>
 
         <!-- PASO 2: CUPOS -->
         <div class="section-card" id="card-cupos">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                </div>
-                <h2>Cupos disponibles</h2>
-            </div>
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg></div><h2>Cupos disponibles</h2></div>
             <div class="seats-grid">
-                <button class="seat-btn" onclick="selectSeats(1)" id="seat-1">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                    <span>1</span><small>cupo</small>
-                </button>
-                <button class="seat-btn selected" onclick="selectSeats(2)" id="seat-2">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                    <span>2</span><small>cupos</small>
-                </button>
-                <button class="seat-btn" onclick="selectSeats(3)" id="seat-3">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                    <span>3</span><small>cupos</small>
-                </button>
-                <button class="seat-btn" onclick="selectSeats(4)" id="seat-4">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                    <span>4</span><small>cupos</small>
-                </button>
+                <button class="seat-btn" onclick="selectSeats(1)" id="seat-1"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>1</span><small>cupo</small></button>
+                <button class="seat-btn selected" onclick="selectSeats(2)" id="seat-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>2</span><small>cupos</small></button>
+                <button class="seat-btn" onclick="selectSeats(3)" id="seat-3"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>3</span><small>cupos</small></button>
+                <button class="seat-btn" onclick="selectSeats(4)" id="seat-4"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>4</span><small>cupos</small></button>
             </div>
             <div class="form-nav" style="margin-top:1.25rem;">
                 <button class="btn-secondary" onclick="goStep(1)">Atrás</button>
-                <button class="btn-primary" onclick="goStep(3)">
-                    Siguiente
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
+                <button class="btn-primary" onclick="goStep(3)">Siguiente <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
             </div>
         </div>
 
         <!-- PASO 3: PRECIO -->
         <div class="section-card" id="card-precio">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <h2>Precio por persona</h2>
-            </div>
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2>Precio por persona</h2></div>
             <div class="field-group" style="margin-bottom:0;">
                 <div class="price-wrap">
                     <span class="price-prefix">$</span>
                     <input type="number" class="field-input" id="input-price" placeholder="5000" min="500" step="500" oninput="updatePreview()"/>
                     <span class="price-suffix">COP</span>
                 </div>
-                <div class="price-hint">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Precio sugerido para esta ruta (8.4 km): <strong>$4,500 – $6,000</strong>
-                </div>
+                <div class="price-hint"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Precio sugerido para esta ruta (8.4 km): <strong>$4,500 – $6,000</strong></div>
             </div>
             <div class="error-msg" id="err-precio">Por favor ingresa un precio válido (mínimo $500).</div>
         </div>
 
         <!-- PASO 3: PREFERENCIAS -->
         <div class="section-card" id="card-prefs">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                </div>
-                <h2>Preferencias del viaje</h2>
-            </div>
-
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><h2>Preferencias del viaje</h2></div>
             <div class="pref-item" id="pref-women" onclick="togglePref('women')">
                 <div class="pref-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
                 <div class="pref-info"><strong>Solo mujeres</strong><small>Viaje exclusivo para pasajeras</small></div>
                 <div class="pref-check" id="check-women"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
             </div>
-
             <div class="pref-item checked" id="pref-ac" onclick="togglePref('ac')">
                 <div class="pref-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg></div>
                 <div class="pref-info"><strong>Aire acondicionado</strong><small>El vehículo tiene A/C</small></div>
                 <div class="pref-check" id="check-ac"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
             </div>
-
             <div class="field-group" style="margin-top:1.25rem; margin-bottom:0;">
                 <label>Notas adicionales (opcional)</label>
                 <textarea class="field-textarea" id="input-notes" placeholder="Ej: Salgo exactamente a las 3:30 PM, por favor ser puntuales…"></textarea>
             </div>
-
             <div class="form-nav" style="margin-top:1.25rem;">
                 <button class="btn-secondary" onclick="goStep(2)">Atrás</button>
-                <button class="btn-primary" onclick="goStep(4)">
-                    Revisar viaje
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
+                <button class="btn-primary" onclick="goStep(4)">Revisar viaje <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
             </div>
         </div>
 
         <!-- PASO 4: CONFIRMAR -->
         <div class="section-card" id="card-confirm">
-            <div class="section-title">
-                <div class="section-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <h2>Confirmar y publicar</h2>
-            </div>
+            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2>Confirmar y publicar</h2></div>
             <p style="font-size:0.88rem; color:#5a7a99; margin-bottom:1.5rem;">Revisa los datos antes de publicar. Los estudiantes podrán ver esta información.</p>
             <div id="confirm-summary" style="background:#0a1628; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; border:1px solid rgba(255,255,255,0.06); font-size:0.88rem; color:#a0b4c8; line-height:2.2;"></div>
             <div class="error-msg" id="err-publish"></div>
@@ -394,64 +276,29 @@
             <div class="preview-label">Vista previa</div>
             <div class="preview-driver">
                 <div class="preview-avatar" id="prev-avatar">A</div>
-                <div class="preview-driver-info">
-                    <strong id="prev-name">...</strong>
-                    <span>Ingeniería</span>
-                </div>
+                <div class="preview-driver-info"><strong id="prev-name">...</strong><span>Javeriana</span></div>
             </div>
             <div class="preview-route">
-                <div class="preview-stop">
-                    <div class="stop-dot gray"></div>
-                    <span id="prev-origin" style="color:#7a8fa6;">Universidad Javeriana</span>
-                </div>
+                <div class="preview-stop"><div class="stop-dot gray"></div><span id="prev-origin" style="color:#7a8fa6;">Universidad Javeriana</span></div>
                 <div style="width:1px; height:18px; background:rgba(255,255,255,0.08); margin-left:4px;"></div>
-                <div class="preview-stop">
-                    <div class="stop-dot yellow"></div>
-                    <span id="prev-destination" style="color:#fff; font-weight:600;">Destino</span>
-                </div>
+                <div class="preview-stop"><div class="stop-dot yellow"></div><span id="prev-destination" style="color:#fff; font-weight:600;">Destino</span></div>
             </div>
             <div class="preview-footer">
                 <div style="display:flex;flex-direction:column;gap:0.35rem;">
-                    <div class="preview-meta">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
-                        <span id="prev-time">--:--</span>
-                    </div>
-                    <div class="preview-meta">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-                        <span id="prev-seats">2</span> cupos
-                    </div>
+                    <div class="preview-meta"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg><span id="prev-time">--:--</span></div>
+                    <div class="preview-meta"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span id="prev-seats">2</span> cupos</div>
                 </div>
-                <div>
-                    <div class="preview-price" id="prev-price">$5.000</div>
-                    <div class="preview-price-label">por persona</div>
-                </div>
+                <div><div class="preview-price" id="prev-price">$5.000</div><div class="preview-price-label">por persona</div></div>
             </div>
         </div>
-
         <div class="checklist-card">
             <div class="checklist-title">Lista de verificación</div>
-            <div class="check-item" id="chk-ruta">
-                <div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-                Ruta definida
-            </div>
-            <div class="check-item" id="chk-horario">
-                <div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-                Fecha y hora
-            </div>
-            <div class="check-item ok" id="chk-cupos">
-                <div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-                Cupos disponibles
-            </div>
-            <div class="check-item" id="chk-precio">
-                <div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-                Precio establecido
-            </div>
-            <div class="check-item" id="chk-prefs">
-                <div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-                Preferencias
-            </div>
+            <div class="check-item" id="chk-ruta"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Ruta definida</div>
+            <div class="check-item" id="chk-horario"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Fecha y hora</div>
+            <div class="check-item ok" id="chk-cupos"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Cupos disponibles</div>
+            <div class="check-item" id="chk-precio"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Precio establecido</div>
+            <div class="check-item" id="chk-prefs"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Preferencias</div>
         </div>
-
         <button class="btn-publish" id="btn-publish-side" style="display:none;" onclick="publishTrip()">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
             Publicar viaje
@@ -459,12 +306,9 @@
     </div>
 </main>
 
-<!-- SUCCESS OVERLAY -->
 <div class="success-overlay" id="success-overlay">
     <div class="success-box">
-        <div class="success-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
+        <div class="success-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
         <h2>¡Viaje publicado!</h2>
         <p>Tu viaje ya está visible para los estudiantes de la Javeriana. ¡Buen trayecto!</p>
         <a href="dashboard.html" class="btn-go-home">Ir al inicio</a>
@@ -472,31 +316,21 @@
 </div>
 
 <script>
-    // ── Config ──
     const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
-
-    // ── Auth guard ──
-    const token = localStorage.getItem('uniride_token');
+    const token    = localStorage.getItem('uniride_token');
     const userName = localStorage.getItem('uniride_name') || 'Usuario';
     if (!token) window.location.href = 'index.html';
 
-    // Init avatar / name in preview
-    const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
-    document.getElementById('prev-avatar').textContent = initials;
-    document.getElementById('prev-name').textContent = userName + ' (tú)';
+    const ini = userName.trim().split(' ').map(n => n[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || 'U';
+    document.getElementById('prev-avatar').textContent = ini;
+    document.getElementById('prev-name').textContent   = userName + ' (tú)';
 
-    // Set min date = today
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('input-date').min = today;
+    document.getElementById('input-date').min   = today;
     document.getElementById('input-date').value = today;
 
-    // ── State ──
-    let currentStep = 1;
-    let selectedSeats = 2;
-    let prefWomen = false;
-    let prefAC = true;
+    let currentStep = 1, selectedSeats = 2, prefWomen = false, prefAC = true;
 
-    // ── Step navigation ──
     function goStep(n) {
         if (n > currentStep) {
             if (currentStep === 1) {
@@ -528,118 +362,82 @@
         for (let i = 1; i <= 4; i++) {
             const s = document.getElementById('step-' + i);
             s.classList.remove('done', 'active');
-            const circle = s.querySelector('.step-circle');
+            const c = s.querySelector('.step-circle');
             if (i < currentStep) {
                 s.classList.add('done');
-                circle.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+                c.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
             } else if (i === currentStep) {
                 s.classList.add('active');
-                circle.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+                c.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
             } else {
-                circle.textContent = i;
+                c.textContent = i;
             }
         }
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 3; i++)
             document.getElementById('line-' + i).classList.toggle('done', i < currentStep);
-        }
     }
 
     function renderCards() {
-        const map = {
-            1: ['card-ruta'],
-            2: ['card-horario', 'card-cupos'],
-            3: ['card-precio', 'card-prefs'],
-            4: ['card-confirm']
-        };
-        ['card-ruta','card-horario','card-cupos','card-precio','card-prefs','card-confirm'].forEach(id => {
-            document.getElementById(id).classList.remove('visible');
-        });
-        (map[currentStep] || []).forEach(id => document.getElementById(id).classList.add('visible'));
+        const map = { 1:['card-ruta'], 2:['card-horario','card-cupos'], 3:['card-precio','card-prefs'], 4:['card-confirm'] };
+        ['card-ruta','card-horario','card-cupos','card-precio','card-prefs','card-confirm'].forEach(id => document.getElementById(id).classList.remove('visible'));
+        (map[currentStep]||[]).forEach(id => document.getElementById(id).classList.add('visible'));
         document.getElementById('btn-publish-side').style.display = currentStep === 4 ? 'flex' : 'none';
     }
 
-    // ── Seats ──
     function selectSeats(n) {
         selectedSeats = n;
-        for (let i = 1; i <= 4; i++) {
-            document.getElementById('seat-' + i).classList.toggle('selected', i === n);
-        }
+        for (let i = 1; i <= 4; i++) document.getElementById('seat-' + i).classList.toggle('selected', i === n);
         document.getElementById('prev-seats').textContent = n;
         updateChecklist();
     }
 
-    // ── Preferences ──
     function togglePref(key) {
-        if (key === 'women') {
-            prefWomen = !prefWomen;
-            document.getElementById('pref-women').classList.toggle('checked', prefWomen);
-        } else {
-            prefAC = !prefAC;
-            document.getElementById('pref-ac').classList.toggle('checked', prefAC);
-        }
+        if (key === 'women') { prefWomen = !prefWomen; document.getElementById('pref-women').classList.toggle('checked', prefWomen); }
+        else { prefAC = !prefAC; document.getElementById('pref-ac').classList.toggle('checked', prefAC); }
     }
 
-    // ── Live preview ──
     function updatePreview() {
         const origin = document.getElementById('input-origin').value || 'Universidad Javeriana';
-        const dest = document.getElementById('input-destination').value || 'Destino';
-        const time = document.getElementById('input-time').value;
-        const price = document.getElementById('input-price').value;
-
-        document.getElementById('prev-origin').textContent = origin;
+        const dest   = document.getElementById('input-destination').value || 'Destino';
+        const time   = document.getElementById('input-time').value;
+        const price  = document.getElementById('input-price').value;
+        document.getElementById('prev-origin').textContent      = origin;
         document.getElementById('prev-destination').textContent = dest;
-
         if (time) {
-            const [h, m] = time.split(':');
-            const hr = parseInt(h);
-            const ampm = hr >= 12 ? 'p.m.' : 'a.m.';
-            document.getElementById('prev-time').textContent = `${hr % 12 || 12}:${m} ${ampm}`;
+            const [h, m] = time.split(':'); const hr = parseInt(h);
+            document.getElementById('prev-time').textContent = `${hr%12||12}:${m} ${hr>=12?'p.m.':'a.m.'}`;
         }
-
-        if (price && Number(price) > 0) {
+        if (price && Number(price) > 0)
             document.getElementById('prev-price').textContent = '$' + Number(price).toLocaleString('es-CO');
-        }
-
         updateChecklist();
     }
 
-    // ── Checklist ──
     function updateChecklist() {
-        const origin = document.getElementById('input-origin').value.trim();
-        const dest = document.getElementById('input-destination').value.trim();
+        const o = document.getElementById('input-origin').value.trim();
+        const d = document.getElementById('input-destination').value.trim();
         const dt = document.getElementById('input-date').value;
         const tm = document.getElementById('input-time').value;
-        const price = document.getElementById('input-price').value;
-
-        setCheck('chk-ruta', !!(origin && dest));
+        const p  = document.getElementById('input-price').value;
+        setCheck('chk-ruta',    !!(o && d));
         setCheck('chk-horario', !!(dt && tm));
-        setCheck('chk-cupos', selectedSeats > 0);
-        setCheck('chk-precio', !!(price && Number(price) >= 500));
-        setCheck('chk-prefs', currentStep >= 3);
+        setCheck('chk-cupos',   selectedSeats > 0);
+        setCheck('chk-precio',  !!(p && Number(p) >= 500));
+        setCheck('chk-prefs',   currentStep >= 3);
     }
 
-    function setCheck(id, ok) {
-        document.getElementById(id).classList.toggle('ok', ok);
-    }
+    function setCheck(id, ok) { document.getElementById(id).classList.toggle('ok', ok); }
 
-    // ── Confirm summary ──
     function buildConfirmSummary() {
         const origin = document.getElementById('input-origin').value;
-        const dest = document.getElementById('input-destination').value;
-        const date = document.getElementById('input-date').value;
-        const time = document.getElementById('input-time').value;
-        const price = document.getElementById('input-price').value;
-        const notes = document.getElementById('input-notes').value;
-
+        const dest   = document.getElementById('input-destination').value;
+        const date   = document.getElementById('input-date').value;
+        const time   = document.getElementById('input-time').value;
+        const price  = document.getElementById('input-price').value;
+        const notes  = document.getElementById('input-notes').value;
         let dateStr = date;
-        try {
-            dateStr = new Date(date + 'T12:00:00').toLocaleDateString('es-CO', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-        } catch(e) {}
-
-        const [h, m] = time.split(':');
-        const hr = parseInt(h);
-        const timeStr = `${hr % 12 || 12}:${m} ${hr >= 12 ? 'p.m.' : 'a.m.'}`;
-
+        try { dateStr = new Date(date + 'T12:00:00').toLocaleDateString('es-CO', { weekday:'long', year:'numeric', month:'long', day:'numeric' }); } catch(e){}
+        const [h, m] = time.split(':'); const hr = parseInt(h);
+        const timeStr = `${hr%12||12}:${m} ${hr>=12?'p.m.':'a.m.'}`;
         document.getElementById('confirm-summary').innerHTML = `
             <div>📍 <strong style="color:#fff">Ruta:</strong> ${origin} → ${dest}</div>
             <div>📅 <strong style="color:#fff">Fecha:</strong> ${dateStr}</div>
@@ -648,31 +446,25 @@
             <div>💵 <strong style="color:#fff">Precio:</strong> $${Number(price).toLocaleString('es-CO')} COP por persona</div>
             <div>❄️ <strong style="color:#fff">Aire acondicionado:</strong> ${prefAC ? 'Sí' : 'No'}</div>
             <div>👩 <strong style="color:#fff">Solo mujeres:</strong> ${prefWomen ? 'Sí' : 'No'}</div>
-            ${notes ? `<div>📝 <strong style="color:#fff">Notas:</strong> ${notes}</div>` : ''}
-        `;
+            ${notes ? `<div>📝 <strong style="color:#fff">Notas:</strong> ${notes}</div>` : ''}`;
         updateChecklist();
     }
 
-    // ── Publish → POST /api/trips ──
+    // FIX: POST /api/trips con Authorization header — requiere TripController.java actualizado en el backend
     async function publishTrip() {
-        const btn = document.getElementById('btn-publish-final');
+        const btn   = document.getElementById('btn-publish-final');
         const errEl = document.getElementById('err-publish');
         errEl.classList.remove('show');
-
         btn.disabled = true;
-        btn.innerHTML = `
-            <svg style="animation:spin 1s linear infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg> Publicando…`;
+        btn.innerHTML = `<svg style="animation:spin 1s linear infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Publicando…`;
 
         const date = document.getElementById('input-date').value;
         const time = document.getElementById('input-time').value;
 
-        // Build body matching Trip entity fields
         const body = {
             origin:      document.getElementById('input-origin').value.trim(),
             destination: document.getElementById('input-destination').value.trim(),
-            departure:   `${date}T${time}:00`,   // LocalDateTime format
+            departure:   `${date}T${time}:00`,
             seats:       selectedSeats,
             price:       parseFloat(document.getElementById('input-price').value),
             onlyWomen:   prefWomen,
@@ -691,23 +483,19 @@
 
             if (!res.ok) {
                 const err = await res.json().catch(() => ({}));
-                throw new Error(err.message || `Error ${res.status}: no se pudo publicar`);
+                throw new Error(err.message || `Error ${res.status}`);
             }
 
-            // Show success modal
             document.getElementById('success-overlay').classList.add('show');
 
-        } catch (e) {
+        } catch(e) {
             errEl.textContent = e.message;
             errEl.classList.add('show');
             btn.disabled = false;
-            btn.innerHTML = `
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Publicar viaje`;
+            btn.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Publicar viaje`;
         }
     }
 
-    // ── Helpers ──
     function showErr(id) { document.getElementById(id).classList.add('show'); }
     function hideErr(id) { document.getElementById(id).classList.remove('show'); }
     function logout() {
@@ -716,7 +504,6 @@
         localStorage.removeItem('uniride_name');
     }
 
-    // Init
     updatePreview();
 </script>
 </body>
