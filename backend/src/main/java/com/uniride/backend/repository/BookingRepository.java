@@ -25,4 +25,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     
     // Buscar bookings por trip
     List<Booking> findByTripId(Long tripId);
+
+    List<Booking> findByPassengerId(Long passengerId);
 }

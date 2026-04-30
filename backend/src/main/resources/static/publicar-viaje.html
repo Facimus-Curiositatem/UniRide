@@ -540,7 +540,7 @@
         updateChecklist();
     }
 
-    async function publishTrip() {
+  async function publishTrip() {
     const btn = document.getElementById('btn-publish-final');
     const errEl = document.getElementById('err-publish');
     if (!btn) return;
@@ -552,14 +552,22 @@
     const date = document.getElementById('input-date')?.value;
     const time = document.getElementById('input-time')?.value;
     
+    // === SOLUCIÓN: Sumar 2 horas (diferencia actual) ===
+    const fechaLocal = new Date(`${date}T${time}:00`);
+    const fechaUTC = new Date(fechaLocal.getTime() + (2 * 60 * 60 * 1000)); // Sumar 2 horas
+    
+    const departure = fechaUTC.toISOString().slice(0, 19);
+    
+    console.log('Fecha local:', `${date}T${time}:00`);
+    console.log('Fecha ajustada:', departure);
+    
     const body = {
         origin: document.getElementById('input-origin')?.value.trim() || '',
         destination: document.getElementById('input-destination')?.value.trim() || '',
-        departure: `${date}T${time}:00`,
+        departure: departure,
         seats: selectedSeats,
         price: parseFloat(document.getElementById('input-price')?.value || 0),
         onlyWomen: prefWomen
-        // hasAC: prefAC   ← ELIMINA O COMENTA ESTA LÍNEA
     };
     
     try {

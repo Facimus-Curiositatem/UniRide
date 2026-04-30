@@ -276,8 +276,7 @@
 
     const filtros = { ac: false, mujeres: false, precio: false };
     const badges     = ['badge-ing', 'badge-der', 'badge-med'];
-    const facultades = ['Ingeniería', 'Derecho', 'Medicina'];
-
+    
     function toggleFiltro(nombre) {
         filtros[nombre] = !filtros[nombre];
         document.getElementById('filtro-' + nombre).classList.toggle('active', filtros[nombre]);
@@ -354,7 +353,7 @@
                             </div>
                             <div>
                                 <div class="driver-name">${t.driverName || 'Conductor'}</div>
-                                <span class="driver-badge ${badges[i%3]}">${facultades[i%3]}</span>
+                                
                                 <div class="driver-rating">⭐ ${rating} <span>(${reviews})</span></div>
                             </div>
                         </div>

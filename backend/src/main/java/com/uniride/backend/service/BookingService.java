@@ -5,7 +5,7 @@ import com.uniride.backend.model.*;
 import com.uniride.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -52,4 +52,10 @@ public class BookingService {
                 .createdAt(saved.getCreatedAt())
                 .build();
     }
+
+    public List<Booking> getMyBookings(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    return bookingRepository.findByPassengerId(user.getId());
+}
 }

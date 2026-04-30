@@ -9,7 +9,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px; min-height: 100vh;
             background: #0d1f35;
@@ -29,18 +28,13 @@
         .nav-bottom { margin-top: auto; }
         .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
 
-        /* MAIN */
         .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; }
-
-        /* HEADER */
         .page-header { margin-bottom: 1.75rem; }
         .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
         .page-header p { font-size: 0.9rem; color: #5a7a99; }
 
-        /* GRID */
         .live-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem; }
 
-        /* MAPA */
         .map-card {
             background: #0d1f35;
             border-radius: 20px;
@@ -88,7 +82,6 @@
             border-radius: 20px;
         }
 
-        /* INFO VIAJE */
         .info-card {
             background: #0d1f35;
             border-radius: 20px;
@@ -120,12 +113,35 @@
         .trip-stat-value { font-size: 1.5rem; font-weight: 800; color: #f5a623; }
         .trip-stat-label { font-size: 0.7rem; color: #5a7a99; }
 
+        .trip-features {
+            display: flex;
+            gap: 0.75rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .feature-tag {
+            background: #1e3a5a;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #a0b4c8;
+        }
+        .feature-tag.active {
+            background: rgba(245,166,35,0.15);
+            color: #f5a623;
+            border: 1px solid rgba(245,166,35,0.3);
+        }
+        .feature-tag svg { width: 14px; height: 14px; }
+
         .progress-section { margin: 1rem 0; }
         .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: #7a8fa6; margin-bottom: 0.5rem; }
         .progress-bar { height: 6px; background: #1e3a5a; border-radius: 3px; overflow: hidden; }
         .progress-fill { width: 65%; height: 100%; background: #f5a623; border-radius: 3px; }
 
-        /* CONDUCTOR */
         .driver-card {
             background: #0d1f35;
             border-radius: 20px;
@@ -154,7 +170,6 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon">U</div>
@@ -190,7 +205,6 @@
     </nav>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
     <div class="page-header">
         <h1>Viaje en vivo</h1>
@@ -198,7 +212,6 @@
     </div>
 
     <div class="live-grid">
-        <!-- MAPA -->
         <div class="map-card">
             <div class="map-placeholder">
                 <div class="map-grid"></div>
@@ -210,6 +223,252 @@
                 <div class="car-marker" style="top: 55%; left: 48%;">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14v-4M5 17H3a2 2 0 01-2-2v-2a2 2 0 012-2h1m14 0h1a2 2 0 012 2v2a2 2 0 01-2 2h-1m-6-4h-3"/></svg>
                 </div>
-                <div class="map-label">Autopista Norte, Km 8</div>
+                <div class="map-label" id="map-ubicacion">Buscando ubicación...</div>
             </div>
-            <div style="font-size: 0.
+        </div>
+
+        <div>
+            <div class="info-card">
+                <div class="live-badge">🔴 EN VIVO</div>
+                
+                <h2 style="font-size: 1.2rem; margin-bottom: 0.5rem;" id="viaje-ruta">Cargando...</h2>
+                <p style="font-size: 0.8rem; color: #5a7a99;" id="viaje-hora">---</p>
+
+                <div class="trip-features" id="trip-features">
+                    <div class="feature-tag">Cargando características...</div>
+                </div>
+
+                <div class="trip-stats">
+                    <div class="trip-stat" id="stat-distancia">
+                        <div class="trip-stat-value">-- km</div>
+                        <div class="trip-stat-label">Distancia</div>
+                    </div>
+                    <div class="trip-stat" id="stat-duracion">
+                        <div class="trip-stat-value">-- min</div>
+                        <div class="trip-stat-label">Tiempo total</div>
+                    </div>
+                    <div class="trip-stat" id="stat-precio">
+                        <div class="trip-stat-value">$--</div>
+                        <div class="trip-stat-label">Precio/persona</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Recorrido</span>
+                        <span id="progreso-porcentaje">0% completado</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <div style="flex: 1; background: #0a1628; border-radius: 12px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: #5a7a99;">Origen</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="origen-text">---</div>
+                    </div>
+                    <div style="flex: 1; background: #0a1628; border-radius: 12px; padding: 0.5rem; text-align: center;">
+                        <div style="font-size: 0.7rem; color: #5a7a99;">Destino</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="destino-text">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="driver-card">
+                <div class="driver-avatar" id="conductor-inicial">?</div>
+                <div class="driver-info">
+                    <h3 id="conductor-nombre">Cargando...</h3>
+                    <div class="rating" id="conductor-rating">⭐ --</div>
+                    <div class="plate" id="conductor-vehiculo">---</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-action" onclick="contactarConductor()">📱 Contactar</button>
+                    <button class="btn-action" onclick="verDetalles()">📍 Ver detalles</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const API_BASE = window.location.hostname.includes('localhost') 
+        ? 'http://localhost:8080'
+        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    
+    const token = localStorage.getItem('uniride_token');
+    if (!token) window.location.href = 'index.html';
+
+    let viajeActual = null;
+    let intervalSimulacion = null;
+
+    // Registrar el viaje seleccionado desde la URL (opcional)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tripId = urlParams.get('id');
+
+    async function cargarViajeEnVivo() {
+    try {
+        // Obtener reservas del usuario
+        const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+            const bookings = await res.json();
+            // Filtrar solo los que tienen estado CONFIRMED o COMPLETED
+            const viajesActivos = bookings.filter(b => 
+                b.estado === 'CONFIRMED' || b.estado === 'COMPLETED'
+            );
+            
+            if (viajesActivos.length > 0) {
+                const viaje = viajesActivos[0].trip; // Asumiendo que viene con el trip
+                actualizarUI(viaje);
+                return;
+            }
+        }
+        
+        // Si no hay reservas, mostrar mensaje
+        mostrarSinViajes();
+        
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarSinViajes();
+    }
+}
+
+    function actualizarUI(viaje) {
+        // Ruta
+        document.getElementById('viaje-ruta').textContent = `${viaje.origin} → ${viaje.destination}`;
+        document.getElementById('origen-text').textContent = viaje.origin;
+        document.getElementById('destino-text').textContent = viaje.destination;
+        
+        // Fecha y hora
+        if (viaje.departure) {
+            const fecha = new Date(viaje.departure);
+            const hora = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+            const fechaStr = fecha.toLocaleDateString('es-CO', { day: 'numeric', month: 'long' });
+            document.getElementById('viaje-hora').textContent = `📅 ${fechaStr} · 🕐 ${hora}`;
+        }
+        
+        // Características del viaje (solo usando los campos reales de Trip)
+        const featuresContainer = document.getElementById('trip-features');
+        let featuresHtml = `
+            <div class="feature-tag active">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857"/></svg>
+                💺 ${viaje.seats} asientos disponibles
+            </div>
+        `;
+        
+        if (viaje.onlyWomen) {
+            featuresHtml += `
+                <div class="feature-tag active">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Solo mujeres
+                </div>
+            `;
+        }
+        
+        featuresContainer.innerHTML = featuresHtml;
+        
+        // Estadísticas del viaje (valores simulados con base en el precio real)
+        const precio = Number(viaje.price).toLocaleString('es-CO');
+        document.getElementById('stat-precio').querySelector('.trip-stat-value').textContent = `$${precio}`;
+        
+        // Distancia y duración (simuladas basadas en origen/destino)
+        const distancia = calcularDistanciaAproximada(viaje.origin, viaje.destination);
+        document.getElementById('stat-distancia').querySelector('.trip-stat-value').textContent = `${distancia.km} km`;
+        document.getElementById('stat-duracion').querySelector('.trip-stat-value').textContent = `${distancia.min} min`;
+        
+        // Conductor
+        if (viaje.driverName) {
+            const iniciales = viaje.driverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+            document.getElementById('conductor-inicial').textContent = iniciales;
+            document.getElementById('conductor-nombre').textContent = viaje.driverName;
+        }
+        
+        const rating = viaje.driverRating?.toFixed(1) || '5.0';
+        const totalRatings = viaje.driverTotalRatings || 0;
+        document.getElementById('conductor-rating').innerHTML = `⭐ ${rating} (${totalRatings} reseñas)`;
+        
+        // Ubicación en el mapa
+        document.getElementById('map-ubicacion').textContent = `📍 ${viaje.origin} → ${viaje.destination}`;
+    }
+
+    function calcularDistanciaAproximada(origen, destino) {
+        const rutas = {
+            "Universidad Javeriana:Centro Chía": { km: 12.5, min: 25 },
+            "Universidad Javeriana:Portal Norte": { km: 8.2, min: 18 },
+            "Universidad Javeriana:Suba": { km: 15.3, min: 35 },
+            "Universidad Nacional:Calle 72": { km: 5.5, min: 12 },
+        };
+        const key = `${origen}:${destino}`;
+        return rutas[key] || { km: 8.5, min: 20 };
+    }
+
+    function iniciarSimulacionProgreso() {
+        if (intervalSimulacion) clearInterval(intervalSimulacion);
+        
+        let progreso = 0;
+        intervalSimulacion = setInterval(() => {
+            if (progreso >= 100) {
+                clearInterval(intervalSimulacion);
+                document.getElementById('progreso-porcentaje').textContent = 'Viaje completado ✅';
+                return;
+            }
+            progreso += Math.random() * 10;
+            if (progreso > 100) progreso = 100;
+            document.getElementById('progreso-porcentaje').textContent = `${Math.round(progreso)}% completado`;
+            document.getElementById('progress-fill-bar').style.width = `${progreso}%`;
+            
+            // Actualizar posición del carro en el mapa (simulado)
+            const carMarker = document.querySelector('.car-marker');
+            if (carMarker) {
+                const leftPos = 10 + (progreso * 0.8);
+                carMarker.style.left = `${Math.min(leftPos, 85)}%`;
+            }
+        }, 3000);
+    }
+
+    function mostrarSinViajes() {
+        document.getElementById('viaje-ruta').textContent = 'No hay viajes en vivo';
+        document.getElementById('viaje-hora').textContent = 'Publica un viaje o reserva uno para ver el seguimiento';
+        document.getElementById('trip-features').innerHTML = '<div class="feature-tag">No hay viajes activos</div>';
+        document.getElementById('conductor-nombre').textContent = '---';
+        document.getElementById('conductor-rating').innerHTML = '⭐ --';
+        document.getElementById('conductor-vehiculo').innerHTML = '---';
+        document.getElementById('origen-text').textContent = '---';
+        document.getElementById('destino-text').textContent = '---';
+        document.getElementById('stat-precio').querySelector('.trip-stat-value').textContent = '$--';
+        document.getElementById('stat-distancia').querySelector('.trip-stat-value').textContent = '-- km';
+        document.getElementById('stat-duracion').querySelector('.trip-stat-value').textContent = '-- min';
+        document.getElementById('map-ubicacion').textContent = 'Sin viajes activos';
+    }
+
+    function contactarConductor() {
+        if (viajeActual && viajeActual.driverName) {
+            alert(`📞 Contactando a ${viajeActual.driverName}...\n\n(Simulación: En una versión real, esto abriría un chat)`);
+        } else {
+            alert('No hay un viaje activo para contactar');
+        }
+    }
+
+    function verDetalles() {
+        if (viajeActual) {
+            window.location.href = `buscar-viajes.html?origen=${encodeURIComponent(viajeActual.origin)}&destino=${encodeURIComponent(viajeActual.destination)}`;
+        } else {
+            alert('No hay un viaje activo para ver detalles');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('uniride_token');
+        localStorage.removeItem('uniride_email');
+        localStorage.removeItem('uniride_name');
+        localStorage.removeItem('uniride_rol');
+        window.location.href = 'index.html';
+    }
+
+    cargarViajeEnVivo();
+</script>
+</body>
+</html>

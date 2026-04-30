@@ -1,5 +1,5 @@
 package com.uniride.backend.controller;
-
+import com.uniride.backend.model.Booking;
 import com.uniride.backend.dto.BookingRequest;
 import com.uniride.backend.dto.BookingResponse;
 import com.uniride.backend.service.BookingService;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
@@ -26,4 +26,12 @@ public class BookingController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/my-trips")
+public ResponseEntity<?> getMyTrips(Authentication authentication) {
+    String email = authentication.getName();
+    List<Booking> bookings = bookingService.getMyBookings(email);
+    return ResponseEntity.ok(bookings);
+}
+
 }
