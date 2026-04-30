@@ -233,11 +233,6 @@
                 <div class="pref-info"><strong>Solo mujeres</strong><small>Viaje exclusivo para pasajeras</small></div>
                 <div class="pref-check" id="check-women"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
             </div>
-            <div class="pref-item checked" id="pref-ac" onclick="togglePref('ac')">
-                <div class="pref-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg></div>
-                <div class="pref-info"><strong>Aire acondicionado</strong><small>El vehículo tiene A/C</small></div>
-                <div class="pref-check" id="check-ac"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-            </div>
             <div class="field-group" style="margin-top:1.25rem; margin-bottom:0;">
                 <label>Notas adicionales (opcional)</label>
                 <textarea class="field-textarea" id="input-notes" placeholder="Ej: Salgo exactamente a las 3:30 PM, por favor ser puntuales…"></textarea>
@@ -534,14 +529,13 @@
         const summaryDiv = document.getElementById('confirm-summary');
         if (summaryDiv) {
             summaryDiv.innerHTML = `
-                <div>📍 <strong style="color:#fff">Ruta:</strong> ${origin} → ${dest}</div>
-                <div>📅 <strong style="color:#fff">Fecha:</strong> ${dateStr}</div>
-                <div>🕐 <strong style="color:#fff">Hora:</strong> ${timeStr}</div>
-                <div>👥 <strong style="color:#fff">Cupos:</strong> ${selectedSeats}</div>
-                <div>💵 <strong style="color:#fff">Precio:</strong> $${Number(price).toLocaleString('es-CO')} COP por persona</div>
-                <div>❄️ <strong style="color:#fff">Aire acondicionado:</strong> ${prefAC ? 'Sí' : 'No'}</div>
-                <div>👩 <strong style="color:#fff">Solo mujeres:</strong> ${prefWomen ? 'Sí' : 'No'}</div>
-                ${notes ? `<div>📝 <strong style="color:#fff">Notas:</strong> ${notes}</div>` : ''}`;
+                <div> <strong style="color:#fff">Ruta:</strong> ${origin} → ${dest}</div>
+                <div> <strong style="color:#fff">Fecha:</strong> ${dateStr}</div>
+                <div> <strong style="color:#fff">Hora:</strong> ${timeStr}</div>
+                <div> <strong style="color:#fff">Cupos:</strong> ${selectedSeats}</div>
+                <div> <strong style="color:#fff">Precio:</strong> $${Number(price).toLocaleString('es-CO')} COP por persona</div>
+                <div> <strong style="color:#fff">Solo mujeres:</strong> ${prefWomen ? 'Sí' : 'No'}</div>
+                ${notes ? `<div> <strong style="color:#fff">Notas:</strong> ${notes}</div>` : ''}`;
         }
         updateChecklist();
     }
