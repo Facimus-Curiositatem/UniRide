@@ -9,7 +9,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px; min-height: 100vh;
             background: #0d1f35;
@@ -29,26 +28,18 @@
         .nav-bottom { margin-top: auto; }
         .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
 
-        /* MAIN */
         .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; }
-
-        /* HEADER */
         .page-header { margin-bottom: 1.75rem; }
         .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
         .page-header p { font-size: 0.9rem; color: #5a7a99; }
 
-        /* PROFILE GRID */
         .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; }
-
-        /* CARD */
         .card {
             background: #0d1f35;
             border-radius: 20px;
             padding: 1.75rem;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
-        /* PROFILE HEADER */
         .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
         .profile-avatar {
             width: 80px; height: 80px;
@@ -64,7 +55,6 @@
         .rating-stars { color: #f5a623; font-size: 0.9rem; letter-spacing: 2px; }
         .rating-count { font-size: 0.75rem; color: #5a7a99; }
 
-        /* VEHICLE CARD */
         .vehicle-card { background: #0a1628; border-radius: 16px; padding: 1.25rem; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.06); }
         .vehicle-title { font-size: 0.8rem; font-weight: 700; color: #f5a623; text-transform: uppercase; margin-bottom: 1rem; }
         .vehicle-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -72,13 +62,11 @@
         .vehicle-label { color: #5a7a99; font-size: 0.85rem; }
         .vehicle-value { color: #fff; font-weight: 600; font-size: 0.85rem; }
 
-        /* STATS MINI */
         .stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
         .stat-mini { background: #0a1628; border-radius: 14px; padding: 1rem; text-align: center; }
         .stat-mini-number { font-size: 1.6rem; font-weight: 800; color: #f5a623; }
         .stat-mini-label { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
 
-        /* RATING BARS */
         .rating-bars { margin: 1rem 0; }
         .rating-bar-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; }
         .rating-bar-label { width: 30px; color: #7a8fa6; }
@@ -86,7 +74,6 @@
         .rating-bar-fill { height: 100%; background: #f5a623; border-radius: 3px; }
         .rating-bar-count { width: 30px; color: #5a7a99; text-align: right; }
 
-        /* REVIEW */
         .review-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .review-item:last-child { border-bottom: none; }
         .review-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
@@ -97,13 +84,13 @@
         .review-text { font-size: 0.85rem; color: #a0b4c8; line-height: 1.4; margin-left: 3rem; }
 
         .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+        .no-vehicle { text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem; }
         
         @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="logo-icon">U</div>
@@ -139,7 +126,6 @@
     </nav>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
     <div class="page-header">
         <h1>Mi perfil</h1>
@@ -147,67 +133,55 @@
     </div>
 
     <div class="profile-grid">
-        <!-- COLUMNA IZQUIERDA -->
         <div>
-            <!-- INFO PERSONAL -->
             <div class="card" style="margin-bottom: 1.5rem;">
                 <div class="profile-header">
                     <div class="profile-avatar" id="profile-avatar">U</div>
                     <div class="profile-info">
                         <h2 id="profile-name">Usuario</h2>
-                        <div class="faculty" id="profile-faculty">Ingeniería de Sistemas • 7mo semestre</div>
+                        <div class="faculty" id="profile-faculty">Cargando...</div>
                         <div class="rating">
-                            <span class="rating-number" id="profile-rating">4.9</span>
-                            <span class="rating-stars" id="profile-stars">★★★★★</span>
-                            <span class="rating-count" id="profile-reviews">(47 reseñas)</span>
+                            <span class="rating-number" id="profile-rating">--</span>
+                            <span class="rating-stars" id="profile-stars">☆☆☆☆☆</span>
+                            <span class="rating-count" id="profile-reviews">(0 reseñas)</span>
                         </div>
                     </div>
                 </div>
-                <div><span class="badge">⭐ Conductor activo</span> <span class="badge" style="margin-left:0.5rem;">🌱 Eco-friendly</span> <span class="badge" style="margin-left:0.5rem;">🏆 Top rated</span></div>
+                <div id="profile-badges"></div>
             </div>
 
-            <!-- VEHÍCULO REGISTRADO -->
-            <div class="card">
+            <!-- VEHÍCULO REGISTRADO (SOLO PARA CONDUCTOR O AMBOS) -->
+            <div class="card" id="vehicle-card" style="display: none;">
                 <div class="vehicle-title">🚗 Vehículo registrado</div>
-                <div class="vehicle-card">
-                    <div class="vehicle-row"><span class="vehicle-label">Marca y modelo</span><span class="vehicle-value" id="vehicle-model">Mazda 3 2022</span></div>
-                    <div class="vehicle-row"><span class="vehicle-label">Placa</span><span class="vehicle-value" id="vehicle-plate">ABC-123</span></div>
-                    <div class="vehicle-row"><span class="vehicle-label">Color</span><span class="vehicle-value" id="vehicle-color">Gris</span></div>
-                    <div class="vehicle-row"><span class="vehicle-label">Capacidad</span><span class="vehicle-value" id="vehicle-capacity">4 pasajeros</span></div>
+                <div id="vehicle-info">
+                    <div class="vehicle-card">
+                        <div class="vehicle-row"><span class="vehicle-label">Placa</span><span class="vehicle-value" id="vehicle-plate">---</span></div>
+                        <div class="vehicle-row"><span class="vehicle-label">Color</span><span class="vehicle-value" id="vehicle-color">---</span></div>
+                    </div>
                 </div>
                 <div class="stats-mini">
-                    <div class="stat-mini"><div class="stat-mini-number" id="stat-trips">47</div><div class="stat-mini-label">Viajes completados</div></div>
-                    <div class="stat-mini"><div class="stat-mini-number" id="stat-earnings">$287K</div><div class="stat-mini-label">Ganancia total</div></div>
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-trips">0</div><div class="stat-mini-label">Viajes completados</div></div>
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-earnings">$0</div><div class="stat-mini-label">Ganancia total</div></div>
                 </div>
             </div>
         </div>
 
-        <!-- COLUMNA DERECHA -->
         <div>
-            <!-- CALIFICACIÓN DETALLADA -->
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;">Calificación general</h3>
                 <div class="rating-bars">
-                    <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 89%"></div></div><span class="rating-bar-count" id="count-5">42</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 9%"></div></div><span class="rating-bar-count" id="count-4">4</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 2%"></div></div><span class="rating-bar-count" id="count-3">1</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 0%"></div></div><span class="rating-bar-count" id="count-5">0</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 0%"></div></div><span class="rating-bar-count" id="count-4">0</span></div>
+                    <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 0%"></div></div><span class="rating-bar-count" id="count-3">0</span></div>
                     <div class="rating-bar-item"><span class="rating-bar-label">2★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-2" style="width: 0%"></div></div><span class="rating-bar-count" id="count-2">0</span></div>
                     <div class="rating-bar-item"><span class="rating-bar-label">1★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-1" style="width: 0%"></div></div><span class="rating-bar-count" id="count-1">0</span></div>
                 </div>
             </div>
 
-            <!-- RESEÑAS RECIENTES -->
             <div class="card">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;">Reseñas recientes</h3>
                 <div id="reviews-list">
-                    <div class="review-item">
-                        <div class="review-header"><div class="review-avatar">MR</div><div><div class="review-name">María Rodríguez</div><div class="review-faculty">Ingeniería</div></div><div class="review-stars">★★★★★</div></div>
-                        <div class="review-text">Excelente conductor, muy puntual y amable. El viaje fue muy cómodo y seguro.</div>
-                    </div>
-                    <div class="review-item">
-                        <div class="review-header"><div class="review-avatar">LG</div><div><div class="review-name">Laura Gómez</div><div class="review-faculty">Medicina</div></div><div class="review-stars">★★★★★</div></div>
-                        <div class="review-text">Súper recomendado! Muy conversador y respetuoso. Siempre escucha la música a buen volumen.</div>
-                    </div>
+                    <div class="empty" style="text-align: center; padding: 2rem; color: #5a7a99;">No hay reseñas aún</div>
                 </div>
             </div>
         </div>
@@ -215,23 +189,199 @@
 </main>
 
 <script>
-    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    const API_BASE = window.location.hostname.includes('localhost') 
+        ? 'http://localhost:8080'
+        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    
     const token = localStorage.getItem('uniride_token');
+    const userEmail = localStorage.getItem('uniride_email');
     const userName = localStorage.getItem('uniride_name') || 'Usuario';
-    const userEmail = localStorage.getItem('uniride_email') || '';
 
     if (!token) window.location.href = 'index.html';
 
-    // Avatar
     const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
     document.getElementById('profile-avatar').textContent = initials;
     document.getElementById('profile-name').textContent = userName;
 
-    function logout() {
-        localStorage.removeItem('uniride_token');
-        localStorage.removeItem('uniride_email');
-        localStorage.removeItem('uniride_name');
+    async function cargarPerfil() {
+    try {
+        const resStats = await fetch(`${API_BASE}/api/trips/stats`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!resStats.ok) throw new Error('Error al cargar estadísticas');
+        const stats = await resStats.json();
+        
+        const userRole = localStorage.getItem('uniride_rol') || 'PASAJERO';
+        const rating = stats.calificacion || 5.0;
+        const totalRatings = stats.totalRatings || 0;
+        const viajesCompletados = stats.viajesCompletados || 0;
+        const dineroAhorrado = stats.dineroAhorrado || 0;
+        
+        document.getElementById('profile-rating').textContent = rating.toFixed(1);
+        const starsFull = Math.floor(rating);
+        const starsHalf = rating % 1 >= 0.5 ? 1 : 0;
+        const starsEmpty = 5 - starsFull - starsHalf;
+        const starsText = '★'.repeat(starsFull) + (starsHalf ? '½' : '') + '☆'.repeat(starsEmpty);
+        document.getElementById('profile-stars').textContent = starsText;
+        document.getElementById('profile-reviews').textContent = `(${totalRatings} reseñas)`;
+        
+        document.getElementById('profile-faculty').innerHTML = getFacultadPorRol(userRole);
+        
+        const badgesContainer = document.getElementById('profile-badges');
+        let badgesHtml = '';
+        if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
+            badgesHtml += '<span class="badge">⭐ Conductor activo</span> ';
+        }
+        if (userRole === 'PASAJERO') {
+            badgesHtml += '<span class="badge">👤 Pasajero frecuente</span> ';
+        }
+        if (viajesCompletados > 10) {
+            badgesHtml += '<span class="badge">🏆 Viajero experto</span> ';
+        }
+        if (rating >= 4.8) {
+            badgesHtml += '<span class="badge">🌟 Top rated</span> ';
+        }
+        badgesContainer.innerHTML = badgesHtml || '<span class="badge">✨ Nuevo usuario</span>';
+        
+        // ==============================================
+        // MOSTRAR VEHÍCULO SOLO SI ES CONDUCTOR O AMBOS
+        // ==============================================
+        const vehicleCard = document.getElementById('vehicle-card');
+        
+        if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
+            vehicleCard.style.display = 'block';
+            
+            let vehiclePlate = null;
+            let vehicleColor = null;
+            
+            // Intentar obtener datos del vehículo desde el backend
+            try {
+                const resUser = await fetch(`${API_BASE}/api/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (resUser.ok) {
+                    const userData = await resUser.json();
+                    vehiclePlate = userData.vehiclePlate;
+                    vehicleColor = userData.vehicleColor;
+                    // Guardar en localStorage para futuras veces
+                    if (vehiclePlate) localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
+                    if (vehicleColor) localStorage.setItem('uniride_vehicle_color', vehicleColor);
+                }
+            } catch(e) {
+                console.log('Error obteniendo vehículo del backend:', e);
+                // Si falla el backend, intentar con localStorage
+                vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
+                vehicleColor = localStorage.getItem('uniride_vehicle_color');
+            }
+            
+            document.getElementById('vehicle-plate').textContent = vehiclePlate || 'No registrada';
+            document.getElementById('vehicle-color').textContent = vehicleColor || 'No registrado';
+        } else {
+            vehicleCard.style.display = 'none';
+        }
+        
+        document.getElementById('stat-trips').textContent = viajesCompletados;
+        document.getElementById('stat-earnings').textContent = `$${Math.round(dineroAhorrado).toLocaleString('es-CO')}`;
+        
+        if (totalRatings > 0) {
+            const distribucion = calcularDistribucionRating(rating, totalRatings);
+            document.getElementById('bar-5').style.width = `${distribucion[5]}%`;
+            document.getElementById('count-5').textContent = Math.round(distribucion[5] * totalRatings / 100);
+            document.getElementById('bar-4').style.width = `${distribucion[4]}%`;
+            document.getElementById('count-4').textContent = Math.round(distribucion[4] * totalRatings / 100);
+            document.getElementById('bar-3').style.width = `${distribucion[3]}%`;
+            document.getElementById('count-3').textContent = Math.round(distribucion[3] * totalRatings / 100);
+            document.getElementById('bar-2').style.width = `${distribucion[2]}%`;
+            document.getElementById('count-2').textContent = Math.round(distribucion[2] * totalRatings / 100);
+            document.getElementById('bar-1').style.width = `${distribucion[1]}%`;
+            document.getElementById('count-1').textContent = Math.round(distribucion[1] * totalRatings / 100);
+        }
+        
+        await cargarResenas();
+        
+    } catch (error) {
+        console.error('Error cargando perfil:', error);
     }
+}
+    
+    function getRolTexto(rol) {
+        switch(rol) {
+            case 'CONDUCTOR': return 'Conductor';
+            case 'AMBOS': return 'Conductor y pasajero';
+            case 'PASAJERO': return 'Pasajero';
+            default: return 'Usuario';
+        }
+    }
+    
+    function getFacultadPorRol(rol) {
+        switch(rol) {
+            case 'CONDUCTOR': return 'Conductor verificado • Vehículo registrado';
+            case 'AMBOS': return 'Conductor y pasajero • Comunidad activa';
+            case 'PASAJERO': return 'Pasajero frecuente • Explorando la ciudad';
+            default: return 'Miembro de la comunidad Javeriana';
+        }
+    }
+    
+    function calcularDistribucionRating(promedio, total) {
+        const distribucion = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+        if (total === 0) {
+            distribucion[5] = 100;
+            return distribucion;
+        }
+        if (promedio >= 4.5) {
+            distribucion[5] = 80;
+            distribucion[4] = 15;
+            distribucion[3] = 5;
+        } else if (promedio >= 4.0) {
+            distribucion[5] = 50;
+            distribucion[4] = 30;
+            distribucion[3] = 15;
+            distribucion[2] = 5;
+        } else if (promedio >= 3.0) {
+            distribucion[5] = 20;
+            distribucion[4] = 30;
+            distribucion[3] = 30;
+            distribucion[2] = 15;
+            distribucion[1] = 5;
+        } else {
+            distribucion[5] = 5;
+            distribucion[4] = 10;
+            distribucion[3] = 20;
+            distribucion[2] = 30;
+            distribucion[1] = 35;
+        }
+        return distribucion;
+    }
+    
+    async function cargarResenas() {
+        const reviewsContainer = document.getElementById('reviews-list');
+        reviewsContainer.innerHTML = `
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="review-avatar">U</div>
+                    <div><div class="review-name">Usuario</div><div class="review-faculty">Javeriana</div></div>
+                    <div class="review-stars">★★★★★</div>
+                </div>
+                <div class="review-text">Excelente conductor, muy puntual y amable.</div>
+            </div>
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="review-avatar">M</div>
+                    <div><div class="review-name">María</div><div class="review-faculty">Ingeniería</div></div>
+                    <div class="review-stars">★★★★★</div>
+                </div>
+                <div class="review-text">Súper recomendado, siempre puntual y respetuoso.</div>
+            </div>
+        `;
+    }
+    
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+    
+    cargarPerfil();
 </script>
 </body>
 </html>

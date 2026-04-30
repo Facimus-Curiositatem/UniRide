@@ -208,157 +208,177 @@
     }
 
     async function login() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        return showResult('Por favor completa todos los campos.', true);
+    }
+    
+    const btn = document.getElementById('btnLogin');
+    btn.disabled = true;
+    btn.textContent = 'Ingresando...';
+    
+    try {
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
         
-        if (!email || !password) {
-            return showResult('Por favor completa todos los campos.', true);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Credenciales incorrectas');
         }
         
-        const btn = document.getElementById('btnLogin');
-        btn.disabled = true;
-        btn.textContent = 'Ingresando...';
+        // Guardar datos básicos
+        localStorage.setItem('uniride_token', data.token);
+        localStorage.setItem('uniride_email', data.email);
+        localStorage.setItem('uniride_name', data.fullName);
+        localStorage.setItem('uniride_rol', data.rol);
         
-        try {
-            const response = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || 'Credenciales incorrectas');
-            }
-            
-            // Guardar datos en localStorage
-            localStorage.setItem('uniride_token', data.token);
-            localStorage.setItem('uniride_email', data.email);
-            localStorage.setItem('uniride_name', data.fullName);
-            localStorage.setItem('uniride_rol', data.rol);
-            
-            showResult('✅ Inicio de sesión exitoso. Redirigiendo...', false);
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-            
-        } catch (error) {
-            showResult(error.message, true);
-            btn.disabled = false;
-            btn.textContent = 'Iniciar sesión';
+        // ==============================================
+        // GUARDAR DATOS DEL VEHÍCULO (si el backend los devuelve)
+        // ==============================================
+        if (data.vehiclePlate) {
+            localStorage.setItem('uniride_vehicle_plate', data.vehiclePlate);
+        }
+        if (data.vehicleColor) {
+            localStorage.setItem('uniride_vehicle_color', data.vehicleColor);
+        }
+        
+        showResult('✅ Inicio de sesión exitoso. Redirigiendo...', false);
+        
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1000);
+        
+    } catch (error) {
+        showResult(error.message, true);
+        btn.disabled = false;
+        btn.textContent = 'Iniciar sesión';
+    }
+}
+
+   async function register() {
+    const fullName = document.getElementById('regFullName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const phone = document.getElementById('regPhone').value.trim();
+    const rol = document.getElementById('regRol').value;
+    
+    // Validaciones
+    if (!fullName || !email || !password || !phone) {
+        return showResult('Por favor completa todos los campos obligatorios.', true);
+    }
+    
+    if (!rol) {
+        return showResult('Por favor selecciona un tipo de usuario.', true);
+    }
+    
+    if (!email.endsWith('@javeriana.edu.co')) {
+        return showResult('Solo se aceptan correos @javeriana.edu.co', true);
+    }
+    
+    if (password.length < 6) {
+        return showResult('La contraseña debe tener al menos 6 caracteres.', true);
+    }
+    
+    if (!phone.match(/^3\d{9}$/)) {
+        return showResult('El teléfono debe tener formato 3001234567', true);
+    }
+    
+    // Validar datos del vehículo si es CONDUCTOR o AMBOS
+    const isDriverOrBoth = (rol === 'CONDUCTOR' || rol === 'AMBOS');
+    let vehiclePlate = null;
+    let vehicleColor = null;
+    
+    if (isDriverOrBoth) {
+        vehiclePlate = document.getElementById('regVehiclePlate').value.trim();
+        vehicleColor = document.getElementById('regVehicleColor').value.trim();
+        
+        if (!vehiclePlate || !vehicleColor) {
+            return showResult('La placa y el color del vehículo son obligatorios para conductores.', true);
+        }
+        
+        if (!vehiclePlate.match(/^[A-Z]{3}\d{3}$/)) {
+            return showResult('La placa debe tener formato ABC123 (3 letras y 3 números)', true);
         }
     }
-
-    async function register() {
-        const fullName = document.getElementById('regFullName').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        const phone = document.getElementById('regPhone').value.trim();
-        const rol = document.getElementById('regRol').value;
+    
+    const btn = document.getElementById('btnRegister');
+    btn.disabled = true;
+    btn.textContent = 'Creando cuenta...';
+    
+    // Construir objeto de registro
+    const registerData = {
+        fullName,
+        email,
+        password,
+        phone,
+        rol,
+        vehiclePlate,
+        vehicleColor
+    };
+    
+    try {
+        const response = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registerData)
+        });
         
-        // Validaciones
-        if (!fullName || !email || !password || !phone) {
-            return showResult('Por favor completa todos los campos obligatorios.', true);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al crear la cuenta');
         }
         
-        if (!rol) {
-            return showResult('Por favor selecciona un tipo de usuario.', true);
-        }
+        showResult('✅ Cuenta creada exitosamente. Iniciando sesión...', false);
         
-        if (!email.endsWith('@javeriana.edu.co')) {
-            return showResult('Solo se aceptan correos @javeriana.edu.co', true);
-        }
+        // Auto-login
+        const loginResponse = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
         
-        if (password.length < 6) {
-            return showResult('La contraseña debe tener al menos 6 caracteres.', true);
-        }
+        const loginData = await loginResponse.json();
         
-        if (!phone.match(/^3\d{9}$/)) {
-            return showResult('El teléfono debe tener formato 3001234567', true);
-        }
-        
-        // Validar datos del vehículo si es CONDUCTOR o AMBOS
-        const isDriverOrBoth = (rol === 'CONDUCTOR' || rol === 'AMBOS');
-        let vehiclePlate = null;
-        let vehicleColor = null;
-        
-        if (isDriverOrBoth) {
-            vehiclePlate = document.getElementById('regVehiclePlate').value.trim();
-            vehicleColor = document.getElementById('regVehicleColor').value.trim();
-            
-            if (!vehiclePlate || !vehicleColor) {
-                return showResult('La placa y el color del vehículo son obligatorios para conductores.', true);
-            }
-            
-            if (!vehiclePlate.match(/^[A-Z]{3}\d{3}$/)) {
-                return showResult('La placa debe tener formato ABC123 (3 letras y 3 números)', true);
-            }
-        }
-        
-        const btn = document.getElementById('btnRegister');
-        btn.disabled = true;
-        btn.textContent = 'Creando cuenta...';
-        
-        // Construir objeto de registro
-        const registerData = {
-            fullName,
-            email,
-            password,
-            phone,
-            rol,
-            vehiclePlate,
-            vehicleColor
-        };
-        
-        try {
-            const response = await fetch(`${API_URL}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(registerData)
-            });
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al crear la cuenta');
-            }
-            
-            showResult('✅ Cuenta creada exitosamente. Iniciando sesión...', false);
-            
-            // Auto-login
-            const loginResponse = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const loginData = await loginResponse.json();
-            
-            if (!loginResponse.ok) {
-                showResult('Cuenta creada. Por favor inicia sesión manualmente.', false);
-                switchTab('login');
-                btn.disabled = false;
-                btn.textContent = 'Crear cuenta';
-                return;
-            }
-            
-            localStorage.setItem('uniride_token', loginData.token);
-            localStorage.setItem('uniride_email', loginData.email);
-            localStorage.setItem('uniride_name', loginData.fullName);
-            localStorage.setItem('uniride_rol', loginData.rol);
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-            
-        } catch (error) {
-            showResult(error.message, true);
+        if (!loginResponse.ok) {
+            showResult('Cuenta creada. Por favor inicia sesión manualmente.', false);
+            switchTab('login');
             btn.disabled = false;
             btn.textContent = 'Crear cuenta';
+            return;
         }
+        
+        localStorage.setItem('uniride_token', loginData.token);
+        localStorage.setItem('uniride_email', loginData.email);
+        localStorage.setItem('uniride_name', loginData.fullName);
+        localStorage.setItem('uniride_rol', loginData.rol);
+        
+        // ==============================================
+        // GUARDAR DATOS DEL VEHÍCULO EN localStorage
+        // ==============================================
+        if (vehiclePlate) {
+            localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
+        }
+        if (vehicleColor) {
+            localStorage.setItem('uniride_vehicle_color', vehicleColor);
+        }
+        
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
+        
+    } catch (error) {
+        showResult(error.message, true);
+        btn.disabled = false;
+        btn.textContent = 'Crear cuenta';
     }
+}
     
     // Enter key support
     document.addEventListener('keypress', (e) => {

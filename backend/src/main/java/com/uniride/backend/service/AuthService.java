@@ -72,25 +72,25 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-
-        // Autenticar usando AuthenticationManager
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .rol(user.getRol().name())
-                .phone(user.getPhone())
-                .rating(user.getRating())
-                .totalRatings(user.getTotalRatings())
-                .build();
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+    if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        throw new RuntimeException("Credenciales inválidas");
     }
+    
+    String token = jwtUtil.generateToken(user.getEmail());
+    
+    return AuthResponse.builder()
+        .token(token)
+        .email(user.getEmail())
+        .fullName(user.getFullName())
+        .rol(user.getRol().name())
+        .phone(user.getPhone())
+        .rating(user.getRating())
+        .totalRatings(user.getTotalRatings())
+        .vehiclePlate(user.getVehiclePlate())   // ← AGREGAR
+        .vehicleColor(user.getVehicleColor())   // ← AGREGAR
+        .build();
+}
 }

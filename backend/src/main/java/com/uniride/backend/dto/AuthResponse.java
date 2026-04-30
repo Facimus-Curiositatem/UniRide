@@ -17,4 +17,6 @@ public class AuthResponse {
     private String phone;
     private Double rating;
     private Integer totalRatings;
+    private String vehiclePlate;   // ← AGREGAR
+    private String vehicleColor;   // ← AGREGAR
 }
