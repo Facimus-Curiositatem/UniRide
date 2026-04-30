@@ -6,6 +6,7 @@ import com.uniride.backend.dto.UserStatsResponse;
 import com.uniride.backend.model.Booking;  // ← IMPORTANTE: Agregar este import
 import com.uniride.backend.model.Trip;
 import com.uniride.backend.model.User;
+import com.uniride.backend.model.UserRole;
 import com.uniride.backend.repository.BookingRepository;
 import com.uniride.backend.repository.TripRepository;
 import com.uniride.backend.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.uniride.backend.dto.CreateTripRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
