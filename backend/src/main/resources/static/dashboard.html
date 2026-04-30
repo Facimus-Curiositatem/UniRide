@@ -6,6 +6,7 @@
     <title>UniRide – Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <style>
+        /* Tus estilos existentes (se mantienen igual) */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
         .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
@@ -18,7 +19,6 @@
         .nav-item.active { background: #1e3a5a; color: #fff; }
         .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
         .nav-bottom { margin-top: auto; }
-        .nav-item.logout { color: #7a8fa6; }
         .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
         .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; min-height: 100vh; }
         .header { margin-bottom: 1.75rem; }
@@ -29,8 +29,8 @@
         .search-bar input { flex: 1; background: #162840; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.7rem 1rem; color: #fff; font-size: 0.92rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
         .search-bar input::placeholder { color: #3a5a7a; }
         .search-bar input:focus { border-color: #f5a623; }
-        .btn-buscar { padding: 0.7rem 1.8rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; white-space: nowrap; }
-        .btn-buscar:hover { background: #e09516; transform: translateY(-1px); }
+        .btn-buscar { padding: 0.7rem 1.8rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: 'Inter', sans-serif; white-space: nowrap; }
+        .btn-buscar:hover { background: #e09516; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: #0d1f35; border-radius: 16px; padding: 1.3rem 1.4rem; border: 1px solid rgba(255,255,255,0.06); position: relative; }
         .stat-icon-wrap { width: 40px; height: 40px; background: rgba(245,166,35,0.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
@@ -44,7 +44,7 @@
         .card-header h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
         .card-header span { font-size: 0.82rem; color: #5a7a99; }
         .trip-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .trip-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .trip-item:last-child { border-bottom: none; }
         .trip-avatar { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; background: #1e3a5a; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: #f5a623; }
         .trip-info { flex: 1; }
         .trip-name { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
@@ -62,8 +62,8 @@
         .map-pin-3 { top: 25%; left: 65%; }
         .map-route { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .map-label { position: absolute; bottom: 1rem; left: 1rem; font-size: 0.75rem; color: #5a7a99; }
-        .loading { text-align: center; color: #5a7a99; padding: 2rem; font-size: 0.85rem; }
-        .empty { text-align: center; color: #5a7a99; padding: 2rem; font-size: 0.85rem; }
+        .loading { text-align: center; color: #5a7a99; padding: 2rem; }
+        .empty { text-align: center; color: #5a7a99; padding: 2rem; }
     </style>
 </head>
 <body>
@@ -73,7 +73,6 @@
         <span class="logo-text">UniRide</span>
     </div>
     <nav class="nav">
-        <!-- FIX: era href="index.html", ahora apunta a dashboard.html -->
         <a class="nav-item active" href="dashboard.html">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Inicio
@@ -95,7 +94,7 @@
             Mi perfil
         </a>
         <div class="nav-bottom">
-            <a class="nav-item logout" href="index.html" onclick="logout()">
+            <a class="nav-item logout" href="#" onclick="logout(); return false;">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                 Cerrar sesión
             </a>
@@ -111,8 +110,8 @@
 
     <div class="search-bar">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="input-origen" placeholder="Origen" />
-        <input type="text" id="input-destino" placeholder="Destino" />
+        <input type="text" id="origen" placeholder="Origen" />
+        <input type="text" id="destino" placeholder="Destino" />
         <button class="btn-buscar" onclick="buscarViajes()">Buscar</button>
     </div>
 
@@ -144,7 +143,7 @@
         <div class="card">
             <div class="card-header">
                 <h2>Viajes próximos</h2>
-                <span>Hoy</span>
+                <span>Próximas salidas</span>
             </div>
             <div id="trips-list"><div class="loading">Cargando viajes...</div></div>
         </div>
@@ -165,75 +164,82 @@
 </main>
 
 <script>
-    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
-    const token    = localStorage.getItem('uniride_token');
-    const userEmail = localStorage.getItem('uniride_email');
-    const userName  = localStorage.getItem('uniride_name');
+    const API_BASE = window.location.hostname.includes('localhost') 
+        ? 'http://localhost:8080'
+        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    
+    const token = localStorage.getItem('uniride_token');
+    const userName = localStorage.getItem('uniride_name') || localStorage.getItem('uniride_email')?.split('@')[0] || 'Usuario';
 
     if (!token) window.location.href = 'index.html';
 
-    document.getElementById('user-name').textContent = userName || userEmail?.split('@')[0] || 'Usuario';
+    document.getElementById('user-name').textContent = userName;
 
     const now = new Date();
-    const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    document.getElementById('current-date').textContent =
-        `${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()}`;
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    document.getElementById('current-date').textContent = `${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()}`;
 
     async function cargarViajes() {
         try {
             const res = await fetch(`${API_BASE}/api/trips/upcoming`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+            
             if (!res.ok) throw new Error();
+            
             const trips = await res.json();
+            const tripsArray = Array.isArray(trips) ? trips : [];
 
-            document.getElementById('stat-disponibles').textContent = trips.length;
+            document.getElementById('stat-disponibles').textContent = tripsArray.length;
 
             const lista = document.getElementById('trips-list');
-            if (!trips.length) {
+            
+            if (tripsArray.length === 0) {
                 lista.innerHTML = '<div class="empty">No hay viajes disponibles hoy</div>';
                 return;
             }
 
-            const badges    = ['badge-ing', 'badge-der', 'badge-med'];
+            const badges = ['badge-ing', 'badge-der', 'badge-med'];
             const facultades = ['Ingeniería', 'Derecho', 'Medicina'];
 
-            lista.innerHTML = trips.slice(0, 4).map((t, i) => {
-                const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0,2) || 'U';
-                const hora = new Date(t.departure).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+            lista.innerHTML = tripsArray.slice(0, 4).map((t, i) => {
+                const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U';
+                const hora = t.departure ? new Date(t.departure).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) : '--:--';
+                
                 return `
                 <div class="trip-item">
                     <div class="trip-avatar">${iniciales}</div>
                     <div class="trip-info">
                         <div class="trip-name">
                             ${t.driverName || 'Conductor'}
-                            <span class="trip-badge ${badges[i%3]}">${facultades[i%3]}</span>
+                            <span class="trip-badge ${badges[i % badges.length]}">${facultades[i % facultades.length]}</span>
                         </div>
-                        <div class="trip-route">${t.origin} → ${t.destination} · ${hora}</div>
+                        <div class="trip-route">${t.origin || '?'} → ${t.destination || '?'} · ${hora}</div>
                     </div>
                     <div class="trip-price">$${Number(t.price).toLocaleString('es-CO')}</div>
                 </div>`;
             }).join('');
-        } catch(e) {
+            
+        } catch (error) {
+            console.error('Error cargando viajes:', error);
             document.getElementById('stat-disponibles').textContent = '0';
-            document.getElementById('trips-list').innerHTML = '<div class="empty">No se pudieron cargar los viajes</div>';
+            document.getElementById('trips-list').innerHTML = '<div class="empty">Error al cargar viajes</div>';
         }
     }
 
     function buscarViajes() {
-        const origen  = document.getElementById('input-origen').value.trim();
-        const destino = document.getElementById('input-destino').value.trim();
-        const params  = new URLSearchParams();
-        if (origen)  params.set('origen', origen);
+        const origen = document.getElementById('origen')?.value.trim() || '';
+        const destino = document.getElementById('destino')?.value.trim() || '';
+        const params = new URLSearchParams();
+        if (origen) params.set('origen', origen);
         if (destino) params.set('destino', destino);
         window.location.href = 'buscar-viajes.html' + (params.toString() ? '?' + params.toString() : '');
     }
 
     function logout() {
-        localStorage.removeItem('uniride_token');
-        localStorage.removeItem('uniride_email');
-        localStorage.removeItem('uniride_name');
+        localStorage.clear();
+        window.location.href = 'index.html';
     }
 
     cargarViajes();

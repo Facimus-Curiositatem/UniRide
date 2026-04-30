@@ -12,19 +12,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/trips")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class TripController {
 
     private final TripService tripService;
 
-    // GET /api/trips/upcoming  → para el dashboard
     @GetMapping("/upcoming")
-    public ResponseEntity<List<TripResponse>> getUpcoming() {
+    public ResponseEntity<List<TripResponse>> getUpcomingTrips() {
         return ResponseEntity.ok(tripService.getUpcomingTrips());
     }
 
-    // POST /api/trips/search  → para buscar con filtros
     @PostMapping("/search")
-    public ResponseEntity<List<TripResponse>> search(@RequestBody TripSearchRequest request) {
+    public ResponseEntity<List<TripResponse>> searchTrips(@RequestBody TripSearchRequest request) {
         return ResponseEntity.ok(tripService.searchTrips(request));
     }
 }

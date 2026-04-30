@@ -7,6 +7,5 @@ public class TripSearchRequest {
     private String origin;
     private String destination;
     private Boolean onlyWomen;
-    private Boolean hasAC;
     private Double maxPrice;
 }

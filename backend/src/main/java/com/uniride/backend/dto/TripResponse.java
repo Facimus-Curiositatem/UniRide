@@ -18,6 +18,5 @@ public class TripResponse {
     private Integer seats;
     private Double price;
     private Boolean onlyWomen;
-    private Boolean hasAC;
-    private String status;
+    private String estado;
 }
