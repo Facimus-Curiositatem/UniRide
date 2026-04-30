@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.criteria.Predicate;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +109,38 @@ public class TripService {
         .calificacion(calificacion)
         .build();
 }
+
+    @Transactional
+    public TripResponse createTrip(CreateTripRequest request, String email) {
+        // Buscar al conductor por email
+        User driver = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // Validar que el usuario puede publicar viajes (CONDUCTOR o AMBOS)
+        if (driver.getRol() != UserRole.CONDUCTOR && driver.getRol() != UserRole.AMBOS) {
+            throw new RuntimeException("No tienes permisos para publicar viajes. Debes ser CONDUCTOR o AMBOS.");
+        }
+        
+        // Validar que tenga datos del vehículo
+        if (driver.getVehiclePlate() == null || driver.getVehiclePlate().isBlank()) {
+            throw new RuntimeException("Debes registrar la placa de tu vehículo antes de publicar viajes");
+        }
+        
+        // Crear el viaje
+        Trip trip = Trip.builder()
+                .driver(driver)
+                .origin(request.getOrigin())
+                .destination(request.getDestination())
+                .departure(request.getDeparture())
+                .seats(request.getSeats())
+                .price(request.getPrice())
+                .onlyWomen(request.getOnlyWomen() != null ? request.getOnlyWomen() : false)
+                .estado("ACTIVE")
+                .build();
+        
+        Trip saved = tripRepository.save(trip);
+        return convertToResponse(saved);
+    }
 
     private TripResponse convertToResponse(Trip trip) {
         User driver = trip.getDriver();
