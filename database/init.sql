@@ -6,15 +6,17 @@
 -- USERS
 -- =====================
 CREATE TABLE IF NOT EXISTS users (
-                                     id BIGSERIAL PRIMARY KEY,
-                                     full_name VARCHAR(255) NOT NULL,
-                                     email VARCHAR(255) NOT NULL UNIQUE,
-                                     password_hash VARCHAR(255) NOT NULL,
-                                     phone VARCHAR(20) NOT NULL UNIQUE,
-                                     role VARCHAR(20) NOT NULL,
-                                     rating DOUBLE PRECISION NOT NULL DEFAULT 5.0,
-                                     total_ratings INTEGER NOT NULL DEFAULT 0,
-                                     created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL UNIQUE,
+    rol VARCHAR(20) NOT NULL,
+    vehicle_plate VARCHAR(10),
+    vehicle_color VARCHAR(30),
+    rating DOUBLE PRECISION NOT NULL DEFAULT 5.0,
+    total_ratings INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- =====================
@@ -29,8 +31,7 @@ CREATE TABLE IF NOT EXISTS trips (
                                      seats INTEGER NOT NULL,
                                      price DOUBLE PRECISION NOT NULL,
                                      only_women BOOLEAN NOT NULL DEFAULT FALSE,
-                                     has_ac BOOLEAN NOT NULL DEFAULT FALSE,
-                                     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+                                     estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
                                      created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -60,47 +61,6 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- =====================
 -- DATA INICIAL
 -- =====================
-
--- Admin (contraseña: 123456)
-INSERT INTO users (full_name, email, password_hash, phone, role)
-VALUES (
-           'Admin UniRide',
-           'admin@uniride.com',
-           '$2a$10$XK9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy',
-           '3000000000',
-           'ADMIN'
-       ) ON CONFLICT (email) DO NOTHING;
-
--- Usuarios conductores (contraseña: 123456 para todos)
-INSERT INTO users (full_name, email, password_hash, phone, role, rating, total_ratings)
-VALUES
-    -- María Rodríguez
-    ('María Rodríguez', 
-     'maria.rodriguez@javeriana.edu.co', 
-     '$2a$10$YW9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
-     '3001111111', 
-     'USER', 
-     4.9, 
-     127),
-    
-    -- Andrea López
-    ('Andrea López', 
-     'andrea.lopez@javeriana.edu.co', 
-     '$2a$10$ZV9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
-     '3002222222', 
-     'USER', 
-     5.0, 
-     89),
-    
-    -- Carlos Martínez
-    ('Carlos Martínez', 
-     'carlos.martinez@javeriana.edu.co', 
-     '$2a$10$XK9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHy', 
-     '3003333333', 
-     'USER', 
-     4.8, 
-     203)
-ON CONFLICT (email) DO NOTHING;
 
 -- Trips de prueba
 INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)

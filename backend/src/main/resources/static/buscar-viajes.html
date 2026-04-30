@@ -6,7 +6,6 @@
     <title>UniRide – Buscar viajes</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <style>
-        /* Tus estilos existentes (se mantienen igual) */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
         .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
@@ -32,6 +31,7 @@
         .filtro-btn { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #7a8fa6; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
         .filtro-btn.active { background: #f5a623; color: #0d1f35; border-color: #f5a623; }
         .filtro-btn:hover:not(.active) { border-color: rgba(255,255,255,0.25); color: #fff; }
+        .filtro-x { font-size: 0.75rem; opacity: 0.7; }
         .resultados-header { font-size: 0.85rem; color: #5a7a99; margin-bottom: 1rem; }
         .resultados-header span { color: #f5a623; font-weight: 600; }
         .trip-card { background: #0d1f35; border-radius: 16px; padding: 1.2rem; border: 1.5px solid rgba(255,255,255,0.06); margin-bottom: 1rem; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
@@ -84,6 +84,86 @@
         .map-dot.destino { background: #f5a623; box-shadow: 0 0 14px rgba(245,166,35,0.6); top: 25%; right: 8%; transform: translate(0, -50%); }
         .map-truck { position: absolute; width: 32px; height: 32px; background: #1e3a5a; border-radius: 50%; border: 2px solid #f5a623; display: flex; align-items: center; justify-content: center; top: 48%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px rgba(245,166,35,0.3); }
         .map-truck svg { width: 16px; height: 16px; color: #f5a623; }
+
+        /* MODAL CONFIRMACIÓN PERSONALIZADO */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+        }
+        .confirm-content {
+            background: #0d1f35;
+            border-radius: 20px;
+            max-width: 320px;
+            width: 90%;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(245,166,35,0.3);
+        }
+        .confirm-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(245,166,35,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .confirm-icon svg {
+            width: 30px;
+            height: 30px;
+            color: #f5a623;
+        }
+        .confirm-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .confirm-message {
+            font-size: 0.85rem;
+            color: #7a8fa6;
+            margin-bottom: 1.5rem;
+        }
+        .confirm-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .confirm-btn {
+            flex: 1;
+            padding: 0.7rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .confirm-btn-cancel {
+            background: rgba(255,255,255,0.05);
+            color: #7a8fa6;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .confirm-btn-cancel:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .confirm-btn-confirm {
+            background: #f5a623;
+            color: #0d1f35;
+        }
+        .confirm-btn-confirm:hover {
+            background: #e09516;
+        }
     </style>
 </head>
 <body>
@@ -107,7 +187,7 @@
             Publicar viaje
         </a>
         <a class="nav-item" href="en-vivo.html">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-6 2H5a2 2 0 01-2-2V10a2 2 0 012-2h4l6-3v14l-6-3z"/></svg>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             En vivo
         </a>
         <a class="nav-item" href="perfil.html">
@@ -128,7 +208,7 @@
         <h1>Buscar viajes</h1>
         <div class="input-group">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-            <input type="text" id="input-origen" placeholder="Origen" oninput="buscar()"/>
+            <input type="text" id="input-origen" placeholder="Universidad Javeriana" oninput="buscar()"/>
         </div>
         <div class="input-group">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
@@ -136,8 +216,9 @@
         </div>
 
         <div class="filtros">
-            <button class="filtro-btn" id="filtro-mujeres" onclick="toggleFiltro('mujeres')">Solo mujeres</button>
-            <button class="filtro-btn" id="filtro-precio" onclick="toggleFiltro('precio')">Precio &lt; $10K</button>
+
+            <button class="filtro-btn" id="filtro-mujeres" onclick="toggleFiltro('mujeres')"> Mujeres</button>
+            <button class="filtro-btn" id="filtro-precio" onclick="toggleFiltro('precio')"> Precio &lt;$5K</button>
         </div>
 
         <div class="resultados-header" id="resultados-header">Buscando viajes...</div>
@@ -161,7 +242,7 @@
                 <path d="M60 220 Q150 180 200 150 Q270 110 340 70" stroke="#f5a623" stroke-width="2.5" stroke-dasharray="8 5" opacity="0.7"/>
             </svg>
             <div class="map-dot origen"></div>
-            <div class="map-label-pin pin-origen" id="label-origen">Javeriana</div>
+            <div class="map-label-pin pin-origen" id="label-origen">Universidad Javeriana</div>
             <div class="map-dot destino"></div>
             <div class="map-label-pin pin-destino" id="label-destino">Destino</div>
             <div class="map-truck">
@@ -171,21 +252,35 @@
     </div>
 </main>
 
+<!-- MODAL DE CONFIRMACIÓN PERSONALIZADO -->
+<div id="confirmModal" class="confirm-modal">
+    <div class="confirm-content">
+        <div class="confirm-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div class="confirm-title">Confirmar reserva</div>
+        <div class="confirm-message" id="confirmMessage">¿Estás seguro de reservar este viaje?</div>
+        <div class="confirm-buttons">
+            <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">Cancelar</button>
+            <button class="confirm-btn confirm-btn-confirm" id="confirmAcceptBtn">Confirmar</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Configuración - CAMBIAR SEGÚN ENTORNO
-    const API_BASE = window.location.hostname.includes('localhost') 
-        ? 'http://localhost:8080'
-        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
-    
+    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
     const token = localStorage.getItem('uniride_token');
     if (!token) window.location.href = 'index.html';
 
     const filtros = { ac: false, mujeres: false, precio: false };
+    const badges     = ['badge-ing', 'badge-der', 'badge-med'];
+    const facultades = ['Ingeniería', 'Derecho', 'Medicina'];
 
     function toggleFiltro(nombre) {
         filtros[nombre] = !filtros[nombre];
-        const btn = document.getElementById('filtro-' + nombre);
-        if (btn) btn.classList.toggle('active', filtros[nombre]);
+        document.getElementById('filtro-' + nombre).classList.toggle('active', filtros[nombre]);
         buscar();
     }
 
@@ -196,25 +291,25 @@
     }
 
     async function cargarViajes() {
-        const origen = document.getElementById('input-origen').value.trim();
+        const origen  = document.getElementById('input-origen').value.trim();
         const destino = document.getElementById('input-destino').value.trim();
 
         if (destino) {
             document.getElementById('label-destino').textContent = destino;
-            document.getElementById('stat-km').textContent = '8.4 km';
+            document.getElementById('stat-km').textContent  = '8.4 km';
             document.getElementById('stat-min').textContent = '~18 min';
         }
         if (origen) document.getElementById('label-origen').textContent = origen;
 
         const body = {};
-        if (origen) body.origin = origen;
-        if (destino) body.destination = destino;
-        if (filtros.ac) body.hasAC = true;
-        if (filtros.mujeres) body.onlyWomen = true;
-        if (filtros.precio) body.maxPrice = 10000;
+        if (origen)          body.origin      = origen;
+        if (destino)         body.destination = destino;
+        if (filtros.ac)      body.hasAC       = true;
+        if (filtros.mujeres) body.onlyWomen   = true;
+        if (filtros.precio)  body.maxPrice    = 5000;
 
-        document.getElementById('resultados-header').innerHTML = '🔍 Buscando viajes...';
-        document.getElementById('trips-list').innerHTML = '<div class="state-msg">Cargando...</div>';
+        document.getElementById('resultados-header').textContent = 'Buscando viajes...';
+        document.getElementById('trips-list').innerHTML = '';
 
         try {
             const res = await fetch(`${API_BASE}/api/trips/search`, {
@@ -225,52 +320,41 @@
                 },
                 body: JSON.stringify(body)
             });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
+            if (!res.ok) throw new Error();
             const trips = await res.json();
-            const tripsArray = Array.isArray(trips) ? trips : [];
 
-            document.getElementById('resultados-header').innerHTML = 
-                `<span>${tripsArray.length}</span> viaje${tripsArray.length !== 1 ? 's' : ''} encontrado${tripsArray.length !== 1 ? 's' : ''}`;
+            document.getElementById('resultados-header').innerHTML =
+                `<span>${trips.length}</span> viaje${trips.length !== 1 ? 's' : ''} encontrado${trips.length !== 1 ? 's' : ''}`;
 
-            if (tripsArray.length === 0) {
+            if (!trips.length) {
                 document.getElementById('trips-list').innerHTML = `
                     <div class="state-msg">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="40" height="40">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         No hay viajes disponibles con estos filtros
                     </div>`;
                 return;
             }
 
-            const badges = ['badge-ing', 'badge-der', 'badge-med'];
-            const facultades = ['Ingeniería', 'Derecho', 'Medicina'];
-
-            document.getElementById('trips-list').innerHTML = tripsArray.map((t, i) => {
-                const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U';
-                const hora = t.departure ? new Date(t.departure).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) : '--:--';
-                const precio = Number(t.price).toLocaleString('es-CO');
-                const rating = t.driverRating?.toFixed(1) || '5.0';
-                const reviews = t.driverTotalRatings || 0;
-                const sinCupos = t.seats <= 0;
-
+            document.getElementById('trips-list').innerHTML = trips.map((t, i) => {
+                const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0,2) || 'U';
+                const hora      = new Date(t.departure).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+                const precio    = Number(t.price).toLocaleString('es-CO');
+                const rating    = t.driverRating?.toFixed(1) || '5.0';
+                const reviews   = t.driverTotalRatings || 0;
+                const sinCupos  = t.seats <= 0;
                 return `
-                <div class="trip-card" data-trip-id="${t.id}">
+                <div class="trip-card">
                     <div class="trip-card-top">
                         <div class="driver-info">
                             <div class="driver-avatar">
                                 ${iniciales}
                                 <div class="driver-verified">
-                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                                    </svg>
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </div>
                             </div>
                             <div>
-                                <div class="driver-name">${escapeHtml(t.driverName || 'Conductor')}</div>
-                                <span class="driver-badge ${badges[i % badges.length]}">${facultades[i % facultades.length]}</span>
+                                <div class="driver-name">${t.driverName || 'Conductor'}</div>
+                                <span class="driver-badge ${badges[i%3]}">${facultades[i%3]}</span>
                                 <div class="driver-rating">⭐ ${rating} <span>(${reviews})</span></div>
                             </div>
                         </div>
@@ -280,52 +364,61 @@
                         </div>
                     </div>
                     <div class="trip-route">
-                        <div class="route-point"><div class="route-dot origen"></div>${escapeHtml(t.origin)}</div>
+                        <div class="route-point"><div class="route-dot origen"></div>${t.origin}</div>
                         <div class="route-line"></div>
-                        <div class="route-point"><div class="route-dot destino"></div>${escapeHtml(t.destination)}</div>
+                        <div class="route-point"><div class="route-dot destino"></div>${t.destination}</div>
                     </div>
                     <div class="trip-tags">
                         <span class="tag tag-time">🕐 ${hora}</span>
                         <span class="tag tag-seats">💺 ${t.seats} asiento${t.seats !== 1 ? 's' : ''}</span>
-                        ${t.hasAC ? '<span class="tag tag-ac">❄️ A/C</span>' : ''}
-                        ${t.onlyWomen ? '<span class="tag tag-women">👩 Solo mujeres</span>' : ''}
+                        ${t.hasAC      ? '<span class="tag tag-ac">❄️ A/C</span>'           : ''}
+                        ${t.onlyWomen  ? '<span class="tag tag-women">👩 Solo mujeres</span>' : ''}
                     </div>
                     <button class="btn-reservar" onclick="reservar(${t.id}, this)" ${sinCupos ? 'disabled' : ''}>
-                        ${sinCupos ? 'Sin cupos' : 'Reservar'}
+                        ${sinCupos ? 'Sin cupos disponibles' : 'Reservar'}
                     </button>
                 </div>`;
             }).join('');
 
-        } catch (error) {
-            console.error('Error cargando viajes:', error);
-            document.getElementById('resultados-header').innerHTML = '⚠️ Error al cargar';
-            document.getElementById('trips-list').innerHTML = `
-                <div class="state-msg">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="40" height="40">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    Error al conectar con el servidor
-                </div>`;
+        } catch(e) {
+            document.getElementById('resultados-header').textContent = 'Error al cargar viajes';
+            document.getElementById('trips-list').innerHTML = `<div class="state-msg">No se pudo conectar con el servidor</div>`;
         }
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
+    // Variables para el modal de confirmación
+    let pendingResolve = null;
+
+    function mostrarConfirmacion(mensaje) {
+        return new Promise((resolve) => {
+            pendingResolve = resolve;
+            document.getElementById('confirmMessage').textContent = mensaje;
+            document.getElementById('confirmModal').style.display = 'flex';
         });
     }
+
+    function cerrarConfirmModal() {
+        document.getElementById('confirmModal').style.display = 'none';
+        if (pendingResolve) pendingResolve(false);
+        pendingResolve = null;
+    }
+
+    // Eventos de los botones del modal
+    document.getElementById('confirmCancelBtn').onclick = () => cerrarConfirmModal();
+    document.getElementById('confirmAcceptBtn').onclick = () => {
+        document.getElementById('confirmModal').style.display = 'none';
+        if (pendingResolve) pendingResolve(true);
+        pendingResolve = null;
+    };
 
     async function reservar(tripId, btn) {
         if (btn.disabled) return;
         
-        if (!confirm('¿Confirmas la reserva de este viaje?')) return;
+        const confirmado = await mostrarConfirmacion('¿Estás seguro de reservar este viaje?');
+        if (!confirmado) return;
         
         btn.disabled = true;
-        btn.textContent = 'Procesando...';
+        btn.textContent = 'Reservando...';
         
         try {
             const res = await fetch(`${API_BASE}/api/bookings`, {
@@ -334,35 +427,34 @@
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ tripId: tripId })
+                body: JSON.stringify({ tripId })
             });
-            
             if (res.ok) {
-                const data = await res.json();
-                alert(`✅ ¡Reserva exitosa! Destino: ${data.destination || 'Viaje'}`);
-                cargarViajes();
+                btn.textContent = '✓ Reservado';
+                btn.style.background = '#3a7a3a';
+                cargarViajes(); // refresca cupos
             } else {
-                const error = await res.json();
-                alert(`❌ Error: ${error.message || 'No se pudo reservar'}`);
+                const data = await res.json().catch(() => ({}));
+                alert(data.message || 'Error al reservar');
                 btn.disabled = false;
                 btn.textContent = 'Reservar';
             }
-        } catch (error) {
-            console.error('Error en reserva:', error);
-            alert('❌ Error de conexión');
+        } catch(e) {
+            alert('No se pudo completar la reserva');
             btn.disabled = false;
             btn.textContent = 'Reservar';
         }
     }
 
     function logout() {
-        localStorage.clear();
-        window.location.href = 'index.html';
+        localStorage.removeItem('uniride_token');
+        localStorage.removeItem('uniride_email');
+        localStorage.removeItem('uniride_name');
     }
 
-    // Leer parámetros de URL (desde dashboard)
+    // Leer parámetros del dashboard
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('origen')) document.getElementById('input-origen').value = urlParams.get('origen');
+    if (urlParams.get('origen'))  document.getElementById('input-origen').value  = urlParams.get('origen');
     if (urlParams.get('destino')) document.getElementById('input-destino').value = urlParams.get('destino');
 
     cargarViajes();
