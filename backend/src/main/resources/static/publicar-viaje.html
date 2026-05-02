@@ -333,7 +333,6 @@
     document.getElementById('prev-name').textContent = userName + ' (tú)';
 
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('input-date').min = today;
     document.getElementById('input-date').value = today;
 
     let currentStep = 1;
@@ -472,7 +471,7 @@
         if (time) {
             const [h, m] = time.split(':');
             const hr = parseInt(h);
-            const timeStr = `${hr % 12 || 12}:${m} ${hr >= 12 ? 'p.m.' : 'a.m.'}`;
+            const timeStr = `${String(hr).padStart(2, '0')}:${m}`;
             const prevTime = document.getElementById('prev-time');
             if (prevTime) prevTime.textContent = timeStr;
         }
@@ -523,7 +522,7 @@
         if (time) {
             const [h, m] = time.split(':');
             const hr = parseInt(h);
-            timeStr = `${hr % 12 || 12}:${m} ${hr >= 12 ? 'p.m.' : 'a.m.'}`;
+           timeStr = `${String(hr).padStart(2, '0')}:${m}`;
         }
         
         const summaryDiv = document.getElementById('confirm-summary');
@@ -540,7 +539,7 @@
         updateChecklist();
     }
 
-  async function publishTrip() {
+async function publishTrip() {
     const btn = document.getElementById('btn-publish-final');
     const errEl = document.getElementById('err-publish');
     if (!btn) return;
@@ -552,14 +551,10 @@
     const date = document.getElementById('input-date')?.value;
     const time = document.getElementById('input-time')?.value;
     
-    // === SOLUCIÓN: Sumar 2 horas (diferencia actual) ===
-    const fechaLocal = new Date(`${date}T${time}:00`);
-    const fechaUTC = new Date(fechaLocal.getTime() + (2 * 60 * 60 * 1000)); // Sumar 2 horas
+    // Solo enviar la fecha en formato simple
+    const departure = `${date}T${time}:00`;
     
-    const departure = fechaUTC.toISOString().slice(0, 19);
-    
-    console.log('Fecha local:', `${date}T${time}:00`);
-    console.log('Fecha ajustada:', departure);
+    console.log('Enviando fecha:', departure);
     
     const body = {
         origin: document.getElementById('input-origin')?.value.trim() || '',
@@ -613,7 +608,7 @@
         window.location.href = 'index.html';
     }
 
-    // Inicializar
+  
     renderStepper();
     renderCards();
     updatePreview();

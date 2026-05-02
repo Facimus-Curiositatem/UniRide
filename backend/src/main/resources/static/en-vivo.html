@@ -317,7 +317,7 @@
             const bookings = await res.json();
             // Filtrar solo los que tienen estado CONFIRMED o COMPLETED
             const viajesActivos = bookings.filter(b => 
-                b.estado === 'CONFIRMED' || b.estado === 'COMPLETED'
+                b.status === 'CONFIRMED' || b.status === 'COMPLETED'
             );
             
             if (viajesActivos.length > 0) {
@@ -337,6 +337,7 @@
 }
 
     function actualizarUI(viaje) {
+         viajeActual = viaje;
         // Ruta
         document.getElementById('viaje-ruta').textContent = `${viaje.origin} → ${viaje.destination}`;
         document.getElementById('origen-text').textContent = viaje.origin;
@@ -392,6 +393,8 @@
         
         // Ubicación en el mapa
         document.getElementById('map-ubicacion').textContent = `📍 ${viaje.origin} → ${viaje.destination}`;
+
+        iniciarSimulacionProgreso();
     }
 
     function calcularDistanciaAproximada(origen, destino) {
@@ -404,6 +407,8 @@
         const key = `${origen}:${destino}`;
         return rutas[key] || { km: 8.5, min: 20 };
     }
+
+
 
     function iniciarSimulacionProgreso() {
         if (intervalSimulacion) clearInterval(intervalSimulacion);

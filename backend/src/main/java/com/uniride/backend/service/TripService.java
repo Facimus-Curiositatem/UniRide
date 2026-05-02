@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.uniride.backend.dto.CreateTripRequest;
 import java.time.LocalDateTime;
@@ -145,6 +146,18 @@ public class TripService {
         return convertToResponse(saved);
     }
 
+    @Scheduled(fixedDelay = 3600000) 
+@Transactional
+public void actualizarViajesExpirados() {
+    LocalDateTime ahora = LocalDateTime.now();
+    List<Trip> viajesPasados = tripRepository.findByEstadoAndDepartureBefore("ACTIVE", ahora);
+    
+    for (Trip trip : viajesPasados) {
+        trip.setEstado("COMPLETED");
+        tripRepository.save(trip);
+        System.out.println("✅ Viaje " + trip.getId() + " marcado como COMPLETED (fecha pasada)");
+    }
+}
     private TripResponse convertToResponse(Trip trip) {
         User driver = trip.getDriver();
         return TripResponse.builder()
