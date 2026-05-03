@@ -85,7 +85,10 @@
 
         .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
         .no-vehicle { text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem; }
-        
+
+        /* ── FIX: nota de distribución aproximada ── */
+        .rating-note { font-size: 0.72rem; color: #3a5a7a; margin-top: 0.5rem; font-style: italic; }
+
         @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
     </style>
 </head>
@@ -150,7 +153,6 @@
                 <div id="profile-badges"></div>
             </div>
 
-            <!-- VEHÍCULO REGISTRADO (SOLO PARA CONDUCTOR O AMBOS) -->
             <div class="card" id="vehicle-card" style="display: none;">
                 <div class="vehicle-title">🚗 Vehículo registrado</div>
                 <div id="vehicle-info">
@@ -169,19 +171,29 @@
         <div>
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;">Calificación general</h3>
-                <div class="rating-bars">
-                    <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 0%"></div></div><span class="rating-bar-count" id="count-5">0</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 0%"></div></div><span class="rating-bar-count" id="count-4">0</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 0%"></div></div><span class="rating-bar-count" id="count-3">0</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">2★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-2" style="width: 0%"></div></div><span class="rating-bar-count" id="count-2">0</span></div>
-                    <div class="rating-bar-item"><span class="rating-bar-label">1★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-1" style="width: 0%"></div></div><span class="rating-bar-count" id="count-1">0</span></div>
+                <!-- ── FIX: las barras solo se muestran si hay reseñas reales ── -->
+                <div id="rating-bars-container">
+                    <div class="rating-bars">
+                        <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 0%"></div></div><span class="rating-bar-count" id="count-5">0</span></div>
+                        <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 0%"></div></div><span class="rating-bar-count" id="count-4">0</span></div>
+                        <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 0%"></div></div><span class="rating-bar-count" id="count-3">0</span></div>
+                        <div class="rating-bar-item"><span class="rating-bar-label">2★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-2" style="width: 0%"></div></div><span class="rating-bar-count" id="count-2">0</span></div>
+                        <div class="rating-bar-item"><span class="rating-bar-label">1★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-1" style="width: 0%"></div></div><span class="rating-bar-count" id="count-1">0</span></div>
+                    </div>
+                    <!-- ── FIX: nota visible solo cuando la distribución es estimada ── -->
+                    <p class="rating-note" id="rating-approx-note" style="display:none;">
+                        * Distribución estimada. Los datos exactos estarán disponibles próximamente.
+                    </p>
+                </div>
+                <div id="no-ratings-msg" style="display:none; text-align:center; padding:1.5rem; color:#5a7a99; font-size:0.85rem;">
+                    Aún no tienes calificaciones
                 </div>
             </div>
 
             <div class="card">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;">Reseñas recientes</h3>
                 <div id="reviews-list">
-                    <div class="empty" style="text-align: center; padding: 2rem; color: #5a7a99;">No hay reseñas aún</div>
+                    <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">No hay reseñas aún</div>
                 </div>
             </div>
         </div>
@@ -189,12 +201,12 @@
 </main>
 
 <script>
-    const API_BASE = window.location.hostname.includes('localhost') 
+    // ── FIX: API_BASE centralizado con detección de entorno ──────────────────
+    const API_BASE = window.location.hostname.includes('localhost')
         ? 'http://localhost:8080'
         : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
-    
+
     const token = localStorage.getItem('uniride_token');
-    const userEmail = localStorage.getItem('uniride_email');
     const userName = localStorage.getItem('uniride_name') || 'Usuario';
 
     if (!token) window.location.href = 'index.html';
@@ -204,116 +216,108 @@
     document.getElementById('profile-name').textContent = userName;
 
     async function cargarPerfil() {
-    try {
-        const resStats = await fetch(`${API_BASE}/api/trips/stats`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!resStats.ok) throw new Error('Error al cargar estadísticas');
-        const stats = await resStats.json();
-        
-        const userRole = localStorage.getItem('uniride_rol') || 'PASAJERO';
-        const rating = stats.calificacion || 5.0;
-        const totalRatings = stats.totalRatings || 0;
-        const viajesCompletados = stats.viajesCompletados || 0;
-        const dineroAhorrado = stats.dineroAhorrado || 0;
-        
-        document.getElementById('profile-rating').textContent = rating.toFixed(1);
-        const starsFull = Math.floor(rating);
-        const starsHalf = rating % 1 >= 0.5 ? 1 : 0;
-        const starsEmpty = 5 - starsFull - starsHalf;
-        const starsText = '★'.repeat(starsFull) + (starsHalf ? '½' : '') + '☆'.repeat(starsEmpty);
-        document.getElementById('profile-stars').textContent = starsText;
-        document.getElementById('profile-reviews').textContent = `(${totalRatings} reseñas)`;
-        
-        document.getElementById('profile-faculty').innerHTML = getFacultadPorRol(userRole);
-        
-        const badgesContainer = document.getElementById('profile-badges');
-        let badgesHtml = '';
-        if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
-            badgesHtml += '<span class="badge">⭐ Conductor activo</span> ';
-        }
-        if (userRole === 'PASAJERO') {
-            badgesHtml += '<span class="badge">👤 Pasajero frecuente</span> ';
-        }
-        if (viajesCompletados > 10) {
-            badgesHtml += '<span class="badge">🏆 Viajero experto</span> ';
-        }
-        if (rating >= 4.8) {
-            badgesHtml += '<span class="badge">🌟 Top rated</span> ';
-        }
-        badgesContainer.innerHTML = badgesHtml || '<span class="badge">✨ Nuevo usuario</span>';
-        
-        // ==============================================
-        // MOSTRAR VEHÍCULO SOLO SI ES CONDUCTOR O AMBOS
-        // ==============================================
-        const vehicleCard = document.getElementById('vehicle-card');
-        
-        if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
-            vehicleCard.style.display = 'block';
-            
-            let vehiclePlate = null;
-            let vehicleColor = null;
-            
-            // Intentar obtener datos del vehículo desde el backend
-            try {
-                const resUser = await fetch(`${API_BASE}/api/users/me`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (resUser.ok) {
-                    const userData = await resUser.json();
-                    vehiclePlate = userData.vehiclePlate;
-                    vehicleColor = userData.vehicleColor;
-                    // Guardar en localStorage para futuras veces
-                    if (vehiclePlate) localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
-                    if (vehicleColor) localStorage.setItem('uniride_vehicle_color', vehicleColor);
+        try {
+            const resStats = await fetch(`${API_BASE}/api/trips/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!resStats.ok) throw new Error('Error al cargar estadísticas');
+            const stats = await resStats.json();
+
+            const userRole = localStorage.getItem('uniride_rol') || 'PASAJERO';
+            const rating = stats.calificacion || 5.0;
+            const totalRatings = stats.totalRatings || 0;
+            const viajesCompletados = stats.viajesCompletados || 0;
+            const dineroAhorrado = stats.dineroAhorrado || 0;
+
+            document.getElementById('profile-rating').textContent = rating.toFixed(1);
+            const starsFull = Math.floor(rating);
+            const starsHalf = rating % 1 >= 0.5 ? 1 : 0;
+            const starsEmpty = 5 - starsFull - starsHalf;
+            const starsText = '★'.repeat(starsFull) + (starsHalf ? '½' : '') + '☆'.repeat(starsEmpty);
+            document.getElementById('profile-stars').textContent = starsText;
+            document.getElementById('profile-reviews').textContent = `(${totalRatings} reseñas)`;
+
+            document.getElementById('profile-faculty').innerHTML = getFacultadPorRol(userRole);
+
+            const badgesContainer = document.getElementById('profile-badges');
+            let badgesHtml = '';
+            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') badgesHtml += '<span class="badge">⭐ Conductor activo</span> ';
+            if (userRole === 'PASAJERO') badgesHtml += '<span class="badge">👤 Pasajero frecuente</span> ';
+            if (viajesCompletados > 10) badgesHtml += '<span class="badge">🏆 Viajero experto</span> ';
+            if (rating >= 4.8) badgesHtml += '<span class="badge">🌟 Top rated</span> ';
+            badgesContainer.innerHTML = badgesHtml || '<span class="badge">✨ Nuevo usuario</span>';
+
+            const vehicleCard = document.getElementById('vehicle-card');
+            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
+                vehicleCard.style.display = 'block';
+
+                let vehiclePlate = null;
+                let vehicleColor = null;
+
+                try {
+                    const resUser = await fetch(`${API_BASE}/api/users/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (resUser.ok) {
+                        const userData = await resUser.json();
+                        vehiclePlate = userData.vehiclePlate;
+                        vehicleColor = userData.vehicleColor;
+                        if (vehiclePlate) localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
+                        if (vehicleColor) localStorage.setItem('uniride_vehicle_color', vehicleColor);
+                    }
+                } catch(e) {
+                    vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
+                    vehicleColor = localStorage.getItem('uniride_vehicle_color');
                 }
-            } catch(e) {
-                console.log('Error obteniendo vehículo del backend:', e);
-                // Si falla el backend, intentar con localStorage
-                vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
-                vehicleColor = localStorage.getItem('uniride_vehicle_color');
+
+                document.getElementById('vehicle-plate').textContent = vehiclePlate || 'No registrada';
+                document.getElementById('vehicle-color').textContent = vehicleColor || 'No registrado';
+            } else {
+                vehicleCard.style.display = 'none';
             }
-            
-            document.getElementById('vehicle-plate').textContent = vehiclePlate || 'No registrada';
-            document.getElementById('vehicle-color').textContent = vehicleColor || 'No registrado';
-        } else {
-            vehicleCard.style.display = 'none';
+
+            document.getElementById('stat-trips').textContent = viajesCompletados;
+            document.getElementById('stat-earnings').textContent = `$${Math.round(dineroAhorrado).toLocaleString('es-CO')}`;
+
+            // ── FIX: solo mostrar barras si hay reseñas reales.
+            //         Si el backend devuelve la distribución real, usarla.
+            //         Si no, mostrar distribución estimada con nota aclaratoria.
+            //         Si no hay reseñas, mostrar mensaje vacío. ─────────────────
+            if (totalRatings > 0) {
+                document.getElementById('no-ratings-msg').style.display = 'none';
+                document.getElementById('rating-bars-container').style.display = 'block';
+
+                // Intentar usar distribución real del backend
+                const dist = stats.ratingDistribution;
+                const hayDistribucionReal = dist && typeof dist === 'object';
+
+                const distribucion = hayDistribucionReal
+                    ? dist
+                    : calcularDistribucionEstimada(rating, totalRatings);
+
+                [5, 4, 3, 2, 1].forEach(star => {
+                    const pct = distribucion[star] ?? 0;
+                    document.getElementById(`bar-${star}`).style.width = `${pct}%`;
+                    document.getElementById(`count-${star}`).textContent = Math.round(pct * totalRatings / 100);
+                });
+
+                // Mostrar nota solo si la distribución es estimada
+                document.getElementById('rating-approx-note').style.display =
+                    hayDistribucionReal ? 'none' : 'block';
+
+            } else {
+                document.getElementById('rating-bars-container').style.display = 'none';
+                document.getElementById('no-ratings-msg').style.display = 'block';
+            }
+
+            await cargarResenas();
+
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
         }
-        
-        document.getElementById('stat-trips').textContent = viajesCompletados;
-        document.getElementById('stat-earnings').textContent = `$${Math.round(dineroAhorrado).toLocaleString('es-CO')}`;
-        
-        if (totalRatings > 0) {
-            const distribucion = calcularDistribucionRating(rating, totalRatings);
-            document.getElementById('bar-5').style.width = `${distribucion[5]}%`;
-            document.getElementById('count-5').textContent = Math.round(distribucion[5] * totalRatings / 100);
-            document.getElementById('bar-4').style.width = `${distribucion[4]}%`;
-            document.getElementById('count-4').textContent = Math.round(distribucion[4] * totalRatings / 100);
-            document.getElementById('bar-3').style.width = `${distribucion[3]}%`;
-            document.getElementById('count-3').textContent = Math.round(distribucion[3] * totalRatings / 100);
-            document.getElementById('bar-2').style.width = `${distribucion[2]}%`;
-            document.getElementById('count-2').textContent = Math.round(distribucion[2] * totalRatings / 100);
-            document.getElementById('bar-1').style.width = `${distribucion[1]}%`;
-            document.getElementById('count-1').textContent = Math.round(distribucion[1] * totalRatings / 100);
-        }
-        
-        await cargarResenas();
-        
-    } catch (error) {
-        console.error('Error cargando perfil:', error);
     }
-}
-    
-    function getRolTexto(rol) {
-        switch(rol) {
-            case 'CONDUCTOR': return 'Conductor';
-            case 'AMBOS': return 'Conductor y pasajero';
-            case 'PASAJERO': return 'Pasajero';
-            default: return 'Usuario';
-        }
-    }
-    
+
     function getFacultadPorRol(rol) {
         switch(rol) {
             case 'CONDUCTOR': return 'Conductor verificado • Vehículo registrado';
@@ -322,65 +326,65 @@
             default: return 'Miembro de la comunidad Javeriana';
         }
     }
-    
-    function calcularDistribucionRating(promedio, total) {
+
+    // ── FIX: renombrada a "Estimada" para dejar claro que es aproximada ──────
+    function calcularDistribucionEstimada(promedio, total) {
         const distribucion = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-        if (total === 0) {
-            distribucion[5] = 100;
-            return distribucion;
-        }
+        if (total === 0) { distribucion[5] = 100; return distribucion; }
         if (promedio >= 4.5) {
-            distribucion[5] = 80;
-            distribucion[4] = 15;
-            distribucion[3] = 5;
+            distribucion[5] = 80; distribucion[4] = 15; distribucion[3] = 5;
         } else if (promedio >= 4.0) {
-            distribucion[5] = 50;
-            distribucion[4] = 30;
-            distribucion[3] = 15;
-            distribucion[2] = 5;
+            distribucion[5] = 50; distribucion[4] = 30; distribucion[3] = 15; distribucion[2] = 5;
         } else if (promedio >= 3.0) {
-            distribucion[5] = 20;
-            distribucion[4] = 30;
-            distribucion[3] = 30;
-            distribucion[2] = 15;
-            distribucion[1] = 5;
+            distribucion[5] = 20; distribucion[4] = 30; distribucion[3] = 30; distribucion[2] = 15; distribucion[1] = 5;
         } else {
-            distribucion[5] = 5;
-            distribucion[4] = 10;
-            distribucion[3] = 20;
-            distribucion[2] = 30;
-            distribucion[1] = 35;
+            distribucion[5] = 5; distribucion[4] = 10; distribucion[3] = 20; distribucion[2] = 30; distribucion[1] = 35;
         }
         return distribucion;
     }
-    
+
     async function cargarResenas() {
+        // ── FIX: mostrar estado vacío honesto en lugar de reseñas hardcodeadas.
+        //         Cuando el endpoint exista, descomentar el bloque try/catch. ──
         const reviewsContainer = document.getElementById('reviews-list');
+
+        /* TODO: descomentar cuando exista el endpoint de reseñas
+        try {
+            const res = await fetch(`${API_BASE}/api/reviews/my`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const reviews = await res.json();
+                if (reviews.length > 0) {
+                    reviewsContainer.innerHTML = reviews.map(r => `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-avatar">${r.authorName?.[0] || 'U'}</div>
+                                <div>
+                                    <div class="review-name">${r.authorName || 'Usuario'}</div>
+                                    <div class="review-faculty">${r.authorFaculty || 'Javeriana'}</div>
+                                </div>
+                                <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                            </div>
+                            <div class="review-text">${r.comment || ''}</div>
+                        </div>`).join('');
+                    return;
+                }
+            }
+        } catch(e) { console.warn('No se pudieron cargar reseñas:', e); }
+        */
+
         reviewsContainer.innerHTML = `
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="review-avatar">U</div>
-                    <div><div class="review-name">Usuario</div><div class="review-faculty">Javeriana</div></div>
-                    <div class="review-stars">★★★★★</div>
-                </div>
-                <div class="review-text">Excelente conductor, muy puntual y amable.</div>
-            </div>
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="review-avatar">M</div>
-                    <div><div class="review-name">María</div><div class="review-faculty">Ingeniería</div></div>
-                    <div class="review-stars">★★★★★</div>
-                </div>
-                <div class="review-text">Súper recomendado, siempre puntual y respetuoso.</div>
-            </div>
-        `;
+            <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
+                No hay reseñas aún. Completa viajes para recibir calificaciones.
+            </div>`;
     }
-    
+
     function logout() {
         localStorage.clear();
         window.location.href = 'index.html';
     }
-    
+
     cargarPerfil();
 </script>
 </body>

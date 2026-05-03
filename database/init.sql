@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS trips (
                                      seats INTEGER NOT NULL,
                                      price DOUBLE PRECISION NOT NULL,
                                      only_women BOOLEAN NOT NULL DEFAULT FALSE,
-                                     estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+                                     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
                                      created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -61,19 +61,3 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- =====================
 -- DATA INICIAL
 -- =====================
-
--- Trips de prueba
-INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
-SELECT id, 'Universidad Javeriana', 'Centro Chía', NOW() + INTERVAL '2 hours', 3, 4000, FALSE, TRUE, 'ACTIVE'
-FROM users WHERE email = 'maria.rodriguez@javeriana.edu.co'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
-SELECT id, 'Universidad Javeriana', 'Portal Norte', NOW() + INTERVAL '3 hours', 2, 5500, TRUE, FALSE, 'ACTIVE'
-FROM users WHERE email = 'andrea.lopez@javeriana.edu.co'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO trips (driver_id, origin, destination, departure, seats, price, only_women, has_ac, status)
-SELECT id, 'Universidad Javeriana', 'Suba', NOW() + INTERVAL '4 hours', 4, 6000, FALSE, FALSE, 'ACTIVE'
-FROM users WHERE email = 'carlos.martinez@javeriana.edu.co'
-ON CONFLICT DO NOTHING;

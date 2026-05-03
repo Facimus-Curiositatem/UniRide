@@ -11,4 +11,5 @@ public class UserStatsResponse {
     private Integer viajesComoConductor;    // Viajes que el usuario publicó
     private Double dineroAhorrado;          // Suma de todos los precios de viajes donde fue pasajero
     private Double calificacion;             // Rating del usuario
+    
 }

@@ -1,4 +1,5 @@
 package com.uniride.backend.controller;
+
 import com.uniride.backend.model.Booking;
 import com.uniride.backend.dto.BookingRequest;
 import com.uniride.backend.dto.BookingResponse;
@@ -7,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
@@ -21,17 +24,33 @@ public class BookingController {
             Authentication authentication
     ) {
         String email = authentication.getName();
-
         BookingResponse response = bookingService.createBooking(request.getTripId(), email);
-
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-trips")
-public ResponseEntity<?> getMyTrips(Authentication authentication) {
-    String email = authentication.getName();
-    List<Booking> bookings = bookingService.getMyBookings(email);
-    return ResponseEntity.ok(bookings);
-}
+    public ResponseEntity<?> getMyTrips(Authentication authentication) {
+        String email = authentication.getName();
+        List<Booking> bookings = bookingService.getMyBookings(email);
+        return ResponseEntity.ok(bookings);
+    }
 
+    // ===== NUEVOS ENDPOINTS PARA CONDUCTORES =====
+    
+    @PutMapping("/{bookingId}/confirm")
+    public ResponseEntity<?> confirmBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        BookingResponse response = bookingService.confirmBooking(bookingId, email);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-driver-bookings")
+    public ResponseEntity<?> getMyDriverBookings(Authentication authentication) {
+        String email = authentication.getName();
+        List<BookingResponse> bookings = bookingService.getBookingsForMyTrips(email);
+        return ResponseEntity.ok(bookings);
+    }
 }

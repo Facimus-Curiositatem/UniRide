@@ -32,4 +32,6 @@ public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificat
     
     // Método adicional para encontrar viajes por estado y fecha
     List<Trip> findByEstadoAndDepartureBefore(String estado, LocalDateTime departure);
+
+    List<Trip> findByDriverId(Long driverId);
 }

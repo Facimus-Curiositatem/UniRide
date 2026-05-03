@@ -1,5 +1,6 @@
 package com.uniride.backend.service;
 
+import java.time.ZoneId;
 import com.uniride.backend.dto.TripResponse;
 import com.uniride.backend.dto.TripSearchRequest;
 import com.uniride.backend.dto.UserStatsResponse;
@@ -44,7 +45,8 @@ public class TripService {
         
             predicates.add(cb.equal(root.get("estado"), "ACTIVE"));
             predicates.add(cb.greaterThan(root.get("seats"), 0));  // ← seats > 0
-            predicates.add(cb.greaterThan(root.get("departure"), LocalDateTime.now()));
+            predicates.add(cb.greaterThan(root.get("departure"), LocalDateTime.now(ZoneId.of("America/Bogota"))));
+
             
             if (request.getOrigin() != null && !request.getOrigin().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("origin")), 
@@ -93,6 +95,7 @@ public class TripService {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("passenger").get("id"), user.getId()));
         predicates.add(root.get("status").in("CONFIRMED", "COMPLETED"));
+        predicates.add(cb.lessThan(root.get("trip").get("departure"), LocalDateTime.now())); // ← Filtro de fecha
         return cb.and(predicates.toArray(new Predicate[0]));
     };
     

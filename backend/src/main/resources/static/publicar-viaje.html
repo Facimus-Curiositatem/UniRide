@@ -8,116 +8,179 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
+
+        /* ── SIDEBAR ───────────────────────────────────────────────── */
         .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
-        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
+        .sidebar-logo { display: flex; align-items: center; gap: .75rem; padding: .5rem .75rem; margin-bottom: 2rem; }
         .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
         .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
         .nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; border-radius: 12px; color: #7a8fa6; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item { display: flex; align-items: center; gap: .85rem; padding: .75rem 1rem; border-radius: 12px; color: #7a8fa6; font-size: .95rem; font-weight: 500; cursor: pointer; transition: all .2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,.05); color: #fff; }
         .nav-item.active { background: #1e3a5a; color: #fff; }
         .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
         .nav-bottom { margin-top: auto; }
-        .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+        .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,.08); }
+
+        /* ── MAIN LAYOUT ───────────────────────────────────────────── */
         .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; display: flex; gap: 1.5rem; align-items: flex-start; }
         .form-col { flex: 1; min-width: 0; }
         .side-col { width: 300px; flex-shrink: 0; position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
         .page-header { margin-bottom: 1.75rem; }
-        .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
-        .page-header p { font-size: 0.9rem; color: #5a7a99; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .25rem; }
+        .page-header p { font-size: .9rem; color: #5a7a99; }
+
+        /* ── STEPPER ───────────────────────────────────────────────── */
         .stepper { display: flex; align-items: center; margin-bottom: 2rem; }
-        .step { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; background: #1e3a5a; color: #5a7a99; border: 2px solid #1e3a5a; transition: all 0.3s; position: relative; z-index: 1; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+        .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; background: #1e3a5a; color: #5a7a99; border: 2px solid #1e3a5a; transition: all .3s; position: relative; z-index: 1; }
         .step.done .step-circle, .step.active .step-circle { background: #f5a623; border-color: #f5a623; color: #0d1f35; }
-        .step-label { font-size: 0.72rem; font-weight: 600; color: #5a7a99; white-space: nowrap; }
+        .step-label { font-size: .72rem; font-weight: 600; color: #5a7a99; white-space: nowrap; }
         .step.done .step-label, .step.active .step-label { color: #f5a623; }
-        .step-line { flex: 1; height: 2px; background: #1e3a5a; margin: 0 0.5rem 1.4rem; transition: background 0.3s; }
+        .step-line { flex: 1; height: 2px; background: #1e3a5a; margin: 0 .5rem 1.4rem; transition: background .3s; }
         .step-line.done { background: #f5a623; }
-        .section-card { background: #0d1f35; border-radius: 16px; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.25rem; display: none; }
-        .section-card.visible { display: block; }
-        .section-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
-        .section-icon { width: 38px; height: 38px; background: rgba(245,166,35,0.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        /* ── CARDS CON ANIMACIÓN ───────────────────────────────────── */
+        .section-card { background: #0d1f35; border-radius: 16px; padding: 1.75rem; border: 1px solid rgba(255,255,255,.06); margin-bottom: 1.25rem; display: none; }
+        .section-card.visible {
+            display: block;
+            animation: cardIn .25s ease;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .section-title { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+        .section-icon { width: 38px; height: 38px; background: rgba(245,166,35,.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .section-icon svg { width: 20px; height: 20px; color: #f5a623; }
         .section-title h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+        /* ── FORM FIELDS ───────────────────────────────────────────── */
         .field-group { margin-bottom: 1.25rem; }
-        .field-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #7a8fa6; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
-        .field-input { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .field-group label { display: block; font-size: .82rem; font-weight: 600; color: #7a8fa6; margin-bottom: .5rem; text-transform: uppercase; letter-spacing: .04em; }
+        .field-input { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,.08); border-radius: 12px; padding: .85rem 1rem; color: #fff; font-size: .95rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s, box-shadow .2s; }
         .field-input::placeholder { color: #3a5a7a; }
-        .field-input:focus { border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,0.1); }
+        .field-input:focus { border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,.1); }
+
+        /* ── FIX: campo con error resaltado en rojo ─────────────────── */
+        .field-input.field-error { border-color: #e24b4a; box-shadow: 0 0 0 3px rgba(226,75,74,.12); }
+
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .price-wrap { position: relative; }
-        .price-prefix { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #f5a623; font-weight: 700; font-size: 0.95rem; pointer-events: none; }
+        .price-prefix { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #f5a623; font-weight: 700; font-size: .95rem; pointer-events: none; }
         .price-wrap .field-input { padding-left: 2rem; }
-        .price-suffix { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #3a5a7a; font-size: 0.8rem; pointer-events: none; }
-        .price-hint { margin-top: 0.65rem; background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2); border-radius: 10px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: #a0b4c8; }
+        .price-suffix { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #3a5a7a; font-size: .8rem; pointer-events: none; }
+        .price-hint { margin-top: .65rem; background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.2); border-radius: 10px; padding: .7rem 1rem; display: flex; align-items: center; gap: .6rem; font-size: .82rem; color: #a0b4c8; }
         .price-hint svg { width: 16px; height: 16px; color: #f5a623; flex-shrink: 0; }
         .price-hint strong { color: #f5a623; }
-        .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
-        .seat-btn { background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1rem 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; transition: all 0.2s; color: #5a7a99; }
-        .seat-btn:hover { border-color: rgba(245,166,35,0.4); color: #a0b4c8; }
+
+        /* ── FIX: hint para fecha pasada ───────────────────────────── */
+        .date-hint { margin-top: .5rem; font-size: .78rem; border-radius: 8px; padding: .5rem .8rem; display: none; align-items: center; gap: .5rem; }
+        .date-hint.show { display: flex; }
+        .date-hint.warn { background: rgba(226,75,74,.1); border: 1px solid rgba(226,75,74,.25); color: #ff8080; }
+        .date-hint.ok   { background: rgba(99,153,34,.1); border: 1px solid rgba(99,153,34,.25); color: #97c459; }
+
+        /* ── SEATS ─────────────────────────────────────────────────── */
+        .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+        .seat-btn { background: #0a1628; border: 1.5px solid rgba(255,255,255,.08); border-radius: 14px; padding: 1rem .5rem; display: flex; flex-direction: column; align-items: center; gap: .4rem; cursor: pointer; transition: all .2s; color: #5a7a99; }
+        .seat-btn:hover { border-color: rgba(245,166,35,.4); color: #a0b4c8; }
         .seat-btn.selected { background: #f5a623; border-color: #f5a623; color: #0d1f35; }
         .seat-btn svg { width: 24px; height: 24px; }
         .seat-btn span { font-size: 1.1rem; font-weight: 800; }
-        .seat-btn small { font-size: 0.7rem; font-weight: 500; }
-        .pref-item { background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; cursor: pointer; transition: border-color 0.2s; }
-        .pref-item:hover { border-color: rgba(245,166,35,0.3); }
-        .pref-item.checked { border-color: rgba(245,166,35,0.4); background: rgba(245,166,35,0.04); }
-        .pref-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.04); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .seat-btn small { font-size: .7rem; font-weight: 500; }
+
+        /* ── PREFS ─────────────────────────────────────────────────── */
+        .pref-item { background: #0a1628; border: 1.5px solid rgba(255,255,255,.08); border-radius: 12px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; margin-bottom: .75rem; cursor: pointer; transition: border-color .2s; }
+        .pref-item:hover { border-color: rgba(245,166,35,.3); }
+        .pref-item.checked { border-color: rgba(245,166,35,.4); background: rgba(245,166,35,.04); }
+        .pref-icon { width: 36px; height: 36px; background: rgba(255,255,255,.04); border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .pref-icon svg { width: 18px; height: 18px; color: #7a8fa6; }
         .pref-info { flex: 1; }
-        .pref-info strong { display: block; font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 0.15rem; }
-        .pref-info small { font-size: 0.78rem; color: #5a7a99; }
-        .pref-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.15); background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+        .pref-info strong { display: block; font-size: .9rem; font-weight: 600; color: #fff; margin-bottom: .15rem; }
+        .pref-info small { font-size: .78rem; color: #5a7a99; }
+        .pref-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(255,255,255,.15); background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
         .pref-item.checked .pref-check { background: #f5a623; border-color: #f5a623; }
         .pref-check svg { width: 14px; height: 14px; color: #0d1f35; display: none; }
         .pref-item.checked .pref-check svg { display: block; }
-        .field-textarea { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.92rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; resize: vertical; min-height: 90px; }
+
+        /* ── FIX: notas con contador de caracteres ──────────────────── */
+        .textarea-wrap { position: relative; }
+        .field-textarea { width: 100%; background: #0a1628; border: 1.5px solid rgba(255,255,255,.08); border-radius: 12px; padding: .85rem 1rem; color: #fff; font-size: .92rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s; resize: vertical; min-height: 90px; }
         .field-textarea::placeholder { color: #3a5a7a; }
-        .field-textarea:focus { border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,0.1); }
-        .form-nav { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem; }
-        .btn-secondary { padding: 0.8rem 1.6rem; background: transparent; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 50px; color: #7a8fa6; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
-        .btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
-        .btn-primary { padding: 0.8rem 2rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+        .field-textarea:focus { border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,.1); }
+        .char-counter { text-align: right; font-size: .72rem; color: #5a7a99; margin-top: .35rem; transition: color .2s; }
+        .char-counter.warn { color: #f5a623; }
+        .char-counter.over { color: #e24b4a; }
+
+        /* ── NAV BUTTONS ───────────────────────────────────────────── */
+        .form-nav { display: flex; justify-content: flex-end; gap: .75rem; margin-top: .5rem; }
+        .btn-secondary { padding: .8rem 1.6rem; background: transparent; border: 1.5px solid rgba(255,255,255,.12); border-radius: 50px; color: #7a8fa6; font-size: .92rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+        .btn-secondary:hover { border-color: rgba(255,255,255,.25); color: #fff; }
+        .btn-primary { padding: .8rem 2rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 50px; font-size: .95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; display: flex; align-items: center; gap: .5rem; }
         .btn-primary:hover { background: #e09516; transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .btn-publish { width: 100%; padding: 1rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
-        .btn-publish:hover { background: #e09516; transform: translateY(-1px); }
-        .btn-publish:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .preview-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1.5px solid rgba(245,166,35,0.3); }
-        .preview-label { font-size: 0.75rem; font-weight: 700; color: #f5a623; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
-        .preview-driver { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; }
+        .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        /* ── CONFIRM SUMMARY ───────────────────────────────────────── */
+        .confirm-summary { background: #0a1628; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,.06); font-size: .88rem; color: #a0b4c8; }
+        .confirm-row { display: flex; justify-content: space-between; align-items: baseline; padding: .55rem 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+        .confirm-row:last-child { border-bottom: none; }
+        .confirm-key { color: #5a7a99; font-size: .8rem; }
+        .confirm-val { color: #fff; font-weight: 600; text-align: right; max-width: 60%; }
+
+        /* ── FIX: alerta de fecha pasada en paso 4 ──────────────────── */
+        .alert-box { display: none; border-radius: 10px; padding: .75rem 1rem; font-size: .83rem; margin-bottom: 1rem; align-items: center; gap: .6rem; }
+        .alert-box.show { display: flex; }
+        .alert-box.warn { background: rgba(226,75,74,.1); border: 1px solid rgba(226,75,74,.25); color: #ff8080; }
+        .alert-box.info { background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.25); color: #f5a623; }
+        .alert-box svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+        .error-msg { background: rgba(255,80,80,.1); border: 1px solid rgba(255,80,80,.25); border-radius: 10px; padding: .75rem 1rem; font-size: .83rem; color: #ff8080; margin-top: .75rem; display: none; }
+        .error-msg.show { display: block; }
+
+        /* ── SIDEBAR PREVIEW ───────────────────────────────────────── */
+        .preview-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1.5px solid rgba(245,166,35,.3); }
+        .preview-label { font-size: .75rem; font-weight: 700; color: #f5a623; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; }
+        .preview-driver { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.2rem; }
         .preview-avatar { width: 44px; height: 44px; border-radius: 50%; background: #f5a623; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: #0d1f35; flex-shrink: 0; }
-        .preview-driver-info strong { display: block; font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .preview-driver-info span { font-size: 0.8rem; color: #5a7a99; }
+        .preview-driver-info strong { display: block; font-size: .95rem; font-weight: 700; color: #fff; }
+        .preview-driver-info span { font-size: .8rem; color: #5a7a99; }
         .preview-route { margin-bottom: 1rem; }
-        .preview-stop { display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; padding: 0.3rem 0; }
+        .preview-stop { display: flex; align-items: center; gap: .65rem; font-size: .85rem; padding: .3rem 0; }
         .stop-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .stop-dot.gray { background: #3a5a7a; }
-        .stop-dot.yellow { background: #f5a623; box-shadow: 0 0 8px rgba(245,166,35,0.5); }
-        .preview-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; }
-        .preview-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #5a7a99; }
+        .stop-dot.gray   { background: #3a5a7a; }
+        .stop-dot.yellow { background: #f5a623; box-shadow: 0 0 8px rgba(245,166,35,.5); }
+        .preview-footer { display: flex; align-items: center; justify-content: space-between; margin-top: .75rem; }
+        .preview-meta { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: #5a7a99; }
         .preview-meta svg { width: 14px; height: 14px; }
         .preview-price { font-size: 1.4rem; font-weight: 900; color: #f5a623; }
-        .preview-price-label { font-size: 0.7rem; color: #5a7a99; font-weight: 400; }
-        .checklist-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1px solid rgba(255,255,255,0.06); }
-        .checklist-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
-        .check-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.4rem 0; font-size: 0.83rem; color: #5a7a99; transition: color 0.3s; }
+        .preview-price-label { font-size: .7rem; color: #5a7a99; font-weight: 400; }
+
+        /* ── CHECKLIST ─────────────────────────────────────────────── */
+        .checklist-card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1px solid rgba(255,255,255,.06); }
+        .checklist-title { font-size: .85rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+        .check-item { display: flex; align-items: center; gap: .65rem; padding: .4rem 0; font-size: .83rem; color: #5a7a99; transition: color .3s; }
         .check-item.ok { color: #a0b4c8; }
-        .check-circle { width: 22px; height: 22px; border-radius: 50%; background: #1e3a5a; border: 2px solid #1e3a5a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; }
+        .check-circle { width: 22px; height: 22px; border-radius: 50%; background: #1e3a5a; border: 2px solid #1e3a5a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .3s; }
         .check-item.ok .check-circle { background: #f5a623; border-color: #f5a623; }
         .check-circle svg { width: 12px; height: 12px; color: #0d1f35; }
-        .success-overlay { position: fixed; inset: 0; background: rgba(10,22,40,0.92); display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px); }
+
+        /* ── PUBLISH BUTTON (sidebar) ──────────────────────────────── */
+        .btn-publish { width: 100%; padding: 1rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: .6rem; }
+        .btn-publish:hover:not(:disabled) { background: #e09516; transform: translateY(-1px); }
+        .btn-publish:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        /* ── SUCCESS OVERLAY ───────────────────────────────────────── */
+        .success-overlay { position: fixed; inset: 0; background: rgba(10,22,40,.92); display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px); }
         .success-overlay.show { display: flex; }
-        .success-box { background: #0d1f35; border-radius: 20px; padding: 2.5rem; text-align: center; border: 1px solid rgba(245,166,35,0.3); max-width: 380px; width: 90%; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .success-icon { width: 72px; height: 72px; background: rgba(245,166,35,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+        .success-box { background: #0d1f35; border-radius: 20px; padding: 2.5rem; text-align: center; border: 1px solid rgba(245,166,35,.3); max-width: 380px; width: 90%; animation: popIn .4s cubic-bezier(.175,.885,.32,1.275); }
+        @keyframes popIn { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .success-icon { width: 72px; height: 72px; background: rgba(245,166,35,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
         .success-icon svg { width: 36px; height: 36px; color: #f5a623; }
-        .success-box h2 { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
-        .success-box p { font-size: 0.88rem; color: #5a7a99; margin-bottom: 1.5rem; }
-        .btn-go-home { display: block; width: 100%; padding: 0.9rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; transition: background 0.2s; text-align: center; }
+        .success-box h2 { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: .5rem; }
+        .success-box p { font-size: .88rem; color: #5a7a99; margin-bottom: 1.5rem; }
+        .btn-go-home { display: block; width: 100%; padding: .9rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 12px; font-size: .95rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none; transition: background .2s; text-align: center; }
         .btn-go-home:hover { background: #e09516; }
-        .error-msg { background: rgba(255,80,80,0.1); border: 1px solid rgba(255,80,80,0.25); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.83rem; color: #ff8080; margin-top: 0.75rem; display: none; }
-        .error-msg.show { display: block; }
+
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -165,8 +228,14 @@
             <p>Comparte tu trayecto con la comunidad Javeriana</p>
         </div>
 
+        <!-- STEPPER -->
         <div class="stepper">
-            <div class="step active" id="step-1"><div class="step-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div><span class="step-label">Ruta</span></div>
+            <div class="step active" id="step-1">
+                <div class="step-circle">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span class="step-label">Ruta</span>
+            </div>
             <div class="step-line" id="line-1"></div>
             <div class="step" id="step-2"><div class="step-circle">2</div><span class="step-label">Horario</span></div>
             <div class="step-line" id="line-2"></div>
@@ -177,78 +246,174 @@
 
         <!-- PASO 1: RUTA -->
         <div class="section-card visible" id="card-ruta">
-            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><h2>Ruta del viaje</h2></div>
+            <div class="section-title">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <h2>Ruta del viaje</h2>
+            </div>
             <div class="field-group">
                 <label>Punto de salida</label>
-                <input type="text" class="field-input" id="input-origin" placeholder="Universidad Javeriana – Sede Central" oninput="updatePreview()"/>
+                <input type="text" class="field-input" id="input-origin" placeholder="Universidad Javeriana – Sede Central" oninput="clearErr('input-origin'); updatePreview()"/>
             </div>
             <div class="field-group" style="margin-bottom:0;">
                 <label>Punto de llegada</label>
-                <input type="text" class="field-input" id="input-destination" placeholder="Ej: Centro Chía, Chapinero, Suba…" oninput="updatePreview()"/>
+                <input type="text" class="field-input" id="input-destination" placeholder="Ej: Centro Chía, Chapinero, Suba…" oninput="clearErr('input-destination'); updatePreview()"/>
             </div>
             <div class="error-msg" id="err-ruta">Por favor completa el origen y destino.</div>
             <div class="form-nav" style="margin-top:1.25rem;">
-                <button class="btn-primary" onclick="nextStep()">Siguiente <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
+                <button class="btn-primary" onclick="nextStep()">
+                    Siguiente
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
         </div>
 
         <!-- PASO 2: HORARIO Y CUPOS -->
         <div class="section-card" id="card-horario">
-            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg></div><h2>Fecha y hora</h2></div>
-            <div class="field-row">
-                <div class="field-group"><label>Fecha de salida</label><input type="date" class="field-input" id="input-date" oninput="updatePreview()"/></div>
-                <div class="field-group"><label>Hora de salida</label><input type="time" class="field-input" id="input-time" oninput="updatePreview()"/></div>
+            <div class="section-title">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
+                </div>
+                <h2>Fecha y hora</h2>
             </div>
+            <div class="field-row">
+                <div class="field-group">
+                    <label>Fecha de salida</label>
+                    <input type="date" class="field-input" id="input-date" oninput="clearErr('input-date'); validateDateTime(); updatePreview()"/>
+                </div>
+                <div class="field-group">
+                    <label>Hora de salida</label>
+                    <input type="time" class="field-input" id="input-time" oninput="clearErr('input-time'); validateDateTime(); updatePreview()"/>
+                </div>
+            </div>
+
+            <!-- FIX: Indicador visual de fecha/hora pasada -->
+            <div class="date-hint" id="date-hint-warn">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                La fecha u hora ya pasó. Los pasajeros no podrán reservar este viaje.
+            </div>
+            <div class="date-hint" id="date-hint-ok">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Fecha válida ✓
+            </div>
+
             <div class="error-msg" id="err-horario">Por favor selecciona fecha y hora de salida.</div>
-            
-            <div class="section-title" style="margin-top: 1.5rem;"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg></div><h2>Cupos disponibles</h2></div>
+            <!-- FIX: error específico para fecha pasada -->
+            <div class="error-msg" id="err-fecha-pasada">La fecha y hora ya pasaron. Por favor selecciona un horario futuro.</div>
+
+            <div class="section-title" style="margin-top: 1.5rem;">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                </div>
+                <h2>Cupos disponibles</h2>
+            </div>
             <div class="seats-grid">
-                <button type="button" class="seat-btn" onclick="selectSeats(1)" id="seat-1"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>1</span><small>cupo</small></button>
-                <button type="button" class="seat-btn selected" onclick="selectSeats(2)" id="seat-2"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>2</span><small>cupos</small></button>
-                <button type="button" class="seat-btn" onclick="selectSeats(3)" id="seat-3"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>3</span><small>cupos</small></button>
-                <button type="button" class="seat-btn" onclick="selectSeats(4)" id="seat-4"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span>4</span><small>cupos</small></button>
+                <button type="button" class="seat-btn" onclick="selectSeats(1)" id="seat-1">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                    <span>1</span><small>cupo</small>
+                </button>
+                <button type="button" class="seat-btn selected" onclick="selectSeats(2)" id="seat-2">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                    <span>2</span><small>cupos</small>
+                </button>
+                <button type="button" class="seat-btn" onclick="selectSeats(3)" id="seat-3">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                    <span>3</span><small>cupos</small>
+                </button>
+                <button type="button" class="seat-btn" onclick="selectSeats(4)" id="seat-4">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                    <span>4</span><small>cupos</small>
+                </button>
             </div>
             <div class="form-nav" style="margin-top:1.25rem;">
                 <button class="btn-secondary" onclick="prevStep()">Atrás</button>
-                <button class="btn-primary" onclick="nextStep()">Siguiente <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
+                <button class="btn-primary" onclick="nextStep()">
+                    Siguiente
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
         </div>
 
         <!-- PASO 3: PRECIO Y PREFERENCIAS -->
         <div class="section-card" id="card-precio">
-            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2>Precio por persona</h2></div>
-            <div class="field-group" style="margin-bottom:0;">
+            <div class="section-title">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h2>Precio por persona</h2>
+            </div>
+            <div class="field-group">
                 <div class="price-wrap">
                     <span class="price-prefix">$</span>
-                    <input type="number" class="field-input" id="input-price" placeholder="5000" min="500" step="500" oninput="updatePreview()"/>
+                    <input type="number" class="field-input" id="input-price" placeholder="5000" min="500" step="500" oninput="clearErr('input-price'); updatePreview()"/>
                     <span class="price-suffix">COP</span>
                 </div>
-                <div class="price-hint"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Precio sugerido para esta ruta: <strong>$4,500 – $6,000</strong></div>
+                <div class="price-hint">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Precio sugerido para esta ruta: <strong>$4,500 – $6,000</strong>
+                </div>
             </div>
             <div class="error-msg" id="err-precio">Por favor ingresa un precio válido (mínimo $500).</div>
 
-            <div class="section-title" style="margin-top: 1.5rem;"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><h2>Preferencias del viaje</h2></div>
+            <div class="section-title" style="margin-top: 1.5rem;">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <h2>Preferencias del viaje</h2>
+            </div>
+
             <div class="pref-item" id="pref-women" onclick="togglePref('women')">
-                <div class="pref-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
-                <div class="pref-info"><strong>Solo mujeres</strong><small>Viaje exclusivo para pasajeras</small></div>
-                <div class="pref-check" id="check-women"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+                <div class="pref-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <div class="pref-info">
+                    <strong>Solo mujeres</strong>
+                    <small>Viaje exclusivo para pasajeras</small>
+                </div>
+                <div class="pref-check" id="check-women">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
             </div>
+
             <div class="field-group" style="margin-top:1.25rem; margin-bottom:0;">
-                <label>Notas adicionales (opcional)</label>
-                <textarea class="field-textarea" id="input-notes" placeholder="Ej: Salgo exactamente a las 3:30 PM, por favor ser puntuales…"></textarea>
+                <label>Notas adicionales <span style="color:#3a5a7a;text-transform:none;font-weight:400;">(opcional)</span></label>
+                <!-- FIX: maxlength + contador de caracteres -->
+                <div class="textarea-wrap">
+                    <textarea class="field-textarea" id="input-notes" placeholder="Ej: Salgo exactamente a las 3:30 PM, por favor ser puntuales…" maxlength="280" oninput="updateCharCount()"></textarea>
+                    <div class="char-counter" id="char-counter">0 / 280</div>
+                </div>
             </div>
+
             <div class="form-nav" style="margin-top:1.25rem;">
                 <button class="btn-secondary" onclick="prevStep()">Atrás</button>
-                <button class="btn-primary" onclick="nextStep()">Revisar viaje <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
+                <button class="btn-primary" onclick="nextStep()">
+                    Revisar viaje
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
         </div>
 
         <!-- PASO 4: CONFIRMAR -->
         <div class="section-card" id="card-confirm">
-            <div class="section-title"><div class="section-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2>Confirmar y publicar</h2></div>
-            <p style="font-size:0.88rem; color:#5a7a99; margin-bottom:1.5rem;">Revisa los datos antes de publicar. Los estudiantes podrán ver esta información.</p>
-            <div id="confirm-summary" style="background:#0a1628; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; border:1px solid rgba(255,255,255,0.06); font-size:0.88rem; color:#a0b4c8; line-height:2.2;"></div>
+            <div class="section-title">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h2>Confirmar y publicar</h2>
+            </div>
+            <p style="font-size:.88rem; color:#5a7a99; margin-bottom:1.25rem;">Revisa los datos antes de publicar. Los estudiantes podrán ver esta información.</p>
+
+            <!-- FIX: alerta si la fecha ya pasó al llegar a paso 4 -->
+            <div class="alert-box warn" id="alert-fecha-pasada">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                <span>La fecha seleccionada ya pasó. Vuelve al paso 2 para corregirla antes de publicar.</span>
+            </div>
+
+            <div class="confirm-summary" id="confirm-summary"></div>
+
             <div class="error-msg" id="err-publish"></div>
+
             <div class="form-nav">
                 <button class="btn-secondary" onclick="prevStep()">Editar</button>
                 <button class="btn-primary" id="btn-publish-final" onclick="publishTrip()">
@@ -265,29 +430,44 @@
             <div class="preview-label">Vista previa</div>
             <div class="preview-driver">
                 <div class="preview-avatar" id="prev-avatar">U</div>
-                <div class="preview-driver-info"><strong id="prev-name">...</strong><span>Javeriana</span></div>
+                <div class="preview-driver-info">
+                    <strong id="prev-name">...</strong>
+                    <span>Javeriana</span>
+                </div>
             </div>
             <div class="preview-route">
                 <div class="preview-stop"><div class="stop-dot gray"></div><span id="prev-origin" style="color:#7a8fa6;">Universidad Javeriana</span></div>
-                <div style="width:1px; height:18px; background:rgba(255,255,255,0.08); margin-left:4px;"></div>
-                <div class="preview-stop"><div class="stop-dot yellow"></div><span id="prev-destination" style="color:#fff; font-weight:600;">Destino</span></div>
+                <div style="width:1px;height:18px;background:rgba(255,255,255,.08);margin-left:4px;"></div>
+                <div class="preview-stop"><div class="stop-dot yellow"></div><span id="prev-destination" style="color:#fff;font-weight:600;">Destino</span></div>
             </div>
             <div class="preview-footer">
-                <div style="display:flex;flex-direction:column;gap:0.35rem;">
-                    <div class="preview-meta"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg><span id="prev-time">--:--</span></div>
-                    <div class="preview-meta"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg><span id="prev-seats">2</span> cupos</div>
+                <div style="display:flex;flex-direction:column;gap:.35rem;">
+                    <div class="preview-meta">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
+                        <span id="prev-time">--:--</span>
+                    </div>
+                    <div class="preview-meta">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                        <span id="prev-seats">2</span> cupos
+                    </div>
                 </div>
-                <div><div class="preview-price" id="prev-price">$5.000</div><div class="preview-price-label">por persona</div></div>
+                <div>
+                    <div class="preview-price" id="prev-price">$5.000</div>
+                    <div class="preview-price-label">por persona</div>
+                </div>
             </div>
         </div>
+
         <div class="checklist-card">
             <div class="checklist-title">Lista de verificación</div>
             <div class="check-item" id="chk-ruta"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Ruta definida</div>
-            <div class="check-item" id="chk-horario"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Fecha y hora</div>
+            <div class="check-item" id="chk-horario"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Fecha y hora válidas</div>
             <div class="check-item" id="chk-cupos"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Cupos disponibles</div>
             <div class="check-item" id="chk-precio"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Precio establecido</div>
             <div class="check-item" id="chk-prefs"><div class="check-circle"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>Preferencias</div>
         </div>
+
+        <!-- FIX: botón sidebar con loading state propio, sólo visible en paso 4 -->
         <button class="btn-publish" id="btn-publish-side" style="display:none;" onclick="publishTrip()">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
             Publicar viaje
@@ -297,7 +477,9 @@
 
 <div class="success-overlay" id="success-overlay">
     <div class="success-box">
-        <div class="success-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="success-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
         <h2>¡Viaje publicado!</h2>
         <p>Tu viaje ya está visible para los estudiantes de la Javeriana. ¡Buen trayecto!</p>
         <a href="dashboard.html" class="btn-go-home">Ir al inicio</a>
@@ -305,75 +487,84 @@
 </div>
 
 <script>
-    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
-    const token = localStorage.getItem('uniride_token');
+    const API_BASE = window.location.hostname.includes('localhost')
+        ? 'http://localhost:8080'
+        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+
+    const token    = localStorage.getItem('uniride_token');
     const userName = localStorage.getItem('uniride_name') || 'Usuario';
     const userRole = localStorage.getItem('uniride_rol');
-    
+
     if (!token) window.location.href = 'index.html';
-    
-    // Verificar si el usuario puede publicar (solo CONDUCTOR o AMBOS)
+
+    // ── Bloqueo de rol ────────────────────────────────────────────────────
     if (userRole !== 'CONDUCTOR' && userRole !== 'AMBOS') {
         document.querySelector('.main').innerHTML = `
-            <div style="flex:1; display: flex; justify-content: center; align-items: center; min-height: 60vh;">
-                <div style="background: #0d1f35; border-radius: 20px; padding: 2rem; text-align: center; max-width: 400px;">
+            <div style="flex:1;display:flex;justify-content:center;align-items:center;min-height:60vh;">
+                <div style="background:#0d1f35;border-radius:20px;padding:2rem;text-align:center;max-width:400px;">
                     <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="1.5"><path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                    <h2 style="margin-top: 1rem;">Acceso restringido</h2>
-                    <p style="color: #7a8fa6; margin: 1rem 0;">Solo los <strong>conductores</strong> pueden publicar viajes.</p>
-                    <p style="color: #7a8fa6;">Tu rol actual es: <strong>${userRole || 'No definido'}</strong></p>
-                    <a href="dashboard.html" style="display: inline-block; margin-top: 1.5rem; padding: 0.8rem 1.5rem; background: #f5a623; color: #0d1f35; border-radius: 50px; text-decoration: none; font-weight: 600;">Volver al inicio</a>
+                    <h2 style="margin-top:1rem;">Acceso restringido</h2>
+                    <p style="color:#7a8fa6;margin:1rem 0;">Solo los <strong>conductores</strong> pueden publicar viajes.</p>
+                    <p style="color:#7a8fa6;">Tu rol actual es: <strong>${userRole || 'No definido'}</strong></p>
+                    <a href="dashboard.html" style="display:inline-block;margin-top:1.5rem;padding:.8rem 1.5rem;background:#f5a623;color:#0d1f35;border-radius:50px;text-decoration:none;font-weight:600;">Volver al inicio</a>
                 </div>
-            </div>
-        `;
+            </div>`;
         throw new Error('Usuario no autorizado');
     }
 
+    // ── Setup inicial ─────────────────────────────────────────────────────
     const ini = userName.trim().split(' ').map(n => n[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || 'U';
     document.getElementById('prev-avatar').textContent = ini;
-    document.getElementById('prev-name').textContent = userName + ' (tú)';
+    document.getElementById('prev-name').textContent   = userName + ' (tú)';
 
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('input-date').value = today;
+    // FIX: fecha mínima = HOY (no permite fechas pasadas en el picker)
+    const todayISO = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('input-date');
+    dateInput.setAttribute('min', todayISO);
+    dateInput.value = todayISO;
 
-    let currentStep = 1;
+    let currentStep   = 1;
     let selectedSeats = 2;
-    let prefWomen = false;
-    let prefAC = true;
+    let prefWomen     = false;
+    let publishing    = false;   // FIX: bandera para evitar doble submit
 
+    // ── FIX: Validación de fecha/hora en tiempo real ──────────────────────
+    function validateDateTime() {
+        const date = document.getElementById('input-date').value;
+        const time = document.getElementById('input-time').value;
+        const hintWarn = document.getElementById('date-hint-warn');
+        const hintOk   = document.getElementById('date-hint-ok');
+
+        hintWarn.classList.remove('show');
+        hintOk.classList.remove('show');
+
+        if (!date || !time) return false;
+
+        const selected = new Date(`${date}T${time}:00`);
+        const now      = new Date();
+        const isPast   = selected <= now;
+
+        hintWarn.classList.toggle('show', isPast);
+        hintOk.classList.toggle('show', !isPast);
+
+        document.getElementById('input-date').classList.toggle('field-error', isPast);
+        document.getElementById('input-time').classList.toggle('field-error', isPast);
+
+        // actualizar checklist: la fecha solo es válida si es futura
+        setCheck('chk-horario', !isPast);
+        return !isPast;
+    }
+
+    // ── Navegación entre pasos ────────────────────────────────────────────
     function nextStep() {
-        // Validar paso actual
-        if (currentStep === 1) {
-            const origin = document.getElementById('input-origin').value.trim();
-            const destination = document.getElementById('input-destination').value.trim();
-            if (!origin || !destination) {
-                showErr('err-ruta');
-                return;
-            }
-            hideErr('err-ruta');
-            currentStep = 2;
-        } else if (currentStep === 2) {
-            const date = document.getElementById('input-date').value;
-            const time = document.getElementById('input-time').value;
-            if (!date || !time) {
-                showErr('err-horario');
-                return;
-            }
-            hideErr('err-horario');
-            currentStep = 3;
-        } else if (currentStep === 3) {
-            const price = document.getElementById('input-price').value;
-            if (!price || Number(price) < 500) {
-                showErr('err-precio');
-                return;
-            }
-            hideErr('err-precio');
-            currentStep = 4;
-            buildConfirmSummary();
+        if (!validateCurrentStep()) return;
+        if (currentStep < 4) {
+            currentStep++;
+            if (currentStep === 4) buildConfirmSummary();
+            renderStepper();
+            renderCards();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        renderStepper();
-        renderCards();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function prevStep() {
@@ -385,17 +576,65 @@
         }
     }
 
+    // ── FIX: validación centralizada por paso ─────────────────────────────
+    function validateCurrentStep() {
+        if (currentStep === 1) {
+            const origin      = document.getElementById('input-origin').value.trim();
+            const destination = document.getElementById('input-destination').value.trim();
+            if (!origin || !destination) {
+                showErr('err-ruta');
+                if (!origin)      document.getElementById('input-origin').classList.add('field-error');
+                if (!destination) document.getElementById('input-destination').classList.add('field-error');
+                return false;
+            }
+            hideErr('err-ruta');
+            return true;
+        }
+
+        if (currentStep === 2) {
+            const date = document.getElementById('input-date').value;
+            const time = document.getElementById('input-time').value;
+            if (!date || !time) {
+                showErr('err-horario');
+                return false;
+            }
+            hideErr('err-horario');
+
+            // FIX: bloquear avance si fecha pasada
+            if (!validateDateTime()) {
+                showErr('err-fecha-pasada');
+                return false;
+            }
+            hideErr('err-fecha-pasada');
+            return true;
+        }
+
+        if (currentStep === 3) {
+            const price = parseFloat(document.getElementById('input-price').value);
+            if (!price || price < 500) {
+                showErr('err-precio');
+                document.getElementById('input-price').classList.add('field-error');
+                return false;
+            }
+            hideErr('err-precio');
+            return true;
+        }
+
+        return true;
+    }
+
+    // ── Stepper visual ────────────────────────────────────────────────────
     function renderStepper() {
         for (let i = 1; i <= 4; i++) {
-            const step = document.getElementById('step-' + i);
-            step.classList.remove('done', 'active');
+            const step   = document.getElementById('step-' + i);
             const circle = step.querySelector('.step-circle');
+            step.classList.remove('done', 'active');
             if (i < currentStep) {
                 step.classList.add('done');
                 circle.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
             } else if (i === currentStep) {
                 step.classList.add('active');
-                circle.innerHTML = i;
+                circle.textContent = i;
             } else {
                 circle.textContent = i;
             }
@@ -406,200 +645,211 @@
         }
     }
 
+    // ── Cards visibles ────────────────────────────────────────────────────
     function renderCards() {
-        const cards = {
-            1: ['card-ruta'],
-            2: ['card-horario'],
-            3: ['card-precio'],
-            4: ['card-confirm']
-        };
-        
-        ['card-ruta', 'card-horario', 'card-precio', 'card-prefs', 'card-confirm'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('visible');
+        const map = { 1: 'card-ruta', 2: 'card-horario', 3: 'card-precio', 4: 'card-confirm' };
+        ['card-ruta','card-horario','card-precio','card-confirm'].forEach(id => {
+            document.getElementById(id)?.classList.remove('visible');
         });
-        
-        const toShow = cards[currentStep] || [];
-        toShow.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.add('visible');
-        });
-        
-        // Mostrar prefs siempre en paso 3 junto con precio
-        if (currentStep === 3) {
-            const prefsCard = document.getElementById('card-prefs');
-            if (prefsCard) prefsCard.classList.add('visible');
-        }
-        
+        const target = map[currentStep];
+        if (target) document.getElementById(target)?.classList.add('visible');
+
+        // Botón sidebar: sólo en paso 4
         const sideBtn = document.getElementById('btn-publish-side');
         if (sideBtn) sideBtn.style.display = currentStep === 4 ? 'flex' : 'none';
     }
 
+    // ── Cupos ─────────────────────────────────────────────────────────────
     function selectSeats(n) {
         selectedSeats = n;
         for (let i = 1; i <= 4; i++) {
-            const btn = document.getElementById('seat-' + i);
-            if (btn) btn.classList.toggle('selected', i === n);
+            document.getElementById('seat-' + i)?.classList.toggle('selected', i === n);
         }
         document.getElementById('prev-seats').textContent = n;
         updateChecklist();
     }
 
+    // ── Preferencias ─────────────────────────────────────────────────────
     function togglePref(key) {
         if (key === 'women') {
             prefWomen = !prefWomen;
-            const el = document.getElementById('pref-women');
-            if (el) el.classList.toggle('checked', prefWomen);
-        } else {
-            prefAC = !prefAC;
-            const el = document.getElementById('pref-ac');
-            if (el) el.classList.toggle('checked', prefAC);
+            document.getElementById('pref-women')?.classList.toggle('checked', prefWomen);
         }
-    }
-
-    function updatePreview() {
-        const origin = document.getElementById('input-origin').value || 'Universidad Javeriana';
-        const dest = document.getElementById('input-destination').value || 'Destino';
-        const time = document.getElementById('input-time').value;
-        const price = document.getElementById('input-price').value;
-        
-        const prevOrigin = document.getElementById('prev-origin');
-        const prevDest = document.getElementById('prev-destination');
-        if (prevOrigin) prevOrigin.textContent = origin;
-        if (prevDest) prevDest.textContent = dest;
-        
-        if (time) {
-            const [h, m] = time.split(':');
-            const hr = parseInt(h);
-            const timeStr = `${String(hr).padStart(2, '0')}:${m}`;
-            const prevTime = document.getElementById('prev-time');
-            if (prevTime) prevTime.textContent = timeStr;
-        }
-        
-        if (price && Number(price) > 0) {
-            const prevPrice = document.getElementById('prev-price');
-            if (prevPrice) prevPrice.textContent = '$' + Number(price).toLocaleString('es-CO');
-        }
-        
-        updateChecklist();
-    }
-
-    function updateChecklist() {
-        const origin = document.getElementById('input-origin')?.value.trim();
-        const dest = document.getElementById('input-destination')?.value.trim();
-        const date = document.getElementById('input-date')?.value;
-        const time = document.getElementById('input-time')?.value;
-        const price = document.getElementById('input-price')?.value;
-        
-        setCheck('chk-ruta', !!(origin && dest));
-        setCheck('chk-horario', !!(date && time));
-        setCheck('chk-cupos', selectedSeats > 0);
-        setCheck('chk-precio', !!(price && Number(price) >= 500));
         setCheck('chk-prefs', true);
     }
 
-    function setCheck(id, ok) {
-        const el = document.getElementById(id);
-        if (el) el.classList.toggle('ok', ok);
+    // ── FIX: contador de caracteres en notas ─────────────────────────────
+    function updateCharCount() {
+        const textarea = document.getElementById('input-notes');
+        const counter  = document.getElementById('char-counter');
+        const len      = textarea.value.length;
+        const max      = 280;
+        counter.textContent = `${len} / ${max}`;
+        counter.classList.toggle('warn', len > max * 0.8 && len < max);
+        counter.classList.toggle('over', len >= max);
     }
 
-    function buildConfirmSummary() {
-        const origin = document.getElementById('input-origin')?.value || '-';
-        const dest = document.getElementById('input-destination')?.value || '-';
-        const date = document.getElementById('input-date')?.value;
-        const time = document.getElementById('input-time')?.value;
-        const price = document.getElementById('input-price')?.value;
-        const notes = document.getElementById('input-notes')?.value;
-        
-        let dateStr = date || '-';
-        try {
-            if (date) dateStr = new Date(date + 'T12:00:00').toLocaleDateString('es-CO', { 
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            });
-        } catch(e) {}
-        
-        let timeStr = '-';
+    // ── Vista previa lateral ──────────────────────────────────────────────
+    function updatePreview() {
+        const origin = document.getElementById('input-origin')?.value || 'Universidad Javeriana';
+        const dest   = document.getElementById('input-destination')?.value || 'Destino';
+        const time   = document.getElementById('input-time')?.value;
+        const price  = document.getElementById('input-price')?.value;
+
+        document.getElementById('prev-origin').textContent      = origin;
+        document.getElementById('prev-destination').textContent = dest;
+
         if (time) {
             const [h, m] = time.split(':');
-            const hr = parseInt(h);
-           timeStr = `${String(hr).padStart(2, '0')}:${m}`;
+            document.getElementById('prev-time').textContent = `${String(parseInt(h)).padStart(2,'0')}:${m}`;
         }
-        
-        const summaryDiv = document.getElementById('confirm-summary');
-        if (summaryDiv) {
-            summaryDiv.innerHTML = `
-                <div> <strong style="color:#fff">Ruta:</strong> ${origin} → ${dest}</div>
-                <div> <strong style="color:#fff">Fecha:</strong> ${dateStr}</div>
-                <div> <strong style="color:#fff">Hora:</strong> ${timeStr}</div>
-                <div> <strong style="color:#fff">Cupos:</strong> ${selectedSeats}</div>
-                <div> <strong style="color:#fff">Precio:</strong> $${Number(price).toLocaleString('es-CO')} COP por persona</div>
-                <div> <strong style="color:#fff">Solo mujeres:</strong> ${prefWomen ? 'Sí' : 'No'}</div>
-                ${notes ? `<div> <strong style="color:#fff">Notas:</strong> ${notes}</div>` : ''}`;
+
+        if (price && Number(price) > 0) {
+            document.getElementById('prev-price').textContent = '$' + Number(price).toLocaleString('es-CO');
         }
+
         updateChecklist();
     }
 
-async function publishTrip() {
-    const btn = document.getElementById('btn-publish-final');
-    const errEl = document.getElementById('err-publish');
-    if (!btn) return;
-    
-    errEl.classList.remove('show');
-    btn.disabled = true;
-    btn.innerHTML = `<svg style="animation:spin 1s linear infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Publicando…`;
-    
-    const date = document.getElementById('input-date')?.value;
-    const time = document.getElementById('input-time')?.value;
-    
-    // Solo enviar la fecha en formato simple
-    const departure = `${date}T${time}:00`;
-    
-    console.log('Enviando fecha:', departure);
-    
-    const body = {
-        origin: document.getElementById('input-origin')?.value.trim() || '',
-        destination: document.getElementById('input-destination')?.value.trim() || '',
-        departure: departure,
-        seats: selectedSeats,
-        price: parseFloat(document.getElementById('input-price')?.value || 0),
-        onlyWomen: prefWomen
-    };
-    
-    try {
-        const res = await fetch(`${API_BASE}/api/trips`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(body)
-        });
-        
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.message || `Error ${res.status}`);
+    // ── Checklist lateral ─────────────────────────────────────────────────
+    function updateChecklist() {
+        const origin = document.getElementById('input-origin')?.value.trim();
+        const dest   = document.getElementById('input-destination')?.value.trim();
+        const date   = document.getElementById('input-date')?.value;
+        const time   = document.getElementById('input-time')?.value;
+        const price  = document.getElementById('input-price')?.value;
+
+        // FIX: chk-horario solo verde si la fecha es futura
+        const dateOk = date && time && new Date(`${date}T${time}:00`) > new Date();
+
+        setCheck('chk-ruta',    !!(origin && dest));
+        setCheck('chk-horario', !!dateOk);
+        setCheck('chk-cupos',   selectedSeats > 0);
+        setCheck('chk-precio',  !!(price && Number(price) >= 500));
+        setCheck('chk-prefs',   true);
+    }
+
+    function setCheck(id, ok) {
+        document.getElementById(id)?.classList.toggle('ok', ok);
+    }
+
+    // ── FIX: resumen de confirmación con filas estructuradas ─────────────
+    function buildConfirmSummary() {
+        const origin = document.getElementById('input-origin')?.value || '-';
+        const dest   = document.getElementById('input-destination')?.value || '-';
+        const date   = document.getElementById('input-date')?.value;
+        const time   = document.getElementById('input-time')?.value;
+        const price  = document.getElementById('input-price')?.value;
+        const notes  = document.getElementById('input-notes')?.value;
+
+        let dateStr = date || '-';
+        try {
+            if (date) dateStr = new Date(date + 'T12:00:00').toLocaleDateString('es-CO', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+        } catch(e) {}
+
+        let timeStr = '-';
+        if (time) {
+            const [h, m] = time.split(':');
+            timeStr = `${String(parseInt(h)).padStart(2,'0')}:${m}`;
         }
-        
-        const successOverlay = document.getElementById('success-overlay');
-        if (successOverlay) successOverlay.classList.add('show');
-        
-    } catch(e) {
-        errEl.textContent = e.message;
-        errEl.classList.add('show');
-        btn.disabled = false;
-        btn.innerHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Publicar viaje`;
+
+        // FIX: verificar si la fecha ya pasó y mostrar alerta en paso 4
+        const isPast = date && time && new Date(`${date}T${time}:00`) <= new Date();
+        document.getElementById('alert-fecha-pasada')?.classList.toggle('show', !!isPast);
+
+        const rows = [
+            { k: 'Origen',      v: origin },
+            { k: 'Destino',     v: dest },
+            { k: 'Fecha',       v: dateStr },
+            { k: 'Hora',        v: timeStr },
+            { k: 'Cupos',       v: `${selectedSeats} asiento${selectedSeats !== 1 ? 's' : ''}` },
+            { k: 'Precio',      v: `$${Number(price).toLocaleString('es-CO')} COP / persona` },
+            { k: 'Solo mujeres',v: prefWomen ? 'Sí' : 'No' },
+        ];
+        if (notes?.trim()) rows.push({ k: 'Notas', v: notes });
+
+        document.getElementById('confirm-summary').innerHTML = rows.map(r =>
+            `<div class="confirm-row"><span class="confirm-key">${r.k}</span><span class="confirm-val">${r.v}</span></div>`
+        ).join('');
+
+        updateChecklist();
     }
-}
-    function showErr(id) {
-        const el = document.getElementById(id);
-        if (el) el.classList.add('show');
+
+    // ── FIX: publishTrip con todas las guardas ────────────────────────────
+    async function publishTrip() {
+        // Guardia 1: solo desde paso 4
+        if (currentStep !== 4) return;
+        // Guardia 2: evitar doble submit
+        if (publishing) return;
+
+        // Guardia 3: bloquear si la fecha ya pasó
+        const date = document.getElementById('input-date')?.value;
+        const time = document.getElementById('input-time')?.value;
+        if (date && time && new Date(`${date}T${time}:00`) <= new Date()) {
+            document.getElementById('err-publish').textContent = 'La fecha y hora ya pasaron. Edita el horario antes de publicar.';
+            document.getElementById('err-publish').classList.add('show');
+            return;
+        }
+
+        publishing = true;
+        const btnFinal = document.getElementById('btn-publish-final');
+        const btnSide  = document.getElementById('btn-publish-side');
+        const errEl    = document.getElementById('err-publish');
+
+        errEl.classList.remove('show');
+
+        const loadingHTML = `<svg style="animation:spin 1s linear infinite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Publicando…`;
+        if (btnFinal) { btnFinal.disabled = true; btnFinal.innerHTML = loadingHTML; }
+        if (btnSide)  { btnSide.disabled  = true; btnSide.innerHTML  = loadingHTML; }
+
+        // Spring Boot LocalDateTime espera ISO 8601 sin zona horaria ("2026-05-10T08:00:00")
+        // El offset -05:00 causa un 400 porque LocalDateTime no soporta OffsetDateTime
+        const departure = `${date}T${time}:00`;
+
+        const body = {
+            origin:      document.getElementById('input-origin')?.value.trim()      || '',
+            destination: document.getElementById('input-destination')?.value.trim() || '',
+            departure,
+            seats:       selectedSeats,
+            price:       parseFloat(document.getElementById('input-price')?.value || 0),
+            onlyWomen:   prefWomen,
+        };
+
+        try {
+            const res = await fetch(`${API_BASE}/api/trips`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body:    JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || `Error ${res.status}`);
+            }
+
+            document.getElementById('success-overlay')?.classList.add('show');
+
+        } catch(e) {
+            errEl.textContent = e.message;
+            errEl.classList.add('show');
+        } finally {
+            publishing = false;
+            const readyHTML = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Publicar viaje`;
+            if (btnFinal) { btnFinal.disabled = false; btnFinal.innerHTML = readyHTML; }
+            if (btnSide)  { btnSide.disabled  = false; btnSide.innerHTML  = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Publicar viaje`; }
+        }
     }
-    
-    function hideErr(id) {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('show');
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function showErr(id) { document.getElementById(id)?.classList.add('show'); }
+    function hideErr(id) { document.getElementById(id)?.classList.remove('show'); }
+
+    function clearErr(fieldId) {
+        document.getElementById(fieldId)?.classList.remove('field-error');
     }
-    
+
     function logout() {
         localStorage.removeItem('uniride_token');
         localStorage.removeItem('uniride_email');
@@ -608,7 +858,7 @@ async function publishTrip() {
         window.location.href = 'index.html';
     }
 
-  
+    // ── Arranque ──────────────────────────────────────────────────────────
     renderStepper();
     renderCards();
     updatePreview();

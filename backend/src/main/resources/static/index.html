@@ -112,24 +112,25 @@
             <label>Nombre completo <span class="required">*</span></label>
             <input id="regFullName" type="text" placeholder="Juan Pérez" />
         </div>
-        
+
         <div class="form-group">
             <label>Correo institucional <span class="required">*</span></label>
             <input id="regEmail" type="email" placeholder="usuario@javeriana.edu.co" />
             <p class="hint">Solo se aceptan correos @javeriana.edu.co</p>
         </div>
-        
+
         <div class="form-group">
             <label>Contraseña <span class="required">*</span></label>
             <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" />
         </div>
-        
+
         <div class="form-group">
             <label>Teléfono <span class="required">*</span></label>
-            <input id="regPhone" type="text" placeholder="3001234567" />
+            <!-- ── FIX: tipo "tel" para activar teclado numérico en móviles ── -->
+            <input id="regPhone" type="tel" placeholder="3001234567" />
             <p class="hint">Formato: 3001234567</p>
         </div>
-        
+
         <div class="form-group">
             <label>Tipo de usuario <span class="required">*</span></label>
             <select id="regRol" onchange="toggleVehicleFields()">
@@ -139,7 +140,7 @@
                 <option value="AMBOS">Conductor y pasajero</option>
             </select>
         </div>
-        
+
         <!-- Campos de vehículo (solo para conductores) -->
         <div id="vehicleFields" class="vehicle-fields" style="display: none;">
             <h4>🚗 Datos del vehículo</h4>
@@ -153,7 +154,7 @@
                 <input id="regVehicleColor" type="text" placeholder="Rojo, Blanco, Gris..." />
             </div>
         </div>
-        
+
         <button class="btn-submit" id="btnRegister" onclick="register()">Crear cuenta</button>
         <p class="register-link">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
     </div>
@@ -162,13 +163,13 @@
 </div>
 
 <script>
-    // Configuración - CAMBIAR SEGÚN ENTORNO
-    // Para local: 'http://localhost:8080'
-    // Para Codespaces: 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev'
-    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    // ── FIX: API_BASE centralizado con detección de entorno ──────────────────
+    const API_BASE = window.location.hostname.includes('localhost')
+        ? 'http://localhost:8080'
+        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+
     const API_URL = `${API_BASE}/api/auth`;
 
-    // Redirigir si ya está logueado
     if (localStorage.getItem('uniride_token')) {
         window.location.href = 'dashboard.html';
     }
@@ -176,7 +177,7 @@
     function switchTab(tab) {
         const loginTab = document.querySelector('.tab:first-child');
         const registerTab = document.querySelector('.tab:last-child');
-        
+
         if (tab === 'login') {
             loginTab.classList.add('active');
             registerTab.classList.remove('active');
@@ -203,12 +204,10 @@
         el.style.display = 'block';
         el.className = 'result ' + (isError ? 'error' : 'success');
         el.textContent = message;
-        
+
         if (!isError) {
             setTimeout(() => {
-                if (el.style.display === 'block') {
-                    el.style.display = 'none';
-                }
+                if (el.style.display === 'block') el.style.display = 'none';
             }, 5000);
         }
     }
@@ -222,48 +221,37 @@
     async function login() {
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        
+
         if (!email || !password) {
             return showResult('Por favor completa todos los campos.', true);
         }
-        
+
         const btn = document.getElementById('btnLogin');
         btn.disabled = true;
         btn.textContent = 'Ingresando...';
-        
+
         try {
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            
+
             const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || 'Credenciales incorrectas');
-            }
-            
-            // Guardar datos básicos
+
+            if (!response.ok) throw new Error(data.error || 'Credenciales incorrectas');
+
             localStorage.setItem('uniride_token', data.token);
             localStorage.setItem('uniride_email', data.email);
             localStorage.setItem('uniride_name', data.fullName);
             localStorage.setItem('uniride_rol', data.rol);
-            
-            // Guardar datos del vehículo si el backend los devuelve
-            if (data.vehiclePlate) {
-                localStorage.setItem('uniride_vehicle_plate', data.vehiclePlate);
-            }
-            if (data.vehicleColor) {
-                localStorage.setItem('uniride_vehicle_color', data.vehicleColor);
-            }
-            
+
+            if (data.vehiclePlate) localStorage.setItem('uniride_vehicle_plate', data.vehiclePlate);
+            if (data.vehicleColor) localStorage.setItem('uniride_vehicle_color', data.vehicleColor);
+
             showResult('✅ Inicio de sesión exitoso. Redirigiendo...', false);
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1000);
-            
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+
         } catch (error) {
             showResult(error.message, true);
             btn.disabled = false;
@@ -275,112 +263,98 @@
         const fullName = document.getElementById('regFullName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
-        const phone = document.getElementById('regPhone').value.trim();
         const rol = document.getElementById('regRol').value;
-        
-        // Validaciones
+
+        // ── FIX: sanitizar el teléfono eliminando espacios, guiones y
+        //         paréntesis antes de aplicar el regex. Así el usuario puede
+        //         pegar "300 123 4567" o "300-123-4567" sin que falle. ─────────
+        const phoneRaw = document.getElementById('regPhone').value;
+        const phone = phoneRaw.replace(/\D/g, '');
+
         if (!fullName || !email || !password || !phone) {
             return showResult('Por favor completa todos los campos obligatorios.', true);
         }
-        
-        if (!rol) {
-            return showResult('Por favor selecciona un tipo de usuario.', true);
-        }
-        
+
+        if (!rol) return showResult('Por favor selecciona un tipo de usuario.', true);
+
         if (!email.endsWith('@javeriana.edu.co')) {
             return showResult('Solo se aceptan correos @javeriana.edu.co', true);
         }
-        
+
         if (password.length < 6) {
             return showResult('La contraseña debe tener al menos 6 caracteres.', true);
         }
-        
+
         if (!phone.match(/^3\d{9}$/)) {
-            return showResult('El teléfono debe tener formato 3001234567', true);
+            return showResult('El teléfono debe tener formato 3001234567 (10 dígitos, empezando por 3)', true);
         }
-        
-        // Validar datos del vehículo si es CONDUCTOR o AMBOS
+
         const isDriverOrBoth = (rol === 'CONDUCTOR' || rol === 'AMBOS');
         let vehiclePlate = null;
         let vehicleColor = null;
-        
+
         if (isDriverOrBoth) {
-            vehiclePlate = document.getElementById('regVehiclePlate').value.trim();
+            vehiclePlate = document.getElementById('regVehiclePlate').value.trim().toUpperCase();
             vehicleColor = document.getElementById('regVehicleColor').value.trim();
-            
+
             if (!vehiclePlate || !vehicleColor) {
                 return showResult('La placa y el color del vehículo son obligatorios para conductores.', true);
             }
-            
+
             if (!vehiclePlate.match(/^[A-Z]{3}\d{3}$/)) {
                 return showResult('La placa debe tener formato ABC123 (3 letras y 3 números)', true);
             }
         }
-        
+
         const btn = document.getElementById('btnRegister');
         btn.disabled = true;
         btn.textContent = 'Creando cuenta...';
-        
-        // Construir objeto de registro
-        const registerData = {
-            fullName,
-            email,
-            password,
-            phone,
-            rol,
-            vehiclePlate,
-            vehicleColor
-        };
-        
+
+        const registerData = { fullName, email, password, phone, rol, vehiclePlate, vehicleColor };
+
         try {
             const response = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(registerData)
             });
-            
+
             const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al crear la cuenta');
-            }
-            
+            if (!response.ok) throw new Error(data.error || 'Error al crear la cuenta');
+
             showResult('✅ Cuenta creada exitosamente. Iniciando sesión...', false);
-            
-            // Auto-login
+
+            // ── Auto-login ────────────────────────────────────────────────────
             const loginResponse = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-            
+
             const loginData = await loginResponse.json();
-            
+
             if (!loginResponse.ok) {
-                showResult('Cuenta creada. Por favor inicia sesión manualmente.', false);
+                // ── FIX: si el auto-login falla, pre-rellenar el email en el
+                //         formulario de login para que el usuario no tenga que
+                //         escribirlo de nuevo. ────────────────────────────────
+                showResult('Cuenta creada. Por favor inicia sesión.', false);
                 switchTab('login');
+                document.getElementById('loginEmail').value = email;
                 btn.disabled = false;
                 btn.textContent = 'Crear cuenta';
                 return;
             }
-            
+
             localStorage.setItem('uniride_token', loginData.token);
             localStorage.setItem('uniride_email', loginData.email);
             localStorage.setItem('uniride_name', loginData.fullName);
             localStorage.setItem('uniride_rol', loginData.rol);
-            
-            // Guardar datos del vehículo
-            if (vehiclePlate) {
-                localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
-            }
-            if (vehicleColor) {
-                localStorage.setItem('uniride_vehicle_color', vehicleColor);
-            }
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-            
+
+            if (vehiclePlate) localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
+            if (vehicleColor) localStorage.setItem('uniride_vehicle_color', vehicleColor);
+
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+
         } catch (error) {
             showResult(error.message, true);
             btn.disabled = false;
@@ -388,7 +362,6 @@
         }
     }
 
-    // Función para cargar estadísticas globales
     async function cargarEstadisticasGlobales() {
         try {
             const response = await fetch(`${API_BASE}/api/global/stats`);
@@ -400,14 +373,12 @@
             }
         } catch (error) {
             console.log('No se pudieron cargar las estadísticas globales');
-            // Valores por defecto mientras no está el backend
             document.getElementById('global-usuarios').textContent = '2,847';
             document.getElementById('global-viajes').textContent = '12,459';
             document.getElementById('global-rating').textContent = '4.8';
         }
     }
 
-    // Enter key support
     document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             if (!document.getElementById('loginForm').classList.contains('hidden')) {
@@ -418,7 +389,6 @@
         }
     });
 
-    // Cargar estadísticas al iniciar
     cargarEstadisticasGlobales();
 </script>
 </body>
