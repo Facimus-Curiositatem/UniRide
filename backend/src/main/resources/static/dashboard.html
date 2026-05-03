@@ -6,8 +6,6 @@
     <title>UniRide – Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <style>
-        /* Tus estilos existentes (se mantienen igual) */
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
         .sidebar { width: 260px; min-height: 100vh; background: #0d1f35; display: flex; flex-direction: column; padding: 1.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.06); position: fixed; top: 0; left: 0; height: 100vh; }
@@ -32,14 +30,14 @@
         .search-bar input:focus { border-color: #f5a623; }
         .btn-buscar { padding: 0.7rem 1.8rem; background: #f5a623; color: #0d1f35; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: 'Inter', sans-serif; white-space: nowrap; }
         .btn-buscar:hover { background: #e09516; }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .stat-card { background: #0d1f35; border-radius: 16px; padding: 1.3rem 1.4rem; border: 1px solid rgba(255,255,255,0.06); position: relative; }
         .stat-icon-wrap { width: 40px; height: 40px; background: rgba(245,166,35,0.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
         .stat-icon-wrap svg { width: 20px; height: 20px; color: #f5a623; }
         .stat-dot { position: absolute; top: 1.3rem; right: 1.4rem; width: 8px; height: 8px; background: #f5a623; border-radius: 50%; }
         .stat-number { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 0.3rem; }
         .stat-label { font-size: 0.82rem; color: #5a7a99; }
-        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .bottom-grid { display: flex; flex-direction: column; gap: 1.5rem; }
         .card { background: #0d1f35; border-radius: 16px; padding: 1.4rem; border: 1px solid rgba(255,255,255,0.06); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
         .card-header h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
@@ -50,11 +48,27 @@
         .trip-info { flex: 1; }
         .trip-name { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
         .trip-route { font-size: 0.78rem; color: #5a7a99; }
-        .trip-badge { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 500; margin-left: 0.4rem; }
-        .badge-ing { background: rgba(99,153,34,0.15); color: #97c459; }
-        .badge-der { background: rgba(53,130,221,0.15); color: #85b7eb; }
-        .badge-med { background: rgba(212,83,126,0.15); color: #ed93b1; }
         .trip-price { font-size: 0.95rem; font-weight: 700; color: #f5a623; white-space: nowrap; }
+        .btn-confirmar {
+            background: #f5a623;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #0d1f35;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .btn-confirmar:hover:not(:disabled) {
+            background: #e09516;
+        }
+        .btn-confirmar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .map-placeholder { background: #0a1a2e; border-radius: 12px; height: 220px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
         .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,166,35,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.05) 1px, transparent 1px); background-size: 40px 40px; }
         .map-pin { position: absolute; width: 14px; height: 14px; background: #f5a623; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 12px rgba(245,166,35,0.6); }
@@ -65,26 +79,6 @@
         .map-label { position: absolute; bottom: 1rem; left: 1rem; font-size: 0.75rem; color: #5a7a99; }
         .loading { text-align: center; color: #5a7a99; padding: 2rem; }
         .empty { text-align: center; color: #5a7a99; padding: 2rem; }
-        .btn-confirmar {
-    background: #1e3a5a;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #fff;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-.btn-confirmar:hover:not(:disabled) {
-    background: #f5a623;
-    color: #0d1f35;
-}
-
-.btn-confirmar:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
     </style>
 </head>
 <body>
@@ -162,15 +156,17 @@
 
     <div class="bottom-grid">
         <!-- Reservas pendientes (solo para conductores) -->
-<div class="card" id="reservas-card" style="margin-top: 1.5rem; display: none;">
-    <div class="card-header">
-        <h2>📋 Reservas pendientes</h2>
-        <span>Confirma a los pasajeros</span>
-    </div>
-    <div id="reservas-list">
-        <div class="loading">Cargando...</div>
-    </div>
-</div>
+        <div class="card" id="reservas-card" style="display: none;">
+            <div class="card-header">
+                <h2> Reservas pendientes</h2>
+                <span>Confirma a los pasajeros</span>
+            </div>
+            <div id="reservas-list">
+                <div class="loading">Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Viajes próximos -->
         <div class="card">
             <div class="card-header">
                 <h2>Viajes próximos</h2>
@@ -178,6 +174,8 @@
             </div>
             <div id="trips-list"><div class="loading">Cargando viajes...</div></div>
         </div>
+
+        <!-- Mapa -->
         <div class="card">
             <div class="card-header"><h2>Mapa en vivo</h2></div>
             <div class="map-placeholder">
@@ -195,7 +193,6 @@
 </main>
 
 <script>
-    // ── FIX: API_BASE centralizado con detección de entorno ──────────────────
     const API_BASE = window.location.hostname.includes('localhost')
         ? 'http://localhost:8080'
         : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
@@ -212,138 +209,127 @@
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     document.getElementById('current-date').textContent = `${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()}`;
 
-   // ========== FUNCIONALIDAD 2: CONFIRMAR RESERVAS ==========
-
-async function cargarReservasPendientes() {
-    const userRole = localStorage.getItem('uniride_rol');
-    // Solo mostrar para conductores o AMBOS
-    if (userRole !== 'CONDUCTOR' && userRole !== 'AMBOS') {
-        document.getElementById('reservas-card').style.display = 'none';
-        return;
-    }
-    
-    document.getElementById('reservas-card').style.display = 'block';
-    
-    try {
-        const res = await fetch(`${API_BASE}/api/bookings/my-driver-bookings`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!res.ok) throw new Error();
-        const reservas = await res.json();
-        
-        const lista = document.getElementById('reservas-list');
-        
-        if (reservas.length === 0) {
-            lista.innerHTML = '<div class="empty">No hay reservas pendientes</div>';
+    // ========== FUNCIONALIDAD 2: CONFIRMAR RESERVAS ==========
+    async function cargarReservasPendientes() {
+        const userRole = localStorage.getItem('uniride_rol');
+        if (userRole !== 'CONDUCTOR' && userRole !== 'AMBOS') {
+            document.getElementById('reservas-card').style.display = 'none';
             return;
         }
         
-        lista.innerHTML = reservas.map(r => `
-            <div class="trip-item">
-                <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
-                <div class="trip-info">
-                    <div class="trip-name">
-                        🧑 ${r.passengerName || 'Pasajero'} 
-                        <span style="font-size: 0.7rem; color: #f5a623;">(${r.passengerEmail})</span>
+        document.getElementById('reservas-card').style.display = 'block';
+        
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/my-driver-bookings`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!res.ok) throw new Error();
+            const reservas = await res.json();
+            
+            const lista = document.getElementById('reservas-list');
+            
+            if (reservas.length === 0) {
+                lista.innerHTML = '<div class="empty">No hay reservas pendientes</div>';
+                return;
+            }
+            
+            lista.innerHTML = reservas.map(r => `
+                <div class="trip-item">
+                    <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
+                    <div class="trip-info">
+                        <div class="trip-name">${r.passengerName || 'Pasajero'} (${r.passengerEmail})</div>
+                        <div class="trip-route"> ${r.origin} → ${r.destination}</div>
+                        <div class="trip-route" style="font-size: 0.7rem;"> ${new Date(r.createdAt).toLocaleDateString()} ·  $${Number(r.price).toLocaleString('es-CO')}</div>
                     </div>
-                    <div class="trip-route">
-                        📍 ${r.origin} → ${r.destination}
-                    </div>
-                    <div class="trip-route" style="font-size: 0.7rem;">
-                        📅 ${new Date(r.createdAt).toLocaleDateString()} 
-                        💰 $${Number(r.price).toLocaleString('es-CO')}
-                    </div>
+                    <button class="btn-confirmar" onclick="confirmarReserva(${r.id}, this)"> Confirmar</button>
                 </div>
-                <button class="btn-confirmar" onclick="confirmarReserva(${r.id}, this)" 
-                    style="background:#1e3a5a; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; color:#fff; font-weight:600;">
-                    ✅ Confirmar
-                </button>
-            </div>
-        `).join('');
-        
-    } catch(e) {
-        console.error('Error cargando reservas:', e);
-        document.getElementById('reservas-list').innerHTML = '<div class="empty">Error al cargar reservas</div>';
+            `).join('');
+            
+        } catch(e) {
+            console.error('Error cargando reservas:', e);
+            document.getElementById('reservas-list').innerHTML = '<div class="empty">Error al cargar reservas</div>';
+        }
     }
-}
 
-async function confirmarReserva(bookingId, btn) {
-    btn.disabled = true;
-    btn.textContent = '⏳ Procesando...';
-    
-    try {
-        const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    async function confirmarReserva(bookingId, btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳';
         
-        if (res.ok) {
-            alert('✅ ¡Reserva confirmada exitosamente!');
-            // Recargar listas
-            cargarReservasPendientes();
-            cargarEstadisticas();
-        } else {
-            const error = await res.json().catch(() => ({}));
-            alert(error.message || '❌ Error al confirmar');
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                alert(' ¡Reserva confirmada exitosamente!');
+                cargarReservasPendientes();
+                cargarEstadisticas();
+            } else {
+                const error = await res.json().catch(() => ({}));
+                alert(error.message || ' Error al confirmar');
+                btn.disabled = false;
+                btn.textContent = ' Confirmar';
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            alert(' Error de conexión');
             btn.disabled = false;
-            btn.textContent = '✅ Confirmar';
+            btn.textContent = ' Confirmar';
         }
-    } catch(e) {
-        console.error('Error:', e);
-        alert('❌ Error de conexión');
-        btn.disabled = false;
-        btn.textContent = '✅ Confirmar';
     }
-} 
-   async function cargarViajes() {
-    try {
-        const res = await fetch(`${API_BASE}/api/trips/search`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({})
-        });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    async function cargarViajes() {
+        try {
+            const res = await fetch(`${API_BASE}/api/trips/search`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({})
+            });
 
-        const trips = await res.json();
-        const tripsArray = Array.isArray(trips) ? trips : [];
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const lista = document.getElementById('trips-list');
+            const trips = await res.json();
+            const tripsArray = Array.isArray(trips) ? trips : [];
 
-        if (tripsArray.length === 0) {
-            lista.innerHTML = '<div class="empty">No hay viajes disponibles</div>';
-            return;
+            const lista = document.getElementById('trips-list');
+
+            if (tripsArray.length === 0) {
+                lista.innerHTML = '<div class="empty">No hay viajes disponibles</div>';
+                return;
+            }
+
+            lista.innerHTML = tripsArray.slice(0, 4).map((t) => {
+                const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U';
+                const hora = t.departure
+                    ? new Date(t.departure).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                    : '--:--';
+
+                return `
+                <div class="trip-item">
+                    <div class="trip-avatar">${iniciales}</div>
+                    <div class="trip-info">
+                        <div class="trip-name">${t.driverName || 'Conductor'}</div>
+                        <div class="trip-route">${t.origin || '?'} → ${t.destination || '?'} · ${hora}</div>
+                    </div>
+                    <div class="trip-price">$${Number(t.price).toLocaleString('es-CO')}</div>
+                </div>`;
+            }).join('');
+
+            // Actualizar contador de viajes disponibles
+            document.getElementById('stat-disponibles').textContent = tripsArray.length;
+
+        } catch (error) {
+            console.error('Error cargando viajes:', error);
+            document.getElementById('trips-list').innerHTML = '<div class="empty">Error al cargar viajes</div>';
+            document.getElementById('stat-disponibles').textContent = '0';
         }
-
-        lista.innerHTML = tripsArray.slice(0, 4).map((t) => {
-            const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U';
-            const hora = t.departure
-                ? new Date(t.departure).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
-                : '--:--';
-
-            return `
-            <div class="trip-item">
-                <div class="trip-avatar">${iniciales}</div>
-                <div class="trip-info">
-                    <div class="trip-name">${t.driverName || 'Conductor'}</div>
-                    <div class="trip-route">${t.origin || '?'} → ${t.destination || '?'} · ${hora}</div>
-                </div>
-                <div class="trip-price">$${Number(t.price).toLocaleString('es-CO')}</div>
-            </div>`;
-        }).join('');
-
-    } catch (error) {
-        console.error('Error cargando viajes:', error);
-        document.getElementById('trips-list').innerHTML = '<div class="empty">Error al cargar viajes</div>';
     }
-}
 
-    // ── FIX: cargarEstadisticas es la única función que escribe los stats,
-    //         incluido stat-disponibles. Elimina la doble escritura. ─────────
     async function cargarEstadisticas() {
         try {
             const res = await fetch(`${API_BASE}/api/trips/stats`, {
@@ -354,14 +340,12 @@ async function confirmarReserva(bookingId, btn) {
 
             const stats = await res.json();
 
-            document.getElementById('stat-disponibles').textContent = stats.viajesDisponibles ?? 0;
             document.getElementById('stat-completados').textContent = stats.viajesCompletados ?? 0;
             document.getElementById('stat-ahorrado').textContent = `$${Number(stats.dineroAhorrado || 0).toLocaleString('es-CO')}`;
             document.getElementById('stat-rating').textContent = stats.calificacion?.toFixed(1) ?? '5.0';
 
         } catch (error) {
             console.error('Error cargando estadísticas:', error);
-            document.getElementById('stat-disponibles').textContent = '0';
             document.getElementById('stat-completados').textContent = '0';
             document.getElementById('stat-ahorrado').textContent = '$0';
             document.getElementById('stat-rating').textContent = '5.0';
@@ -382,15 +366,13 @@ async function confirmarReserva(bookingId, btn) {
         window.location.href = 'index.html';
     }
 
-    // ── FIX: Una sola función de entrada que llama ambas en paralelo.
-    //         cargarViajes() ya no existe como llamada suelta. ────────────────
     async function cargarDatos() {
-    await Promise.all([
-        cargarViajes(), 
-        cargarEstadisticas(),
-        cargarReservasPendientes()  // ← Agregar esta línea
-    ]);
-}
+        await Promise.all([
+            cargarViajes(),
+            cargarEstadisticas(),
+            cargarReservasPendientes()
+        ]);
+    }
 
     cargarDatos();
 </script>

@@ -154,7 +154,7 @@
             </div>
 
             <div class="card" id="vehicle-card" style="display: none;">
-                <div class="vehicle-title">🚗 Vehículo registrado</div>
+                <div class="vehicle-title"> Vehículo registrado</div>
                 <div id="vehicle-info">
                     <div class="vehicle-card">
                         <div class="vehicle-row"><span class="vehicle-label">Placa</span><span class="vehicle-value" id="vehicle-plate">---</span></div>
@@ -242,11 +242,11 @@
 
             const badgesContainer = document.getElementById('profile-badges');
             let badgesHtml = '';
-            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') badgesHtml += '<span class="badge">⭐ Conductor activo</span> ';
-            if (userRole === 'PASAJERO') badgesHtml += '<span class="badge">👤 Pasajero frecuente</span> ';
-            if (viajesCompletados > 10) badgesHtml += '<span class="badge">🏆 Viajero experto</span> ';
-            if (rating >= 4.8) badgesHtml += '<span class="badge">🌟 Top rated</span> ';
-            badgesContainer.innerHTML = badgesHtml || '<span class="badge">✨ Nuevo usuario</span>';
+            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') badgesHtml += '<span class="badge"> Conductor activo</span> ';
+            if (userRole === 'PASAJERO') badgesHtml += '<span class="badge"> Pasajero frecuente</span> ';
+            if (viajesCompletados > 10) badgesHtml += '<span class="badge"> Viajero experto</span> ';
+            if (rating >= 4.8) badgesHtml += '<span class="badge"> Top rated</span> ';
+            badgesContainer.innerHTML = badgesHtml || '<span class="badge"> Nuevo usuario</span>';
 
             const vehicleCard = document.getElementById('vehicle-card');
             if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
@@ -344,42 +344,43 @@
     }
 
     async function cargarResenas() {
-        // ── FIX: mostrar estado vacío honesto en lugar de reseñas hardcodeadas.
-        //         Cuando el endpoint exista, descomentar el bloque try/catch. ──
-        const reviewsContainer = document.getElementById('reviews-list');
-
-        /* TODO: descomentar cuando exista el endpoint de reseñas
-        try {
-            const res = await fetch(`${API_BASE}/api/reviews/my`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const reviews = await res.json();
-                if (reviews.length > 0) {
-                    reviewsContainer.innerHTML = reviews.map(r => `
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="review-avatar">${r.authorName?.[0] || 'U'}</div>
-                                <div>
-                                    <div class="review-name">${r.authorName || 'Usuario'}</div>
-                                    <div class="review-faculty">${r.authorFaculty || 'Javeriana'}</div>
-                                </div>
-                                <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+    const reviewsContainer = document.getElementById('reviews-list');
+    
+    try {
+        // Obtener reseñas del usuario actual (donde él es el reviewed)
+        const res = await fetch(`${API_BASE}/api/reviews/my`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+            const reviews = await res.json();
+            if (reviews.length > 0) {
+                reviewsContainer.innerHTML = reviews.map(r => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="review-avatar">${r.reviewerName?.charAt(0) || 'U'}</div>
+                            <div>
+                                <div class="review-name">${r.reviewerName || 'Usuario'}</div>
+                                <div class="review-faculty">${r.reviewerFaculty || 'Javeriana'}</div>
                             </div>
-                            <div class="review-text">${r.comment || ''}</div>
-                        </div>`).join('');
-                    return;
-                }
+                            <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                        </div>
+                        <div class="review-text">${r.comment || ''}</div>
+                    </div>
+                `).join('');
+                return;
             }
-        } catch(e) { console.warn('No se pudieron cargar reseñas:', e); }
-        */
-
-        reviewsContainer.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
-                No hay reseñas aún. Completa viajes para recibir calificaciones.
-            </div>`;
+        }
+    } catch(e) {
+        console.warn('No se pudieron cargar reseñas:', e);
     }
-
+    
+    // Si no hay reseñas o hay error
+    reviewsContainer.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
+            No hay reseñas aún. Completa viajes para recibir calificaciones.
+        </div>`;
+}
     function logout() {
         localStorage.clear();
         window.location.href = 'index.html';
