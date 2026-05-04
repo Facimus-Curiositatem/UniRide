@@ -387,7 +387,11 @@
     let ratingSeleccionado = 0;
 
 
+
 async function cargarViajeEnVivo() {
+    // --- AÑADE ESTA LÍNEA AQUÍ ---
+    if (intervalSimulacion) clearInterval(intervalSimulacion); 
+    
     try {
         const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -396,10 +400,7 @@ async function cargarViajeEnVivo() {
         if (!res.ok) throw new Error('No se pudieron cargar las reservas');
         const reservas = await res.json();
         
-        console.log('=== DEPURACIÓN ===');
-        console.log('Reservas recibidas:', reservas);
-        
-        // Filtrar solo reservas CONFIRMED
+        // 1. Filtrar solo reservas CONFIRMADAS
         const viajesConfirmados = reservas.filter(r => r.status === 'CONFIRMED');
         
         if (viajesConfirmados.length === 0) {
@@ -408,31 +409,39 @@ async function cargarViajeEnVivo() {
         }
 
         const ahora = new Date();
-        
-        // Separar viajes en PASADOS y FUTUROS
-        const viajesPasados = viajesConfirmados.filter(r => new Date(r.departure) < ahora);
-        const viajesFuturos = viajesConfirmados.filter(r => new Date(r.departure) >= ahora);
-        
-        let viajeSeleccionado = null;
-        
-        // Prioridad: mostrar viajes PASADOS primero (para calificar)
-        if (viajesPasados.length > 0) {
-            viajesPasados.sort((a, b) => new Date(b.departure) - new Date(a.departure));
-            viajeSeleccionado = viajesPasados[0];
-            console.log('Mostrando viaje PASADO:', viajeSeleccionado);
-        } 
-        else if (viajesFuturos.length > 0) {
-            viajesFuturos.sort((a, b) => new Date(a.departure) - new Date(b.departure));
-            viajeSeleccionado = viajesFuturos[0];
-            console.log('Mostrando viaje FUTURO:', viajeSeleccionado);
-        }
-        
-        if (!viajeSeleccionado) {
-            mostrarSinViajes();
-            return;
-        }
+        const limitePasado = new Date(ahora.getTime() - (24 * 60 * 60 * 1000)); // 24 horas atrás
 
-        actualizarUI(viajeSeleccionado);
+        // 2. Buscar un viaje que esté sucediendo justo ahora o sea futuro cercano
+        // Ordenamos por fecha más cercana a "ahora"
+        viajesConfirmados.sort((a, b) => Math.abs(ahora - new Date(a.departure)) - Math.abs(ahora - new Date(b.departure)));
+
+        let viajeSeleccionado = null;
+
+        for (let v of viajesConfirmados) {
+            const fechaViaje = new Date(v.departure);
+            
+            // Si el viaje es futuro, es el candidato ideal para "En Vivo"
+            if (fechaViaje >= ahora) {
+                viajeSeleccionado = v;
+                break; 
+            } 
+            // Si el viaje es pasado pero reciente (menos de 24h) y NO ha sido calificado
+            // Nota: Aquí asumimos que el backend te dice si ya fue calificado. 
+            // Si no, lo manejaremos localmente con localStorage temporalmente.
+            else if (fechaViaje < ahora && fechaViaje > limitePasado) {
+                const yaCalificado = localStorage.getItem(`calificado_${v.id}`);
+                if (!yaCalificado) {
+                    viajeSeleccionado = v;
+                    break;
+                }
+            }
+        }
+        
+        if (viajeSeleccionado) {
+            actualizarUI(viajeSeleccionado);
+        } else {
+            mostrarSinViajes();
+        }
 
     } catch (error) {
         console.error('Error:', error);
@@ -454,15 +463,10 @@ function actualizarUI(viaje) {
         const hora = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
         const fechaStr = fecha.toLocaleDateString('es-CO', { day: 'numeric', month: 'long' });
         document.getElementById('viaje-hora').innerHTML = `📅 ${fechaStr} · 🕐 ${hora}`;
-        
-        // Verificar si es pasado para mostrar botón de calificar
-        const ahora = new Date();
-        const viajePasado = fecha < ahora;
-        
-        if (viajePasado) {
-            agregarBotonCalificar();
-        }
     }
+
+    // --- CORRECCIÓN AQUÍ: Cerramos lógica previa si no se usa 'ahora' ---
+    const ahora = new Date(); 
 
     // Características
     const featuresContainer = document.getElementById('trip-features');
@@ -494,7 +498,8 @@ function actualizarUI(viaje) {
 
     // Conductor
     if (viaje.driverName) {
-        const iniciales = viaje.driverName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        // CORRECCIÓN: .filter(Boolean) evita errores con espacios extra
+        const iniciales = viaje.driverName.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase();
         document.getElementById('conductor-inicial').textContent = iniciales;
         document.getElementById('conductor-nombre').textContent = viaje.driverName;
         document.getElementById('modal-driver-name').textContent = viaje.driverName;
@@ -509,8 +514,11 @@ function actualizarUI(viaje) {
     }
 
     document.getElementById('map-ubicacion').textContent = `📍 ${viaje.origin} → ${viaje.destination}`;
+    
+    // Ejecutar simulación
     iniciarSimulacionProgreso();
-}
+} 
+
 
 function agregarBotonCalificar() {
     const actionButtons = document.getElementById('action-buttons');
@@ -556,15 +564,15 @@ function agregarBotonCalificar() {
         });
     });
 
-  async function enviarCalificacion() {
+async function enviarCalificacion() {
     if (ratingSeleccionado === 0) {
         alert('Por favor selecciona una calificación (1 a 5 estrellas)');
         return;
     }
     
-    if (!viajeActual || !viajeActual.driverId) {
-        console.error('Error: No se encontró el ID del conductor', viajeActual);
-        alert('Error: No se pudo identificar al conductor');
+    if (!viajeActual || !viajeActual.id) { // Asegúrate de usar el ID del viaje
+        console.error('Error: No se encontró el ID del viaje', viajeActual);
+        alert('Error: No se pudo identificar el viaje');
         return;
     }
     
@@ -584,14 +592,25 @@ function agregarBotonCalificar() {
             })
         });
         
-        const data = await res.json();
-        
-        if (res.ok) {
-            alert('✅ ¡Gracias por calificar!');
-            cerrarModalCalificacion();
-            const btnCalificar = document.getElementById('btn-calificar');
-            if (btnCalificar) btnCalificar.remove();
-        } else {
+       if (res.ok) {
+    alert('✅ ¡Gracias por calificar!');
+    
+    // 1. Marcar como calificado
+    localStorage.setItem(`calificado_${viajeActual.id}`, 'true');
+    
+    // 2. Limpiar el progreso guardado de este viaje
+    localStorage.removeItem(`progreso_viaje_${viajeActual.id}`);
+    
+    // 3. Quitar el botón de la pantalla manualmente para evitar clics dobles
+    const btn = document.getElementById('btn-calificar');
+    if (btn) btn.remove();
+
+    cerrarModalCalificacion();
+    
+    // 4. Volver a ejecutar la lógica de búsqueda
+    cargarViajeEnVivo(); 
+} else {
+            const data = await res.json();
             alert(data.error || 'Error al enviar la calificación');
         }
     } catch(e) {
@@ -615,46 +634,105 @@ function agregarBotonCalificar() {
         return rutas[key] || { km: 8.5, min: 20 };
     }
 
-    let intervalSimulacion = null;
-    function iniciarSimulacionProgreso() {
-        if (intervalSimulacion) {
-            clearInterval(intervalSimulacion);
-            intervalSimulacion = null;
-        }
-        let progreso = 0;
-        intervalSimulacion = setInterval(() => {
-            if (progreso >= 100) {
-                clearInterval(intervalSimulacion);
-                intervalSimulacion = null;
-                document.getElementById('progreso-porcentaje').textContent = 'Viaje completado ✅';
-                return;
-            }
-            progreso += Math.random() * 10;
-            if (progreso > 100) progreso = 100;
-            document.getElementById('progreso-porcentaje').textContent = `${Math.round(progreso)}% completado`;
-            document.getElementById('progress-fill-bar').style.width = `${progreso}%`;
-            const carMarker = document.querySelector('.car-marker');
-            if (carMarker) {
-                const leftPos = 10 + (progreso * 0.8);
-                carMarker.style.left = `${Math.min(leftPos, 85)}%`;
-            }
-        }, 3000);
+   let intervalSimulacion = null;
+
+function iniciarSimulacionProgreso() {
+    if (!viajeActual) return;
+
+    const ahora = new Date();
+    const horaSalida = new Date(viajeActual.departure);
+    
+    if (ahora < horaSalida) {
+        document.getElementById('progreso-porcentaje').textContent = 'Esperando hora de salida...';
+        return;
     }
 
-    function mostrarSinViajes() {
-        document.getElementById('viaje-ruta').textContent = 'No hay viajes en vivo';
-        document.getElementById('viaje-hora').textContent = 'Reserva un viaje para ver el seguimiento en tiempo real';
-        document.getElementById('trip-features').innerHTML = '<div class="feature-tag">No hay viajes activos</div>';
-        document.getElementById('conductor-nombre').textContent = '---';
-        document.getElementById('conductor-rating').innerHTML = '⭐ --';
-        document.getElementById('conductor-vehiculo').innerHTML = '---';
-        document.getElementById('origen-text').textContent = '---';
-        document.getElementById('destino-text').textContent = '---';
-        document.getElementById('stat-precio').querySelector('.trip-stat-value').textContent = '$--';
-        document.getElementById('stat-distancia').querySelector('.trip-stat-value').textContent = '-- km';
-        document.getElementById('stat-duracion').querySelector('.trip-stat-value').textContent = '-- min';
-        document.getElementById('map-ubicacion').textContent = 'Sin viajes activos';
+    let progresoGuardado = localStorage.getItem(`progreso_viaje_${viajeActual.id}`);
+    let progreso = progresoGuardado ? parseFloat(progresoGuardado) : 0;
+
+    // Si ya llegó al 100%, llamar a finalizar que activará el botón
+    if (progreso >= 100) {
+        actualizarBarraUI(100);
+        finalizarSimulacionUI();
+        return;
     }
+
+    if (intervalSimulacion) clearInterval(intervalSimulacion);
+
+    intervalSimulacion = setInterval(() => {
+        // Incremento aleatorio
+        progreso += Math.random() * 5; 
+
+        if (progreso >= 100) {
+            progreso = 100;
+            localStorage.setItem(`progreso_viaje_${viajeActual.id}`, 100);
+            clearInterval(intervalSimulacion);
+            actualizarBarraUI(100);
+            finalizarSimulacionUI(); // <--- Aquí se activa el botón
+        } else {
+            localStorage.setItem(`progreso_viaje_${viajeActual.id}`, progreso);
+            actualizarBarraUI(progreso);
+        }
+    }, 2000); // 2 segundos por paso para que no sea tan lento
+}
+
+// Funciones auxiliares para no repetir código
+function actualizarBarraUI(valor) {
+    document.getElementById('progreso-porcentaje').textContent = `${Math.round(valor)}% completado`;
+    document.getElementById('progress-fill-bar').style.width = `${valor}%`;
+    const carMarker = document.querySelector('.car-marker');
+    if (carMarker) {
+        const leftPos = 10 + (valor * 0.75); // Ajuste para que el carro no se salga del mapa
+        carMarker.style.left = `${leftPos}%`;
+    }
+}
+
+function finalizarSimulacionUI() {
+    document.getElementById('progreso-porcentaje').textContent = 'Viaje completado ✅';
+    document.getElementById('progress-fill-bar').style.width = '100%';
+    const carMarker = document.querySelector('.car-marker');
+    if (carMarker) carMarker.style.left = '85%';
+
+    // --- NUEVA LÓGICA ---
+    // Verificamos si ya pasó la hora o el progreso llegó al 100%
+    // Y solo mostramos el botón si no ha sido calificado ya
+    const yaCalificado = localStorage.getItem(`calificado_${viajeActual.id}`);
+    if (!yaCalificado) {
+        agregarBotonCalificar();
+    }
+}
+
+
+
+   function mostrarSinViajes() {
+    viajeActual = null; // Limpiamos la referencia
+    if (intervalSimulacion) clearInterval(intervalSimulacion); // Detenemos la simulación
+
+    document.getElementById('viaje-ruta').textContent = 'No hay viajes en vivo';
+    document.getElementById('viaje-hora').textContent = 'Reserva un viaje para ver el seguimiento en tiempo real';
+    
+    // Resetear barra y porcentaje
+    document.getElementById('progress-fill-bar').style.width = '0%';
+    document.getElementById('progreso-porcentaje').textContent = '0% completado';
+    
+    // Ocultar botón de calificar si existía
+    const btnCalificar = document.getElementById('btn-calificar');
+    if (btnCalificar) btnCalificar.remove();
+
+    document.getElementById('trip-features').innerHTML = '<div class="feature-tag">No hay viajes activos</div>';
+    document.getElementById('conductor-nombre').textContent = '---';
+    document.getElementById('conductor-rating').innerHTML = '⭐ --';
+    document.getElementById('conductor-vehiculo').innerHTML = '---';
+    document.getElementById('origen-text').textContent = '---';
+    document.getElementById('destino-text').textContent = '---';
+    document.getElementById('stat-precio').querySelector('.trip-stat-value').textContent = '$--';
+    document.getElementById('stat-distancia').querySelector('.trip-stat-value').textContent = '-- km';
+    document.getElementById('stat-duracion').querySelector('.trip-stat-value').textContent = '-- min';
+    document.getElementById('map-ubicacion').textContent = 'Sin viajes activos';
+    
+    const carMarker = document.querySelector('.car-marker');
+    if (carMarker) carMarker.style.left = '10%'; // Devolver el carro al inicio
+}
 
     function contactarConductor() {
         if (viajeActual && viajeActual.driverName) {
