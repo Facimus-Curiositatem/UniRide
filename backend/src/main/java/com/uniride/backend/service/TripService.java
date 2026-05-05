@@ -139,29 +139,7 @@ public class TripService {
         return convertToResponse(saved);
     }
 
-    // ============ ESTE ES EL MÉTODO QUE DEBES TENER ============
-    @Scheduled(fixedDelay = 60000) // Cada 1 minuto
-    @Transactional
-    public void actualizarViajesExpirados() {
-        LocalDateTime ahora = LocalDateTime.now(ZoneId.of("America/Bogota"));
-        List<Trip> viajesPasados = tripRepository.findByEstadoAndDepartureBefore("ACTIVE", ahora);
-        
-        for (Trip trip : viajesPasados) {
-            // 1. Marcar viaje como COMPLETED
-            trip.setEstado("COMPLETED");
-            tripRepository.save(trip);
-            
-            // 2. Marcar TODAS las reservas como COMPLETED
-            List<Booking> reservas = bookingRepository.findByTripId(trip.getId());
-            for (Booking booking : reservas) {
-                if (booking.getStatus() != BookingStatus.COMPLETED && 
-                    booking.getStatus() != BookingStatus.CANCELLED) {
-                    booking.setStatus(BookingStatus.COMPLETED);
-                    bookingRepository.save(booking);
-                }
-            }
-        }
-    }
+
 
     private TripResponse convertToResponse(Trip trip) {
         User driver = trip.getDriver();
@@ -179,4 +157,13 @@ public class TripService {
             .estado(trip.getEstado())
             .build();
     }
+
+
+    @Transactional
+public void completeTrip(Long tripId) {
+    Trip trip = tripRepository.findById(tripId)
+        .orElseThrow(() -> new RuntimeException("Viaje no encontrado"));
+    trip.setEstado("COMPLETED");
+    tripRepository.save(trip);
+}
 }

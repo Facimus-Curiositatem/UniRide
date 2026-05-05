@@ -129,4 +129,20 @@ public class BookingService {
         }
         return responses;
     }
+
+    @Transactional
+public void completeBooking(Long bookingId, String email) {
+    Booking booking = bookingRepository.findById(bookingId)
+        .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+    
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+    if (!booking.getPassenger().getId().equals(user.getId())) {
+        throw new RuntimeException("No tienes permiso");
+    }
+    
+    booking.setStatus(BookingStatus.COMPLETED);
+    bookingRepository.save(booking);
+}
 }

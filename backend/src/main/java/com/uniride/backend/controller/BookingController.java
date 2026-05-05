@@ -78,4 +78,13 @@ public class BookingController {
         List<BookingResponse> bookings = bookingService.getBookingsForMyTrips(email);
         return ResponseEntity.ok(bookings);
     }
+
+    @PutMapping("/{bookingId}/complete")
+public ResponseEntity<?> completeBooking(@PathVariable Long bookingId, Authentication authentication) {
+    bookingService.completeBooking(bookingId, authentication.getName());
+    return ResponseEntity.ok().build();
+}
+
+
+
 }

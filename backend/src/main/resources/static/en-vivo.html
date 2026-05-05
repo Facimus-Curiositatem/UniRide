@@ -564,22 +564,18 @@ function agregarBotonCalificar() {
         });
     });
 
-async function enviarCalificacion() {
+
+    async function enviarCalificacion() {
     if (ratingSeleccionado === 0) {
         alert('Por favor selecciona una calificación (1 a 5 estrellas)');
-        return;
-    }
-    
-    if (!viajeActual || !viajeActual.id) { // Asegúrate de usar el ID del viaje
-        console.error('Error: No se encontró el ID del viaje', viajeActual);
-        alert('Error: No se pudo identificar el viaje');
         return;
     }
     
     const comentario = document.getElementById('review-comment').value;
     
     try {
-        const res = await fetch(`${API_BASE}/api/reviews`, {
+        // 1. Enviar la calificación
+        const resReview = await fetch(`${API_BASE}/api/reviews`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -592,25 +588,31 @@ async function enviarCalificacion() {
             })
         });
         
-       if (res.ok) {
-    alert('✅ ¡Gracias por calificar!');
-    
-    // 1. Marcar como calificado
-    localStorage.setItem(`calificado_${viajeActual.id}`, 'true');
-    
-    // 2. Limpiar el progreso guardado de este viaje
-    localStorage.removeItem(`progreso_viaje_${viajeActual.id}`);
-    
-    // 3. Quitar el botón de la pantalla manualmente para evitar clics dobles
-    const btn = document.getElementById('btn-calificar');
-    if (btn) btn.remove();
-
-    cerrarModalCalificacion();
-    
-    // 4. Volver a ejecutar la lógica de búsqueda
-    cargarViajeEnVivo(); 
-} else {
-            const data = await res.json();
+        if (resReview.ok) {
+            // 2. Marcar el TRIP como COMPLETED
+            await fetch(`${API_BASE}/api/trips/${viajeActual.tripId}/complete`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            // 3. Marcar el BOOKING como COMPLETED
+            await fetch(`${API_BASE}/api/bookings/${viajeActual.id}/complete`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            alert('✅ ¡Gracias por calificar!');
+            
+            localStorage.setItem(`calificado_${viajeActual.id}`, 'true');
+            localStorage.removeItem(`progreso_viaje_${viajeActual.id}`);
+            
+            const btn = document.getElementById('btn-calificar');
+            if (btn) btn.remove();
+            
+            cerrarModalCalificacion();
+            cargarViajeEnVivo();
+        } else {
+            const data = await resReview.json();
             alert(data.error || 'Error al enviar la calificación');
         }
     } catch(e) {

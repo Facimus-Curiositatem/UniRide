@@ -52,4 +52,10 @@ public class TripController {
             return ResponseEntity.badRequest().body(error);
         }
     }
+
+    @PutMapping("/{tripId}/complete")
+public ResponseEntity<?> completeTrip(@PathVariable Long tripId, Authentication authentication) {
+    tripService.completeTrip(tripId);
+    return ResponseEntity.ok().build();
+}
 }
