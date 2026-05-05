@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS bookings (
                                         trip_id BIGINT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
                                         passenger_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                                         status VARCHAR(20) NOT NULL,
-                                        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                                        review BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- =====================

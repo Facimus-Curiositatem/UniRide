@@ -67,12 +67,94 @@
         .stat-mini-number { font-size: 1.6rem; font-weight: 800; color: #f5a623; }
         .stat-mini-label { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
 
-        .rating-bars { margin: 1rem 0; }
-        .rating-bar-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; }
-        .rating-bar-label { width: 30px; color: #7a8fa6; }
-        .rating-bar-bg { flex: 1; height: 6px; background: #1e3a5a; border-radius: 3px; overflow: hidden; }
-        .rating-bar-fill { height: 100%; background: #f5a623; border-radius: 3px; }
-        .rating-bar-count { width: 30px; color: #5a7a99; text-align: right; }
+        .trip-history-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .trip-history-item:last-child {
+            border-bottom: none;
+        }
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .trip-route {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        .trip-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+        .status-COMPLETED {
+            background: rgba(99,153,34,0.15);
+            color: #97c459;
+        }
+        .status-CONFIRMED {
+            background: rgba(53,130,221,0.15);
+            color: #85b7eb;
+        }
+        .status-PENDING {
+            background: rgba(245,166,35,0.15);
+            color: #f5a623;
+        }
+        .status-CANCELLED {
+            background: rgba(212,83,126,0.15);
+            color: #ed93b1;
+        }
+        .trip-date {
+            font-size: 0.7rem;
+            color: #5a7a99;
+        }
+        .trip-details {
+            font-size: 0.75rem;
+            color: #5a7a99;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .trip-driver {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #7a8fa6;
+        }
+        .driver-rating {
+            color: #f5a623;
+            font-size: 0.7rem;
+        }
+        .empty-history {
+            text-align: center;
+            padding: 2rem;
+            color: #5a7a99;
+            font-size: 0.85rem;
+        }
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            background: rgba(255,107,107,0.1);
+            border-radius: 12px;
+        }
+        .debug-info {
+            font-size: 0.7rem;
+            color: #5a7a99;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            word-break: break-all;
+        }
 
         .review-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .review-item:last-child { border-bottom: none; }
@@ -84,10 +166,6 @@
         .review-text { font-size: 0.85rem; color: #a0b4c8; line-height: 1.4; margin-left: 3rem; }
 
         .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
-        .no-vehicle { text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem; }
-
-        /* ── FIX: nota de distribución aproximada ── */
-        .rating-note { font-size: 0.72rem; color: #3a5a7a; margin-top: 0.5rem; font-style: italic; }
 
         @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
     </style>
@@ -169,27 +247,15 @@
         </div>
 
         <div>
+            <!-- Historial de viajes del usuario -->
             <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="font-size: 1rem; margin-bottom: 1rem;">Calificación general</h3>
-                <!-- ── FIX: las barras solo se muestran si hay reseñas reales ── -->
-                <div id="rating-bars-container">
-                    <div class="rating-bars">
-                        <div class="rating-bar-item"><span class="rating-bar-label">5★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-5" style="width: 0%"></div></div><span class="rating-bar-count" id="count-5">0</span></div>
-                        <div class="rating-bar-item"><span class="rating-bar-label">4★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-4" style="width: 0%"></div></div><span class="rating-bar-count" id="count-4">0</span></div>
-                        <div class="rating-bar-item"><span class="rating-bar-label">3★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-3" style="width: 0%"></div></div><span class="rating-bar-count" id="count-3">0</span></div>
-                        <div class="rating-bar-item"><span class="rating-bar-label">2★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-2" style="width: 0%"></div></div><span class="rating-bar-count" id="count-2">0</span></div>
-                        <div class="rating-bar-item"><span class="rating-bar-label">1★</span><div class="rating-bar-bg"><div class="rating-bar-fill" id="bar-1" style="width: 0%"></div></div><span class="rating-bar-count" id="count-1">0</span></div>
-                    </div>
-                    <!-- ── FIX: nota visible solo cuando la distribución es estimada ── -->
-                    <p class="rating-note" id="rating-approx-note" style="display:none;">
-                        * Distribución estimada. Los datos exactos estarán disponibles próximamente.
-                    </p>
-                </div>
-                <div id="no-ratings-msg" style="display:none; text-align:center; padding:1.5rem; color:#5a7a99; font-size:0.85rem;">
-                    Aún no tienes calificaciones
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;">📋 Mis viajes</h3>
+                <div id="trips-history-list">
+                    <div style="text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem;">Cargando historial...</div>
                 </div>
             </div>
 
+            <!-- Reseñas recientes -->
             <div class="card">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;">Reseñas recientes</h3>
                 <div id="reviews-list">
@@ -201,7 +267,6 @@
 </main>
 
 <script>
-    // ── FIX: API_BASE centralizado con detección de entorno ──────────────────
     const API_BASE = window.location.hostname.includes('localhost')
         ? 'http://localhost:8080'
         : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
@@ -251,26 +316,8 @@
             const vehicleCard = document.getElementById('vehicle-card');
             if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
                 vehicleCard.style.display = 'block';
-
-                let vehiclePlate = null;
-                let vehicleColor = null;
-
-                try {
-                    const resUser = await fetch(`${API_BASE}/api/users/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (resUser.ok) {
-                        const userData = await resUser.json();
-                        vehiclePlate = userData.vehiclePlate;
-                        vehicleColor = userData.vehicleColor;
-                        if (vehiclePlate) localStorage.setItem('uniride_vehicle_plate', vehiclePlate);
-                        if (vehicleColor) localStorage.setItem('uniride_vehicle_color', vehicleColor);
-                    }
-                } catch(e) {
-                    vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
-                    vehicleColor = localStorage.getItem('uniride_vehicle_color');
-                }
-
+                let vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
+                let vehicleColor = localStorage.getItem('uniride_vehicle_color');
                 document.getElementById('vehicle-plate').textContent = vehiclePlate || 'No registrada';
                 document.getElementById('vehicle-color').textContent = vehicleColor || 'No registrado';
             } else {
@@ -280,37 +327,7 @@
             document.getElementById('stat-trips').textContent = viajesCompletados;
             document.getElementById('stat-earnings').textContent = `$${Math.round(dineroAhorrado).toLocaleString('es-CO')}`;
 
-            // ── FIX: solo mostrar barras si hay reseñas reales.
-            //         Si el backend devuelve la distribución real, usarla.
-            //         Si no, mostrar distribución estimada con nota aclaratoria.
-            //         Si no hay reseñas, mostrar mensaje vacío. ─────────────────
-            if (totalRatings > 0) {
-                document.getElementById('no-ratings-msg').style.display = 'none';
-                document.getElementById('rating-bars-container').style.display = 'block';
-
-                // Intentar usar distribución real del backend
-                const dist = stats.ratingDistribution;
-                const hayDistribucionReal = dist && typeof dist === 'object';
-
-                const distribucion = hayDistribucionReal
-                    ? dist
-                    : calcularDistribucionEstimada(rating, totalRatings);
-
-                [5, 4, 3, 2, 1].forEach(star => {
-                    const pct = distribucion[star] ?? 0;
-                    document.getElementById(`bar-${star}`).style.width = `${pct}%`;
-                    document.getElementById(`count-${star}`).textContent = Math.round(pct * totalRatings / 100);
-                });
-
-                // Mostrar nota solo si la distribución es estimada
-                document.getElementById('rating-approx-note').style.display =
-                    hayDistribucionReal ? 'none' : 'block';
-
-            } else {
-                document.getElementById('rating-bars-container').style.display = 'none';
-                document.getElementById('no-ratings-msg').style.display = 'block';
-            }
-
+            await cargarHistorialViajes();
             await cargarResenas();
 
         } catch (error) {
@@ -327,59 +344,127 @@
         }
     }
 
-    // ── FIX: renombrada a "Estimada" para dejar claro que es aproximada ──────
-    function calcularDistribucionEstimada(promedio, total) {
-        const distribucion = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-        if (total === 0) { distribucion[5] = 100; return distribucion; }
-        if (promedio >= 4.5) {
-            distribucion[5] = 80; distribucion[4] = 15; distribucion[3] = 5;
-        } else if (promedio >= 4.0) {
-            distribucion[5] = 50; distribucion[4] = 30; distribucion[3] = 15; distribucion[2] = 5;
-        } else if (promedio >= 3.0) {
-            distribucion[5] = 20; distribucion[4] = 30; distribucion[3] = 30; distribucion[2] = 15; distribucion[1] = 5;
-        } else {
-            distribucion[5] = 5; distribucion[4] = 10; distribucion[3] = 20; distribucion[2] = 30; distribucion[1] = 35;
+    async function cargarHistorialViajes() {
+        const container = document.getElementById('trips-history-list');
+        
+        try {
+            console.log('Intentando cargar historial desde:', `${API_BASE}/api/bookings/my-trips`);
+            console.log('Token:', token ? 'Presente' : 'No hay token');
+            
+            const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
+                method: 'GET',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('Respuesta status:', res.status);
+            console.log('Respuesta headers:', [...res.headers.entries()]);
+            
+            if (res.ok) {
+                const viajes = await res.json();
+                console.log('Viajes encontrados:', viajes);
+                
+                if (viajes.length > 0) {
+                    container.innerHTML = viajes.map(viaje => {
+                        const fecha = new Date(viaje.departure);
+                        const fechaStr = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
+                        const horaStr = fecha.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+                        
+                        const statusClass = `status-${viaje.status}`;
+                        let statusText = viaje.status;
+                        if (viaje.status === 'COMPLETED') statusText = 'Completado';
+                        else if (viaje.status === 'CONFIRMED') statusText = 'Confirmado';
+                        else if (viaje.status === 'PENDING') statusText = 'Pendiente';
+                        else if (viaje.status === 'CANCELLED') statusText = 'Cancelado';
+                        
+                        return `
+                            <div class="trip-history-item">
+                                <div class="trip-header">
+                                    <span class="trip-route">${viaje.origin || '?'} → ${viaje.destination || '?'}</span>
+                                    <span class="trip-status ${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="trip-details">
+                                    <span> ${fechaStr} - ${horaStr}</span>
+                                    <span> $${Number(viaje.price || 0).toLocaleString('es-CO')}</span>
+                                    <span> ${viaje.seats || 1} asiento${(viaje.seats || 1) !== 1 ? 's' : ''}</span>
+                                </div>
+                                <div class="trip-driver">
+                                    <span> Conductor: ${viaje.driverName || 'Conductor'}</span>
+                                    ${viaje.driverRating ? `<span class="driver-rating"> ${viaje.driverRating}</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<div class="empty-history">📭 Aún no has realizado ningún viaje.<br>¡Busca un viaje y comienza a compartir!</div>';
+                }
+            } else {
+                const errorText = await res.text();
+                console.error('Error response body:', errorText);
+                container.innerHTML = `
+                    <div class="error-message">
+                         Error ${res.status} al cargar historial<br>
+                        <small>${errorText || 'No se recibió mensaje de error'}</small>
+                        <div class="debug-info">
+                             Endpoint: ${API_BASE}/api/bookings/my-trips<br>
+                             Token: ${token ? '✓ Presente' : '✗ No hay token'}<br>
+                             Sugerencia: Verifica que el endpoint exista en tu backend
+                        </div>
+                    </div>
+                `;
+            }
+        } catch(e) {
+            console.error('Error cargando historial:', e);
+            container.innerHTML = `
+                <div class="error-message">
+                     Error de conexión: ${e.message}<br>
+                    <div class="debug-info">
+                         URL: ${API_BASE}/api/bookings/my-trips<br>
+                         Sugerencia: Verifica que el backend esté corriendo
+                    </div>
+                </div>
+            `;
         }
-        return distribucion;
     }
 
     async function cargarResenas() {
-    const reviewsContainer = document.getElementById('reviews-list');
-    
-    try {
-        // Obtener reseñas del usuario actual (donde él es el reviewed)
-        const res = await fetch(`${API_BASE}/api/reviews/my`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const reviewsContainer = document.getElementById('reviews-list');
         
-        if (res.ok) {
-            const reviews = await res.json();
-            if (reviews.length > 0) {
-                reviewsContainer.innerHTML = reviews.map(r => `
-                    <div class="review-item">
-                        <div class="review-header">
-                            <div class="review-avatar">${r.reviewerName?.charAt(0) || 'U'}</div>
-                            <div>
-                                <div class="review-name">${r.reviewerName || 'Usuario'}</div>
+        try {
+            const res = await fetch(`${API_BASE}/api/reviews/my`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                const reviews = await res.json();
+                if (reviews.length > 0) {
+                    reviewsContainer.innerHTML = reviews.map(r => `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-avatar">${r.reviewerName?.charAt(0) || 'U'}</div>
+                                <div>
+                                    <div class="review-name">${r.reviewerName || 'Usuario'}</div>
+                                </div>
+                                <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
                             </div>
-                            <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                            <div class="review-text">${r.comment || ''}</div>
                         </div>
-                        <div class="review-text">${r.comment || ''}</div>
-                    </div>
-                `).join('');
-                return;
+                    `).join('');
+                    return;
+                }
             }
+        } catch(e) {
+            console.warn('No se pudieron cargar reseñas:', e);
         }
-    } catch(e) {
-        console.warn('No se pudieron cargar reseñas:', e);
+        
+        reviewsContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
+                No hay reseñas aún. Completa viajes para recibir calificaciones.
+            </div>`;
     }
-    
-    // Si no hay reseñas o hay error
-    reviewsContainer.innerHTML = `
-        <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
-            No hay reseñas aún. Completa viajes para recibir calificaciones.
-        </div>`;
-}
+
     function logout() {
         localStorage.clear();
         window.location.href = 'index.html';
