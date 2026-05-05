@@ -67,6 +67,34 @@
         .stat-mini-number { font-size: 1.6rem; font-weight: 800; color: #f5a623; }
         .stat-mini-label { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
 
+        /* Filtros de estado */
+        .status-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            color: #7a8fa6;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: #f5a623;
+            color: #0d1f35;
+            border-color: #f5a623;
+        }
+        .filter-btn:hover:not(.active) {
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
         .trip-history-item {
             padding: 1rem 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -137,23 +165,6 @@
             padding: 2rem;
             color: #5a7a99;
             font-size: 0.85rem;
-        }
-        .error-message {
-            text-align: center;
-            padding: 2rem;
-            color: #ff6b6b;
-            font-size: 0.85rem;
-            background: rgba(255,107,107,0.1);
-            border-radius: 12px;
-        }
-        .debug-info {
-            font-size: 0.7rem;
-            color: #5a7a99;
-            margin-top: 1rem;
-            padding: 0.5rem;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            word-break: break-all;
         }
 
         .review-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -247,9 +258,18 @@
         </div>
 
         <div>
-            <!-- Historial de viajes del usuario -->
+            <!-- Historial de viajes del usuario con filtros -->
             <div class="card" style="margin-bottom: 1.5rem;">
-                <h3 style="font-size: 1rem; margin-bottom: 1rem;">📋 Mis viajes</h3>
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;"> Mis viajes</h3>
+                
+                <!-- Filtros por estado -->
+                <div class="status-filters">
+                    <button class="filter-btn active" data-status="all">Todos</button>
+                    <button class="filter-btn" data-status="PENDING">Pendientes</button>
+                    <button class="filter-btn" data-status="CONFIRMED">Confirmados</button>
+                    <button class="filter-btn" data-status="COMPLETED">Completados</button>
+                </div>
+                
                 <div id="trips-history-list">
                     <div style="text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem;">Cargando historial...</div>
                 </div>
@@ -279,6 +299,9 @@
     const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
     document.getElementById('profile-avatar').textContent = initials;
     document.getElementById('profile-name').textContent = userName;
+
+    let todosLosViajes = []; // Guardar todos los viajes para filtrar
+    let filtroActual = 'all';
 
     async function cargarPerfil() {
         try {
@@ -329,6 +352,9 @@
 
             await cargarHistorialViajes();
             await cargarResenas();
+            
+            // Configurar filtros
+            setupFilters();
 
         } catch (error) {
             console.error('Error cargando perfil:', error);
@@ -344,13 +370,62 @@
         }
     }
 
+    function getStatusText(status) {
+        switch(status) {
+            case 'COMPLETED': return 'Completado';
+            case 'CONFIRMED': return 'Confirmado';
+            case 'PENDING': return 'Pendiente';
+            default: return status;
+        }
+    }
+
+    function mostrarViajesFiltrados() {
+        const container = document.getElementById('trips-history-list');
+        
+        let viajesFiltrados = todosLosViajes;
+        if (filtroActual !== 'all') {
+            viajesFiltrados = todosLosViajes.filter(v => v.status === filtroActual);
+        }
+        
+        if (viajesFiltrados.length > 0) {
+            container.innerHTML = viajesFiltrados.map(viaje => {
+                const fecha = new Date(viaje.departure);
+                const fechaStr = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
+                const horaStr = fecha.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+                
+                const statusClass = `status-${viaje.status}`;
+                const statusText = getStatusText(viaje.status);
+                
+                return `
+                    <div class="trip-history-item">
+                        <div class="trip-header">
+                            <span class="trip-route">${viaje.origin || '?'} → ${viaje.destination || '?'}</span>
+                            <span class="trip-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="trip-details">
+                            <span> ${fechaStr} - ${horaStr}</span>
+                            <span> $${Number(viaje.price || 0).toLocaleString('es-CO')}</span>
+                            <span> ${viaje.seats || 1} asiento${(viaje.seats || 1) !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="trip-driver">
+                            <span> Conductor: ${viaje.driverName || 'Conductor'}</span>
+                            ${viaje.driverRating ? `<span class="driver-rating">⭐ ${viaje.driverRating}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            const mensaje = filtroActual === 'all' 
+                ? ' Aún no has realizado ningún viaje. ¡Busca un viaje y comienza a compartir!'
+                : ` No tienes viajes con estado "${getStatusText(filtroActual)}"`;
+            container.innerHTML = `<div class="empty-history">${mensaje}</div>`;
+        }
+    }
+
     async function cargarHistorialViajes() {
         const container = document.getElementById('trips-history-list');
         
         try {
-            console.log('Intentando cargar historial desde:', `${API_BASE}/api/bookings/my-trips`);
-            console.log('Token:', token ? 'Presente' : 'No hay token');
-            
             const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
                 method: 'GET',
                 headers: { 
@@ -359,74 +434,34 @@
                 }
             });
             
-            console.log('Respuesta status:', res.status);
-            console.log('Respuesta headers:', [...res.headers.entries()]);
-            
             if (res.ok) {
-                const viajes = await res.json();
-                console.log('Viajes encontrados:', viajes);
-                
-                if (viajes.length > 0) {
-                    container.innerHTML = viajes.map(viaje => {
-                        const fecha = new Date(viaje.departure);
-                        const fechaStr = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
-                        const horaStr = fecha.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-                        
-                        const statusClass = `status-${viaje.status}`;
-                        let statusText = viaje.status;
-                        if (viaje.status === 'COMPLETED') statusText = 'Completado';
-                        else if (viaje.status === 'CONFIRMED') statusText = 'Confirmado';
-                        else if (viaje.status === 'PENDING') statusText = 'Pendiente';
-                        else if (viaje.status === 'CANCELLED') statusText = 'Cancelado';
-                        
-                        return `
-                            <div class="trip-history-item">
-                                <div class="trip-header">
-                                    <span class="trip-route">${viaje.origin || '?'} → ${viaje.destination || '?'}</span>
-                                    <span class="trip-status ${statusClass}">${statusText}</span>
-                                </div>
-                                <div class="trip-details">
-                                    <span> ${fechaStr} - ${horaStr}</span>
-                                    <span> $${Number(viaje.price || 0).toLocaleString('es-CO')}</span>
-                                    <span> ${viaje.seats || 1} asiento${(viaje.seats || 1) !== 1 ? 's' : ''}</span>
-                                </div>
-                                <div class="trip-driver">
-                                    <span> Conductor: ${viaje.driverName || 'Conductor'}</span>
-                                    ${viaje.driverRating ? `<span class="driver-rating"> ${viaje.driverRating}</span>` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    container.innerHTML = '<div class="empty-history">📭 Aún no has realizado ningún viaje.<br>¡Busca un viaje y comienza a compartir!</div>';
-                }
+                todosLosViajes = await res.json();
+                console.log('Viajes encontrados:', todosLosViajes);
+                mostrarViajesFiltrados();
             } else {
                 const errorText = await res.text();
-                console.error('Error response body:', errorText);
-                container.innerHTML = `
-                    <div class="error-message">
-                         Error ${res.status} al cargar historial<br>
-                        <small>${errorText || 'No se recibió mensaje de error'}</small>
-                        <div class="debug-info">
-                             Endpoint: ${API_BASE}/api/bookings/my-trips<br>
-                             Token: ${token ? '✓ Presente' : '✗ No hay token'}<br>
-                             Sugerencia: Verifica que el endpoint exista en tu backend
-                        </div>
-                    </div>
-                `;
+                console.error('Error response:', errorText);
+                container.innerHTML = `<div class="empty-history">❌Error ${res.status} al cargar historial</div>`;
             }
         } catch(e) {
             console.error('Error cargando historial:', e);
-            container.innerHTML = `
-                <div class="error-message">
-                     Error de conexión: ${e.message}<br>
-                    <div class="debug-info">
-                         URL: ${API_BASE}/api/bookings/my-trips<br>
-                         Sugerencia: Verifica que el backend esté corriendo
-                    </div>
-                </div>
-            `;
+            container.innerHTML = '<div class="empty-history"> Error de conexión al cargar el historial</div>';
         }
+    }
+
+    function setupFilters() {
+        const filters = document.querySelectorAll('.filter-btn');
+        filters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Actualizar clase active
+                filters.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Actualizar filtro
+                filtroActual = btn.dataset.status;
+                mostrarViajesFiltrados();
+            });
+        });
     }
 
     async function cargarResenas() {
