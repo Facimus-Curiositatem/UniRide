@@ -43,8 +43,8 @@ public class User {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private UserRole rol;  
+    @Column(name = "role", nullable = false, length = 20)
+    private UserRole rol;
 
     @Column(name = "vehicle_plate", length = 10)
     private String vehiclePlate;

@@ -4,9 +4,7 @@ import java.time.ZoneId;
 import com.uniride.backend.dto.TripResponse;
 import com.uniride.backend.dto.TripSearchRequest;
 import com.uniride.backend.dto.UserStatsResponse;
-import com.uniride.backend.dto.CreateTripRequest;
-import com.uniride.backend.model.Booking;
-import com.uniride.backend.model.BookingStatus;
+import com.uniride.backend.model.Booking;  // ← IMPORTANTE: Agregar este import
 import com.uniride.backend.model.Trip;
 import com.uniride.backend.model.User;
 import com.uniride.backend.model.UserRole;
@@ -20,6 +18,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.uniride.backend.dto.CreateTripRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,22 +30,23 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final UserRepository userRepository;
-    private final BookingRepository bookingRepository;
+    private final BookingRepository bookingRepository;  // ← Necesitas este repositorio
 
     public List<TripResponse> getUpcomingTrips() {
-        List<Trip> trips = tripRepository.findByEstadoAndSeatsGreaterThanAndDepartureAfterOrderByDepartureAsc(
-            "ACTIVE", 0, LocalDateTime.now(ZoneId.of("America/Bogota"))
-        );
-        return trips.stream().map(this::convertToResponse).collect(Collectors.toList());
-    }
+    List<Trip> trips = tripRepository.findByEstadoAndSeatsGreaterThanAndDepartureAfterOrderByDepartureAsc(
+        "ACTIVE", 0, LocalDateTime.now()  // ← seats > 0, NO seats >= 0
+    );
+    return trips.stream().map(this::convertToResponse).collect(Collectors.toList());
+}
 
     public List<TripResponse> searchTrips(TripSearchRequest request) {
-        Specification<Trip> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            
+         Specification<Trip> spec = (root, query, cb) -> {
+         List<Predicate> predicates = new ArrayList<>();
+        
             predicates.add(cb.equal(root.get("estado"), "ACTIVE"));
-            predicates.add(cb.greaterThan(root.get("seats"), 0));
+            predicates.add(cb.greaterThan(root.get("seats"), 0));  // ← seats > 0
             predicates.add(cb.greaterThan(root.get("departure"), LocalDateTime.now(ZoneId.of("America/Bogota"))));
+
             
             if (request.getOrigin() != null && !request.getOrigin().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("origin")), 
@@ -75,55 +75,65 @@ public class TripService {
     }
 
     public UserStatsResponse getUserStats(String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
-        Specification<Trip> specDisponibles = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("estado"), "ACTIVE"));
-            predicates.add(cb.greaterThan(root.get("seats"), 0));
-            predicates.add(cb.greaterThan(root.get("departure"), LocalDateTime.now(ZoneId.of("America/Bogota"))));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-        
-        Long viajesDisponiblesLong = tripRepository.count(specDisponibles);
-        Integer viajesDisponibles = viajesDisponiblesLong.intValue();
-        
-        Specification<Booking> specCompletados = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("passenger").get("id"), user.getId()));
-            predicates.add(root.get("status").in("CONFIRMED", "COMPLETED"));
-            predicates.add(cb.lessThan(root.get("trip").get("departure"), LocalDateTime.now(ZoneId.of("America/Bogota"))));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-        
-        Long viajesCompletadosLong = bookingRepository.count(specCompletados);
-        Integer viajesCompletados = viajesCompletadosLong.intValue();
-        
-        Double dineroAhorrado = 0.0;
-        Double calificacion = user.getRating() != null ? user.getRating() : 0.0;
-        
-        return UserStatsResponse.builder()
-            .viajesDisponibles(viajesDisponibles)
-            .viajesCompletados(viajesCompletados)
-            .dineroAhorrado(dineroAhorrado)
-            .calificacion(calificacion)
-            .build();
-    }
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+    // ✅ Usar Specification para contar viajes disponibles
+    Specification<Trip> specDisponibles = (root, query, cb) -> {
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("estado"), "ACTIVE"));
+        predicates.add(cb.greaterThan(root.get("seats"), 0));
+        predicates.add(cb.greaterThan(root.get("departure"), LocalDateTime.now()));
+        return cb.and(predicates.toArray(new Predicate[0]));
+    };
+    
+    Long viajesDisponiblesLong = tripRepository.count(specDisponibles);
+    Integer viajesDisponibles = viajesDisponiblesLong.intValue();
+    
+    // ✅ Para viajes completados, también usa Specification si es necesario
+    Specification<Booking> specCompletados = (root, query, cb) -> {
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("passenger").get("id"), user.getId()));
+        predicates.add(root.get("status").in("CONFIRMED", "COMPLETED"));
+        predicates.add(cb.lessThan(root.get("trip").get("departure"), LocalDateTime.now())); // ← Filtro de fecha
+        return cb.and(predicates.toArray(new Predicate[0]));
+    };
+    
+    Long viajesCompletadosLong = bookingRepository.count(specCompletados);
+    Integer viajesCompletados = viajesCompletadosLong.intValue();
+    
+    // ✅ Dinero ahorrado
+    Double dineroAhorrado = bookingRepository.sumPriceByPassengerId(user.getId());
+    if (dineroAhorrado == null) dineroAhorrado = 0.0;
+    
+    // ✅ Calificación
+    Double calificacion = user.getRating() != null ? user.getRating() : 0.0;
+    
+    return UserStatsResponse.builder()
+        .viajesDisponibles(viajesDisponibles)
+        .viajesCompletados(viajesCompletados)
+        .dineroAhorrado(dineroAhorrado)
+        .calificacion(calificacion)
+        .build();
+}
 
     @Transactional
     public TripResponse createTrip(CreateTripRequest request, String email) {
+        // Buscar al conductor por email
         User driver = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
+        // Validar que el usuario puede publicar viajes (CONDUCTOR o AMBOS)
         if (driver.getRol() != UserRole.CONDUCTOR && driver.getRol() != UserRole.AMBOS) {
             throw new RuntimeException("No tienes permisos para publicar viajes. Debes ser CONDUCTOR o AMBOS.");
         }
         
+        // Validar que tenga datos del vehículo
         if (driver.getVehiclePlate() == null || driver.getVehiclePlate().isBlank()) {
             throw new RuntimeException("Debes registrar la placa de tu vehículo antes de publicar viajes");
         }
         
+        // Crear el viaje
         Trip trip = Trip.builder()
                 .driver(driver)
                 .origin(request.getOrigin())
@@ -140,6 +150,19 @@ public class TripService {
     }
 
 
+/*
+    @Scheduled(fixedDelay = 3600000)
+@Transactional
+public void actualizarViajesExpirados() {
+    LocalDateTime ahora = LocalDateTime.now();
+    List<Trip> viajesPasados = tripRepository.findByEstadoAndDepartureBefore("ACTIVE", ahora);
+    
+    for (Trip trip : viajesPasados) {
+        trip.setEstado("COMPLETED");
+        tripRepository.save(trip);
+        System.out.println("✅ Viaje " + trip.getId() + " marcado como COMPLETED (fecha pasada)");
+    }
+} */
 
     private TripResponse convertToResponse(Trip trip) {
         User driver = trip.getDriver();
@@ -158,12 +181,23 @@ public class TripService {
             .build();
     }
 
+    public List<TripResponse> getMyActiveTrips(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Trip> trips = tripRepository.findByDriverAndEstado(user, "ACTIVE");
+
+        return trips.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
-public void completeTrip(Long tripId) {
-    Trip trip = tripRepository.findById(tripId)
-        .orElseThrow(() -> new RuntimeException("Viaje no encontrado"));
-    trip.setEstado("COMPLETED");
-    tripRepository.save(trip);
-}
+    public void completeTrip(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("Viaje no encontrado"));
+        trip.setEstado("COMPLETED");
+        tripRepository.save(trip);
+    }
+
 }

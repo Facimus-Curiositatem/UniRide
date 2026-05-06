@@ -29,4 +29,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     List<Booking> findByPassengerId(Long passengerId);
 
     java.util.Optional<Booking> findById(Long id);
+
+    boolean existsByTripIdAndPassengerId(Long tripId, Long passengerId);
+
+    boolean existsByTripIdAndPassengerEmail(Long tripId, String email);
 }

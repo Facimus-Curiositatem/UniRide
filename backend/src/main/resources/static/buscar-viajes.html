@@ -164,6 +164,26 @@
         .confirm-btn-confirm:hover {
             background: #e09516;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #111;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
     </style>
 </head>
 <body>
@@ -269,8 +289,11 @@
     </div>
 </div>
 
+<div id="toast" class="toast hidden"></div>
+
 <script>
-    const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    //const API_BASE = 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    const API_BASE = 'http://localhost:8080';
     const token = localStorage.getItem('uniride_token');
     if (!token) window.location.href = 'index.html';
 
@@ -374,9 +397,7 @@
                         <span class="tag tag-seats">💺 ${t.seats} asiento${t.seats !== 1 ? 's' : ''}</span>
                         ${t.onlyWomen  ? '<span class="tag tag-women">👩 Solo mujeres</span>' : ''}
                     </div>
-                    <button class="btn-reservar" onclick="reservar(${t.id}, this)" ${sinCupos ? 'disabled' : ''}>
-                        ${sinCupos ? 'Sin cupos disponibles' : 'Reservar'}
-                    </button>
+                    <button class="btn-reservar" onclick="reservar(${t.id}, this)"${sinCupos ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''}>${sinCupos ? 'Sin cupos disponibles' : 'Reservar'} </button>
                 </div>`;
             }).join('');
 
@@ -412,48 +433,57 @@
     };
 
     async function reservar(tripId, btn) {
-    if (btn.disabled) return;
-    
-    const confirmado = await mostrarConfirmacion('¿Estás seguro de reservar este viaje?');
-    if (!confirmado) return;
-    
-    btn.disabled = true;
-    btn.textContent = 'Reservando...';
-    
-    try {
-        const res = await fetch(`${API_BASE}/api/bookings`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ tripId: tripId })
-        });
-        
-        if (res.ok) {
+        if (btn.disabled) return;
+
+        const confirmado = await mostrarConfirmacion('¿Estás seguro de reservar este viaje?');
+        if (!confirmado) return;
+
+        // 🟡 Estado: cargando
+        btn.disabled = true;
+        const textoOriginal = btn.textContent;
+        btn.textContent = 'Reservando...';
+
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ tripId })
+            });
+
+            if (!res.ok) {
+                let errorMsg = 'Error al reservar';
+                try {
+                    const error = await res.json();
+                    errorMsg = error.message || error.error || errorMsg;
+                } catch (e) {}
+                throw new Error(errorMsg);
+            }
+
             const data = await res.json();
-            alert(`✅ ¡Reserva exitosa! Viaje a ${data.destination || 'destino'}`);
-            btn.textContent = '✓ Reservado';
-            btn.style.background = '#3a7a3a';
+
+            // 🟠 Estado: pendiente (MEJOR UX QUE "Reservado")
+            btn.textContent = 'Por confirmar';
+            btn.style.background = '#f39c12';
             btn.disabled = true;
-            cargarViajes(); // Recargar para actualizar cupos
-        } else {
-            let errorMsg = 'Error al reservar';
-            try {
-                const error = await res.json();
-                errorMsg = error.message || error.error || errorMsg;
-            } catch(e) {}
-            alert(errorMsg);
+
+            showToast("⏳ Reserva enviada, esperando confirmación");
+
+            // 🔄 Recargar datos (sin bloquear UX)
+            cargarViajes();
+
+        } catch (e) {
+            console.error('Error en reserva:', e);
+
+            // 🔴 Restaurar estado original
             btn.disabled = false;
-            btn.textContent = 'Reservar';
+            btn.textContent = textoOriginal;
+
+            showToast(`❌ ${e.message || 'Error al reservar'}`, true);
         }
-    } catch(e) {
-        console.error('Error en reserva:', e);
-        alert('Error de conexión. Intenta nuevamente.');
-        btn.disabled = false;
-        btn.textContent = 'Reservar';
     }
-}
 
     function logout() {
         localStorage.removeItem('uniride_token');
@@ -467,6 +497,19 @@
     if (urlParams.get('destino')) document.getElementById('input-destino').value = urlParams.get('destino');
 
     cargarViajes();
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.background = isError ? '#e74c3c' : '#2ecc71';
+
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
 </script>
 </body>
 </html>

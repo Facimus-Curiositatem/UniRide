@@ -261,7 +261,7 @@
             <!-- Historial de viajes del usuario con filtros -->
             <div class="card" style="margin-bottom: 1.5rem;">
                 <h3 style="font-size: 1rem; margin-bottom: 1rem;"> Mis viajes</h3>
-                
+
                 <!-- Filtros por estado -->
                 <div class="status-filters">
                     <button class="filter-btn active" data-status="all">Todos</button>
@@ -269,7 +269,7 @@
                     <button class="filter-btn" data-status="CONFIRMED">Confirmados</button>
                     <button class="filter-btn" data-status="COMPLETED">Completados</button>
                 </div>
-                
+
                 <div id="trips-history-list">
                     <div style="text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem;">Cargando historial...</div>
                 </div>
@@ -352,7 +352,7 @@
 
             await cargarHistorialViajes();
             await cargarResenas();
-            
+
             // Configurar filtros
             setupFilters();
 
@@ -381,21 +381,21 @@
 
     function mostrarViajesFiltrados() {
         const container = document.getElementById('trips-history-list');
-        
+
         let viajesFiltrados = todosLosViajes;
         if (filtroActual !== 'all') {
             viajesFiltrados = todosLosViajes.filter(v => v.status === filtroActual);
         }
-        
+
         if (viajesFiltrados.length > 0) {
             container.innerHTML = viajesFiltrados.map(viaje => {
                 const fecha = new Date(viaje.departure);
                 const fechaStr = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
                 const horaStr = fecha.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
-                
+
                 const statusClass = `status-${viaje.status}`;
                 const statusText = getStatusText(viaje.status);
-                
+
                 return `
                     <div class="trip-history-item">
                         <div class="trip-header">
@@ -415,7 +415,7 @@
                 `;
             }).join('');
         } else {
-            const mensaje = filtroActual === 'all' 
+            const mensaje = filtroActual === 'all'
                 ? ' Aún no has realizado ningún viaje. ¡Busca un viaje y comienza a compartir!'
                 : ` No tienes viajes con estado "${getStatusText(filtroActual)}"`;
             container.innerHTML = `<div class="empty-history">${mensaje}</div>`;
@@ -424,16 +424,16 @@
 
     async function cargarHistorialViajes() {
         const container = document.getElementById('trips-history-list');
-        
+
         try {
             const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
                 method: 'GET',
-                headers: { 
+                headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (res.ok) {
                 todosLosViajes = await res.json();
                 console.log('Viajes encontrados:', todosLosViajes);
@@ -456,7 +456,7 @@
                 // Actualizar clase active
                 filters.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 // Actualizar filtro
                 filtroActual = btn.dataset.status;
                 mostrarViajesFiltrados();
@@ -466,12 +466,12 @@
 
     async function cargarResenas() {
         const reviewsContainer = document.getElementById('reviews-list');
-        
+
         try {
             const res = await fetch(`${API_BASE}/api/reviews/my`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            
+
             if (res.ok) {
                 const reviews = await res.json();
                 if (reviews.length > 0) {
@@ -493,7 +493,7 @@
         } catch(e) {
             console.warn('No se pudieron cargar reseñas:', e);
         }
-        
+
         reviewsContainer.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
                 No hay reseñas aún. Completa viajes para recibir calificaciones.

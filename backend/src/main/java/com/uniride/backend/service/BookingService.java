@@ -35,8 +35,19 @@ public class BookingService {
             throw new RuntimeException("No puedes reservar tu propio viaje");
         }
 
+        if (bookingRepository.existsByTripIdAndPassengerId(tripId, user.getId())) {
+            throw new RuntimeException("Ya tienes una reserva para este viaje");
+        }
+
         if (trip.getSeats() <= 0) {
             throw new RuntimeException("No hay asientos disponibles");
+        }
+
+        // ❌ Evitar que el mismo usuario reserve el mismo viaje varias veces
+        boolean alreadyBooked = bookingRepository.existsByTripIdAndPassengerEmail(tripId, email);
+
+        if (alreadyBooked) {
+            throw new RuntimeException("Ya tienes una reserva para este viaje");
         }
 
         Booking booking = Booking.builder()
@@ -131,18 +142,70 @@ public class BookingService {
     }
 
     @Transactional
-public void completeBooking(Long bookingId, String email) {
-    Booking booking = bookingRepository.findById(bookingId)
-        .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-    
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    
-    if (!booking.getPassenger().getId().equals(user.getId())) {
-        throw new RuntimeException("No tienes permiso");
+    public void completeBooking(Long bookingId, String email) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!booking.getPassenger().getId().equals(user.getId())) {
+            throw new RuntimeException("No tienes permiso");
+        }
+
+        booking.setStatus(BookingStatus.COMPLETED);
+        bookingRepository.save(booking);
     }
-    
-    booking.setStatus(BookingStatus.COMPLETED);
-    bookingRepository.save(booking);
-}
+
+
+
+    @Transactional
+    public BookingResponse rejectBooking(Long bookingId, String email) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        // validar que el usuario es el conductor
+        if (!booking.getTrip().getDriver().getEmail().equals(email)) {
+            throw new RuntimeException("No tienes permisos para rechazar esta reserva");
+        }
+
+        // validar estado
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new RuntimeException("La reserva ya fue procesada");
+        }
+
+        booking.setStatus(BookingStatus.REJECTED);
+
+        bookingRepository.save(booking);
+
+        return convertToResponse(booking);
+    }
+
+    private BookingResponse convertToResponse(Booking booking) {
+        var trip = booking.getTrip();
+        var driver = trip.getDriver();
+
+        return BookingResponse.builder()
+                .id(booking.getId())
+                .tripId(trip.getId())
+                .origin(trip.getOrigin())
+                .destination(trip.getDestination())
+                .departure(trip.getDeparture())
+                .seats(trip.getSeats())
+                .price(trip.getPrice())
+                .onlyWomen(trip.getOnlyWomen())
+                .passengerEmail(booking.getPassenger().getEmail())
+                .passengerName(booking.getPassenger().getFullName())
+                .status(booking.getStatus().name())
+                .createdAt(booking.getCreatedAt())
+                .driverName(driver != null ? driver.getFullName() : "Conductor")
+                .driverId(driver != null ? driver.getId() : null)
+                .driverRating(driver != null ? driver.getRating() : 5.0)
+                .driverTotalRatings(driver != null ? driver.getTotalRatings() : 0)
+                .vehiclePlate(driver != null ? driver.getVehiclePlate() : null)
+                .vehicleColor(driver != null ? driver.getVehicleColor() : null)
+                .build();
+    }
+
 }

@@ -79,12 +79,20 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
+
     @PutMapping("/{bookingId}/complete")
-public ResponseEntity<?> completeBooking(@PathVariable Long bookingId, Authentication authentication) {
-    bookingService.completeBooking(bookingId, authentication.getName());
-    return ResponseEntity.ok().build();
-}
+    public ResponseEntity<?> completeBooking(@PathVariable Long bookingId, Authentication authentication) {
+        bookingService.completeBooking(bookingId, authentication.getName());
+        return ResponseEntity.ok().build();
+    }
 
-
-
+    @PutMapping("/{bookingId}/reject")
+    public ResponseEntity<?> rejectBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+        BookingResponse response = bookingService.rejectBooking(bookingId, email);
+        return ResponseEntity.ok(response);
+    }
 }

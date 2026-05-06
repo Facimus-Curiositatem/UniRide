@@ -127,7 +127,7 @@
         <div class="form-group">
             <label>Teléfono <span class="required">*</span></label>
             <!-- ── FIX: tipo "tel" para activar teclado numérico en móviles ── -->
-            <input id="regPhone" type="tel" placeholder="3001234567" />
+            <input id="regPhone" type="tel" placeholder="3001234567" maxlength="10" pattern="3\d{9}" inputmode="numeric" required />
             <p class="hint">Formato: 3001234567</p>
         </div>
 
@@ -390,6 +390,14 @@
     });
 
     cargarEstadisticasGlobales();
+
+    const phoneInput = document.getElementById('regPhone');
+
+    phoneInput.addEventListener('input', () => {
+        /* elimina todo lo que no sea número y corta a 10 */
+        phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+
 </script>
 </body>
 </html>

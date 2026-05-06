@@ -69,6 +69,15 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        .btn-rechazar {
+            background: #f5a623;
+            color: white;
+        }
+
+        .btn-rechazar:hover:not(:disabled) {
+            background: #e09516;
+        }
+
         .map-placeholder { background: #0a1a2e; border-radius: 12px; height: 220px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
         .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,166,35,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(245,166,35,0.05) 1px, transparent 1px); background-size: 40px 40px; }
         .map-pin { position: absolute; width: 14px; height: 14px; background: #f5a623; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 12px rgba(245,166,35,0.6); }
@@ -233,18 +242,22 @@
                 lista.innerHTML = '<div class="empty">No hay reservas pendientes</div>';
                 return;
             }
-            
+
             lista.innerHTML = reservas.map(r => `
-                <div class="trip-item">
-                    <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
-                    <div class="trip-info">
-                        <div class="trip-name">${r.passengerName || 'Pasajero'} (${r.passengerEmail})</div>
-                        <div class="trip-route"> ${r.origin} → ${r.destination}</div>
-                        <div class="trip-route" style="font-size: 0.7rem;"> ${new Date(r.createdAt).toLocaleDateString()} ·  $${Number(r.price).toLocaleString('es-CO')}</div>
-                    </div>
-                    <button class="btn-confirmar" onclick="confirmarReserva(${r.id}, this)"> Confirmar</button>
-                </div>
-            `).join('');
+    <div class="trip-item">
+        <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
+        <div class="trip-info">
+            <div class="trip-name">${r.passengerName || 'Pasajero'} (${r.passengerEmail})</div>
+            <div class="trip-route"> ${r.origin} → ${r.destination}</div>
+            <div class="trip-route" style="font-size: 0.7rem;">
+                ${new Date(r.createdAt).toLocaleDateString()} · $${Number(r.price).toLocaleString('es-CO')}
+            </div>
+        </div>
+
+        <button class="btn-confirmar" onclick="confirmarReserva(${r.id}, this)">Aceptar</button>
+        <button class="btn-rechazar" onclick="rechazarReserva(${r.id}, this)">Rechazar</button>
+    </div>
+`).join('');
             
         } catch(e) {
             console.error('Error cargando reservas:', e);
@@ -255,28 +268,29 @@
     async function confirmarReserva(bookingId, btn) {
         btn.disabled = true;
         btn.textContent = '⏳';
-        
+
         try {
             const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            
+
             if (res.ok) {
-                alert(' ¡Reserva confirmada exitosamente!');
+                const data = await res.json();
+
+                showToast(`✅ Aceptaste a ${data.passengerName}`);
+
                 cargarReservasPendientes();
                 cargarEstadisticas();
             } else {
-                const error = await res.json().catch(() => ({}));
-                alert(error.message || ' Error al confirmar');
+                showToast("Error al confirmar");
                 btn.disabled = false;
-                btn.textContent = ' Confirmar';
+                btn.textContent = 'Aceptar';
             }
         } catch(e) {
-            console.error('Error:', e);
-            alert(' Error de conexión');
+            showToast("Error de conexión");
             btn.disabled = false;
-            btn.textContent = ' Confirmar';
+            btn.textContent = 'Aceptar';
         }
     }
 
@@ -372,6 +386,35 @@
             cargarEstadisticas(),
             cargarReservasPendientes()
         ]);
+    }
+
+    async function rechazarReserva(bookingId, btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳';
+
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/reject`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+
+                showToast(`❌ Rechazaste a ${data.passengerName}`);
+
+                cargarReservasPendientes();
+                cargarEstadisticas();
+            } else {
+                showToast("Error al rechazar");
+                btn.disabled = false;
+                btn.textContent = 'Rechazar';
+            }
+        } catch (e) {
+            showToast("Error de conexión");
+            btn.disabled = false;
+            btn.textContent = 'Rechazar';
+        }
     }
 
     cargarDatos();

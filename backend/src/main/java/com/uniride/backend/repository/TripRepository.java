@@ -1,6 +1,7 @@
 package com.uniride.backend.repository;  // ← Esto debe ser repository, NO service
 
 import com.uniride.backend.model.Trip;
+import com.uniride.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -13,25 +14,32 @@ import java.util.List;
 
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long>, JpaSpecificationExecutor<Trip> {
-    
+
     // Obtener viajes próximos
     List<Trip> findByEstadoAndSeatsGreaterThanAndDepartureAfterOrderByDepartureAsc(
-        String estado, Integer seats, LocalDateTime departure
+            String estado, Integer seats, LocalDateTime departure
     );
-    
-    // ✅ MÉTODO PARA CONTAR VIAJES DISPONIBLES (CORREGIDO)
+
+    // ✅ MÉTODO PARA CONTAR VIAJES DISPONIBLES
     @Query("SELECT COUNT(t) FROM Trip t WHERE t.estado = :estado AND t.seats > :seats AND t.departure > :departure")
     Integer countByEstadoAndSeatsGreaterThanAndDepartureAfter(
-        @Param("estado") String estado, 
-        @Param("seats") Integer seats, 
-        @Param("departure") LocalDateTime departure
+            @Param("estado") String estado,
+            @Param("seats") Integer seats,
+            @Param("departure") LocalDateTime departure
     );
-    
+
     // Contar viajes por conductor
     Integer countByDriverId(Long driverId);
-    
+
     // Método adicional para encontrar viajes por estado y fecha
     List<Trip> findByEstadoAndDepartureBefore(String estado, LocalDateTime departure);
 
+    // Ya lo tienes 👍
     List<Trip> findByDriverId(Long driverId);
+
+    // 🔥 YA LO TIENES (perfecto)
+    List<Trip> findByDriverAndEstado(User driver, String estado);
+
+    // 🆕 AGREGA ESTE (IMPORTANTE)
+    List<Trip> findByDriver(User driver);
 }
