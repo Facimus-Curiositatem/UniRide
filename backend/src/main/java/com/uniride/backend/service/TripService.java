@@ -200,4 +200,15 @@ public void actualizarViajesExpirados() {
         tripRepository.save(trip);
     }
 
+    public List<TripResponse> getTripsByDriver(String email) {
+
+        User driver = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Trip> trips = tripRepository.findByDriver(driver);
+
+        return trips.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
 }

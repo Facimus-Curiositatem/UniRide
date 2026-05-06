@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>UniRide – Mi Perfil</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
@@ -179,6 +180,75 @@
         .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
 
         @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
+
+        .trip-expanded {
+            width: 100%;
+            max-width: 720px;
+            padding: 1.8rem;
+        }
+
+        .trip-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .trip-title {
+            color: white;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .trip-status {
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .trip-status.confirmed {
+            background: rgba(46,204,113,.15);
+            color: #2ecc71;
+        }
+
+        .trip-line {
+            width: 1px;
+            height: 18px;
+            background: rgba(255,255,255,.08);
+            margin-left: 4px;
+        }
+
+        .trip-passengers {
+            margin-top: 1.4rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .trip-passengers-title {
+            color: #f5a623;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .passenger-item {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: .9rem;
+        }
+
+        .passenger-item strong {
+            color: white;
+            display: block;
+        }
+
+        .passenger-sub {
+            font-size: .8rem;
+            color: #5a7a99;
+        }
     </style>
 </head>
 <body>
@@ -283,6 +353,10 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+        <div id="my-trips-container"></div>
     </div>
 </main>
 
@@ -505,7 +579,111 @@
         window.location.href = 'index.html';
     }
 
+    async function cargarMisViajes() {
+
+        try {
+
+            const res = await fetch(`${API_BASE}/api/trips/driver-trips`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const trips = await res.json();
+
+            renderMisViajes(trips);
+
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    function renderMisViajes(trips) {
+
+        const container = document.getElementById("my-trips-container");
+
+        if (!trips.length) {
+            container.innerHTML = `
+            <div class="card">
+                No has publicado viajes todavía
+            </div>
+        `;
+            return;
+        }
+
+        container.innerHTML = trips.map(trip => `
+
+        <div class="card" style="margin-top:1.5rem;">
+            <div class="preview-card trip-expanded">
+                <div class="trip-top">
+                    <div>
+                        <div class="preview-label">
+                            Tu viaje
+                        </div>
+                        <h3 class="trip-title">
+                            ${trip.origin} → ${trip.destination}
+                        </h3>
+                    </div>
+                    <span class="trip-status confirmed">
+                        ${trip.estado}
+                    </span>
+                </div>
+                <div class="preview-route">
+                    <div class="preview-stop">
+                        <div class="stop-dot gray"></div>
+                        <span style="color:#7a8fa6;">
+                            ${trip.origin}
+                        </span>
+                    </div>
+                    <div class="trip-line"></div>
+                    <div class="preview-stop">
+                        <div class="stop-dot yellow"></div>
+                        <span style="color:white;font-weight:600;">
+                            ${trip.destination}
+                        </span>
+                    </div>
+
+                </div>
+                <div class="preview-footer">
+                    <div style="display:flex;flex-direction:column;gap:.35rem;">
+
+                        <div class="preview-meta">
+                            ${formatDate(trip.departure)}
+                        </div>
+                        <div class="preview-meta">
+                            👥 ${trip.seats} cupos
+                        </div>
+
+                    </div>
+                    <div>
+                        <div class="preview-price">
+                            $${trip.price}
+                        </div>
+                        <div class="preview-price-label">
+                            por persona
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    `).join("");
+    }
+
+    function formatDate(dateString) {
+
+        const date = new Date(dateString);
+
+        return date.toLocaleString('es-CO', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
     cargarPerfil();
+    cargarMisViajes();
 </script>
 </body>
 </html>

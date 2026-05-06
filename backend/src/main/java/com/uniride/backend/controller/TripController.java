@@ -42,7 +42,7 @@ public class TripController {
     @GetMapping("/my-trips")
     public ResponseEntity<List<TripResponse>> getMyTrips(Authentication authentication) {
         String email = authentication.getName();
-        return ResponseEntity.ok(tripService.getMyActiveTrips(email));
+        return ResponseEntity.ok(tripService.getTripsByDriver(email));
     }
     
     // ✅ NUEVO ENDPOINT: Crear viaje (POST /api/trips)
@@ -63,5 +63,15 @@ public class TripController {
     public ResponseEntity<?> completeTrip(@PathVariable Long tripId, Authentication authentication) {
         tripService.completeTrip(tripId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/driver-trips")
+    public ResponseEntity<List<TripResponse>> getDriverTrips(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return ResponseEntity.ok(
+                tripService.getTripsByDriver(email)
+        );
     }
 }
