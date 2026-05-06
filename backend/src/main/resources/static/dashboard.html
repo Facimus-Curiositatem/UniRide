@@ -49,33 +49,39 @@
         .trip-name { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 0.2rem; }
         .trip-route { font-size: 0.78rem; color: #5a7a99; }
         .trip-price { font-size: 0.95rem; font-weight: 700; color: #f5a623; white-space: nowrap; }
-        .btn-confirmar {
-            background: #f5a623;
+
+        .btn {
             border: none;
             padding: 0.4rem 1rem;
             border-radius: 8px;
             cursor: pointer;
-            color: #0d1f35;
             font-weight: 700;
             font-size: 0.8rem;
             transition: background 0.2s;
             font-family: 'Inter', sans-serif;
             white-space: nowrap;
         }
+        .btn-confirmar {
+            background: #f5a623;
+            color: #0d1f35;
+        }
+
         .btn-confirmar:hover:not(:disabled) {
             background: #e09516;
         }
-        .btn-confirmar:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+
         .btn-rechazar {
             background: #f5a623;
-            color: white;
+            color: #0d1f35; /* 👈 aquí estaba uno de los problemas */
         }
 
         .btn-rechazar:hover:not(:disabled) {
             background: #e09516;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .map-placeholder { background: #0a1a2e; border-radius: 12px; height: 220px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
@@ -88,6 +94,78 @@
         .map-label { position: absolute; bottom: 1rem; left: 1rem; font-size: 0.75rem; color: #5a7a99; }
         .loading { text-align: center; color: #5a7a99; padding: 2rem; }
         .empty { text-align: center; color: #5a7a99; padding: 2rem; }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .modal-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .confirm-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            width: 280px;
+            z-index: 999;
+            animation: slideUp 0.25s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .confirm-popup p {
+            margin: 0 0 0.8rem 0;
+            font-size: 0.9rem;
+            color: #0d1f35;
+        }
+
+        .popup-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -184,6 +262,15 @@
             <div id="trips-list"><div class="loading">Cargando viajes...</div></div>
         </div>
 
+        <div id="confirmPopup" class="confirm-popup hidden">
+            <p id="confirmPopupText"></p>
+
+            <div class="popup-actions">
+                <button class="btn btn-confirmar" id="popupYes">Sí</button>
+                <button class="btn btn-rechazar" id="popupNo">Cancelar</button>
+            </div>
+        </div>
+
         <!-- Mapa -->
         <div class="card">
             <div class="card-header"><h2>Mapa en vivo</h2></div>
@@ -225,19 +312,19 @@
             document.getElementById('reservas-card').style.display = 'none';
             return;
         }
-        
+
         document.getElementById('reservas-card').style.display = 'block';
-        
+
         try {
             const res = await fetch(`${API_BASE}/api/bookings/my-driver-bookings`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {'Authorization': `Bearer ${token}`}
             });
-            
+
             if (!res.ok) throw new Error();
             const reservas = await res.json();
-            
+
             const lista = document.getElementById('reservas-list');
-            
+
             if (reservas.length === 0) {
                 lista.innerHTML = '<div class="empty">No hay reservas pendientes</div>';
                 return;
@@ -254,44 +341,72 @@
             </div>
         </div>
 
-        <button class="btn-confirmar" onclick="confirmarReserva(${r.id}, this)">Aceptar</button>
-        <button class="btn-rechazar" onclick="rechazarReserva(${r.id}, this)">Rechazar</button>
-    </div>
+        <button class="btn btn-confirmar" onclick="confirmarReserva(${r.id}, this)">
+        Aceptar
+        </button>
+
+        <button class="btn btn-rechazar" onclick="rechazarReserva(${r.id}, this)">
+            Rechazar
+        </button>
+            </div>
 `).join('');
-            
-        } catch(e) {
+
+        } catch (e) {
             console.error('Error cargando reservas:', e);
             document.getElementById('reservas-list').innerHTML = '<div class="empty">Error al cargar reservas</div>';
         }
     }
 
     async function confirmarReserva(bookingId, btn) {
-        btn.disabled = true;
-        btn.textContent = '⏳';
 
-        try {
-            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+        showConfirmPopup("¿Aceptar esta reserva?", async (ok) => {
+            if (!ok) return;
 
-            if (res.ok) {
-                const data = await res.json();
+            btn.disabled = true;
+            btn.textContent = '⏳';
 
-                showToast(`✅ Aceptaste a ${data.passengerName}`);
+            try {
+                const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-                cargarReservasPendientes();
-                cargarEstadisticas();
-            } else {
-                showToast("Error al confirmar");
-                btn.disabled = false;
-                btn.textContent = 'Aceptar';
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`✅ Aceptaste a ${data.passengerName}`);
+                    cargarReservasPendientes();
+                    cargarEstadisticas();
+                }
+            } catch(e) {
+                showToast("Error de conexión");
             }
-        } catch(e) {
-            showToast("Error de conexión");
-            btn.disabled = false;
-            btn.textContent = 'Aceptar';
-        }
+        });
+    }
+
+    async function rechazarReserva(bookingId, btn) {
+
+        showConfirmPopup("¿Rechazar esta reserva?", async (ok) => {
+            if (!ok) return;
+
+            btn.disabled = true;
+            btn.textContent = '⏳';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/reject`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`❌ Rechazaste a ${data.passengerName}`);
+                    cargarReservasPendientes();
+                    cargarEstadisticas();
+                }
+            } catch (e) {
+                showToast("Error de conexión");
+            }
+        });
     }
 
     async function cargarViajes() {
@@ -320,7 +435,7 @@
             lista.innerHTML = tripsArray.slice(0, 4).map((t) => {
                 const iniciales = t.driverName?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U';
                 const hora = t.departure
-                    ? new Date(t.departure).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                    ? new Date(t.departure).toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'})
                     : '--:--';
 
                 return `
@@ -347,7 +462,7 @@
     async function cargarEstadisticas() {
         try {
             const res = await fetch(`${API_BASE}/api/trips/stats`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {'Authorization': `Bearer ${token}`}
             });
 
             if (!res.ok) throw new Error();
@@ -388,34 +503,32 @@
         ]);
     }
 
-    async function rechazarReserva(bookingId, btn) {
-        btn.disabled = true;
-        btn.textContent = '⏳';
+    let popupCallback = null;
 
-        try {
-            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/reject`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+    function showConfirmPopup(message, callback) {
+        const popup = document.getElementById("confirmPopup");
+        const text = document.getElementById("confirmPopupText");
 
-            if (res.ok) {
-                const data = await res.json();
+        text.textContent = message;
+        popupCallback = callback;
 
-                showToast(`❌ Rechazaste a ${data.passengerName}`);
-
-                cargarReservasPendientes();
-                cargarEstadisticas();
-            } else {
-                showToast("Error al rechazar");
-                btn.disabled = false;
-                btn.textContent = 'Rechazar';
-            }
-        } catch (e) {
-            showToast("Error de conexión");
-            btn.disabled = false;
-            btn.textContent = 'Rechazar';
-        }
+        popup.classList.remove("hidden");
     }
+
+    document.getElementById("popupYes").onclick = () => {
+        if (popupCallback) popupCallback(true);
+        closePopup();
+    };
+
+    document.getElementById("popupNo").onclick = () => {
+        if (popupCallback) popupCallback(false);
+        closePopup();
+    };
+
+    function closePopup() {
+        document.getElementById("confirmPopup").classList.add("hidden");
+    }
+
 
     cargarDatos();
 </script>
