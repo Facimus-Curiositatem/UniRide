@@ -1,20 +1,6 @@
-# Primera etapa: Compilar el JAR
-FROM openjdk:17-jdk-slim AS builder
-
-# Instalar Maven
-RUN apt-get update && apt-get install -y maven
-
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-COPY backend/pom.xml .
-COPY backend/src ./src
-
-# Compilar el proyecto
-RUN mvn clean package -DskipTests
-
-# Segunda etapa: Ejecutar el JAR
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=builder /app/target/backend-3.3.5.jar app.jar
-
+COPY backend .
+RUN ./mvnw clean package -DskipTests
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "target/backend-3.3.5.jar"]
