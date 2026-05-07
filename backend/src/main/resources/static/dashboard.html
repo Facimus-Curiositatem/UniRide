@@ -291,7 +291,7 @@
 <script>
     const API_BASE = window.location.hostname.includes('localhost')
         ? 'http://localhost:8080'
-        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+        : window.location.origin;  // ← Esto es mejor, usa la URL actual
 
     const token = localStorage.getItem('uniride_token');
     const userName = localStorage.getItem('uniride_name') || localStorage.getItem('uniride_email')?.split('@')[0] || 'Usuario';
@@ -300,12 +300,197 @@
 
     document.getElementById('user-name').textContent = userName;
 
+    // Fecha actual
     const now = new Date();
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     document.getElementById('current-date').textContent = `${dias[now.getDay()]}, ${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()}`;
 
-    // ========== FUNCIONALIDAD 2: CONFIRMAR RESERVAS ==========
+    // ========== FUNCIÓN TOAST (NOTIFICACIONES) ==========
+    function showToast(mensaje, esError = false) {
+        let toast = document.getElementById('custom-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'custom-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #2ecc71;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                z-index: 1000;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.3s ease;
+                pointer-events: none;
+                font-family: 'Inter', sans-serif;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(toast);
+        }
+        
+        toast.style.background = esError ? '#e74c3c' : '#2ecc71';
+        toast.textContent = mensaje;
+        
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+        }, 3000);
+    }
+
+    // ========== POPUP DE CONFIRMACIÓN ==========
+    let popupCallback = null;
+    let popupResolve = null;
+
+    function showConfirmPopup(message) {
+        return new Promise((resolve) => {
+            const popup = document.getElementById("confirmPopup");
+            const text = document.getElementById("confirmPopupText");
+            
+            text.textContent = message;
+            popupResolve = resolve;
+            popup.classList.remove("hidden");
+        });
+    }
+
+    function closePopup() {
+        const popup = document.getElementById("confirmPopup");
+        popup.classList.add("hidden");
+        if (popupResolve) {
+            popupResolve(false);
+            popupResolve = null;
+        }
+    }
+
+    // Eventos del popup
+    document.getElementById("popupYes").onclick = () => {
+        const popup = document.getElementById("confirmPopup");
+        popup.classList.add("hidden");
+        if (popupResolve) {
+            popupResolve(true);
+            popupResolve = null;
+        }
+    };
+
+    document.getElementById("popupNo").onclick = () => {
+        const popup = document.getElementById("confirmPopup");
+        popup.classList.add("hidden");
+        if (popupResolve) {
+            popupResolve(false);
+            popupResolve = null;
+        }
+    };
+
+    // Cerrar popup si se hace clic fuera
+    document.getElementById("confirmPopup")?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById("confirmPopup")) {
+            closePopup();
+        }
+    });
+
+    // ========== CONFIRMAR RESERVA ==========
+    async function confirmarReserva(bookingId, btn) {
+        // Guardar estado original del botón
+        const textoOriginal = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = ' Aceptando...';
+        
+        const confirmado = await showConfirmPopup("¿Aceptar esta reserva?");
+        if (!confirmado) {
+            // Restaurar botón si cancela
+            btn.disabled = false;
+            btn.innerHTML = textoOriginal;
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                showToast(` Reserva aceptada: ${data.passengerName || 'Pasajero'}`, false);
+                // Recargar listas
+                await cargarReservasPendientes();
+                await cargarEstadisticas();
+                await cargarViajes();
+            } else {
+                let errorMsg = 'Error al aceptar reserva';
+                try {
+                    const error = await res.json();
+                    errorMsg = error.message || error.error || errorMsg;
+                } catch(e) {}
+                showToast(`❌ ${errorMsg}`, true);
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showToast(`❌ Error de conexión con el servidor`, true);
+            btn.disabled = false;
+            btn.innerHTML = textoOriginal;
+        }
+    }
+
+    // ========== RECHAZAR RESERVA ==========
+    async function rechazarReserva(bookingId, btn) {
+        const textoOriginal = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Rechazando...';
+        
+        const confirmado = await showConfirmPopup("¿Rechazar esta reserva?");
+        if (!confirmado) {
+            btn.disabled = false;
+            btn.innerHTML = textoOriginal;
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/reject`, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                showToast(`Reserva rechazada: ${data.passengerName || 'Pasajero'}`, false);
+                await cargarReservasPendientes();
+                await cargarEstadisticas();
+                await cargarViajes();
+            } else {
+                let errorMsg = 'Error al rechazar reserva';
+                try {
+                    const error = await res.json();
+                    errorMsg = error.message || error.error || errorMsg;
+                } catch(e) {}
+                showToast(`❌ ${errorMsg}`, true);
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
+        } catch(e) {
+            console.error('Error:', e);
+            showToast(`❌ Error de conexión con el servidor`, true);
+            btn.disabled = false;
+            btn.innerHTML = textoOriginal;
+        }
+    }
+
+    // ========== CARGAR RESERVAS PENDIENTES ==========
     async function cargarReservasPendientes() {
         const userRole = localStorage.getItem('uniride_rol');
         if (userRole !== 'CONDUCTOR' && userRole !== 'AMBOS') {
@@ -325,31 +510,25 @@
 
             const lista = document.getElementById('reservas-list');
 
-            if (reservas.length === 0) {
+            if (!reservas.length) {
                 lista.innerHTML = '<div class="empty">No hay reservas pendientes</div>';
                 return;
             }
 
             lista.innerHTML = reservas.map(r => `
-    <div class="trip-item">
-        <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
-        <div class="trip-info">
-            <div class="trip-name">${r.passengerName || 'Pasajero'} (${r.passengerEmail})</div>
-            <div class="trip-route"> ${r.origin} → ${r.destination}</div>
-            <div class="trip-route" style="font-size: 0.7rem;">
-                ${new Date(r.createdAt).toLocaleDateString()} · $${Number(r.price).toLocaleString('es-CO')}
-            </div>
-        </div>
-
-        <button class="btn btn-confirmar" onclick="confirmarReserva(${r.id}, this)">
-        Aceptar
-        </button>
-
-        <button class="btn btn-rechazar" onclick="rechazarReserva(${r.id}, this)">
-            Rechazar
-        </button>
-            </div>
-`).join('');
+                <div class="trip-item">
+                    <div class="trip-avatar">${r.passengerName?.charAt(0) || 'P'}</div>
+                    <div class="trip-info">
+                        <div class="trip-name">${r.passengerName || 'Pasajero'} (${r.passengerEmail || ''})</div>
+                        <div class="trip-route"> ${r.origin} → ${r.destination}</div>
+                        <div class="trip-route" style="font-size: 0.7rem;">
+                            ${new Date(r.createdAt).toLocaleDateString()} · $${Number(r.price).toLocaleString('es-CO')}
+                        </div>
+                    </div>
+                    <button class="btn btn-confirmar" onclick="confirmarReserva(${r.id}, this)"> Aceptar</button>
+                    <button class="btn btn-rechazar" onclick="rechazarReserva(${r.id}, this)"> Rechazar</button>
+                </div>
+            `).join('');
 
         } catch (e) {
             console.error('Error cargando reservas:', e);
@@ -357,58 +536,7 @@
         }
     }
 
-    async function confirmarReserva(bookingId, btn) {
-
-        showConfirmPopup("¿Aceptar esta reserva?", async (ok) => {
-            if (!ok) return;
-
-            btn.disabled = true;
-            btn.textContent = '⏳';
-
-            try {
-                const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/confirm`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    showToast(`✅ Aceptaste a ${data.passengerName}`);
-                    cargarReservasPendientes();
-                    cargarEstadisticas();
-                }
-            } catch(e) {
-                showToast("Error de conexión");
-            }
-        });
-    }
-
-    async function rechazarReserva(bookingId, btn) {
-
-        showConfirmPopup("¿Rechazar esta reserva?", async (ok) => {
-            if (!ok) return;
-
-            btn.disabled = true;
-            btn.textContent = '⏳';
-
-            try {
-                const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/reject`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    showToast(`❌ Rechazaste a ${data.passengerName}`);
-                    cargarReservasPendientes();
-                    cargarEstadisticas();
-                }
-            } catch (e) {
-                showToast("Error de conexión");
-            }
-        });
-    }
-
+    // ========== CARGAR VIAJES ==========
     async function cargarViajes() {
         try {
             const res = await fetch(`${API_BASE}/api/trips/search`, {
@@ -429,6 +557,7 @@
 
             if (tripsArray.length === 0) {
                 lista.innerHTML = '<div class="empty">No hay viajes disponibles</div>';
+                document.getElementById('stat-disponibles').textContent = '0';
                 return;
             }
 
@@ -439,17 +568,16 @@
                     : '--:--';
 
                 return `
-                <div class="trip-item">
-                    <div class="trip-avatar">${iniciales}</div>
-                    <div class="trip-info">
-                        <div class="trip-name">${t.driverName || 'Conductor'}</div>
-                        <div class="trip-route">${t.origin || '?'} → ${t.destination || '?'} · ${hora}</div>
-                    </div>
-                    <div class="trip-price">$${Number(t.price).toLocaleString('es-CO')}</div>
-                </div>`;
+                    <div class="trip-item">
+                        <div class="trip-avatar">${iniciales}</div>
+                        <div class="trip-info">
+                            <div class="trip-name">${t.driverName || 'Conductor'}</div>
+                            <div class="trip-route">${t.origin || '?'} → ${t.destination || '?'} · ${hora}</div>
+                        </div>
+                        <div class="trip-price">$${Number(t.price).toLocaleString('es-CO')}</div>
+                    </div>`;
             }).join('');
 
-            // Actualizar contador de viajes disponibles
             document.getElementById('stat-disponibles').textContent = tripsArray.length;
 
         } catch (error) {
@@ -459,6 +587,7 @@
         }
     }
 
+    // ========== CARGAR ESTADÍSTICAS ==========
     async function cargarEstadisticas() {
         try {
             const res = await fetch(`${API_BASE}/api/trips/stats`, {
@@ -481,6 +610,7 @@
         }
     }
 
+    // ========== BUSCAR VIAJES ==========
     function buscarViajes() {
         const origen = document.getElementById('origen')?.value.trim() || '';
         const destino = document.getElementById('destino')?.value.trim() || '';
@@ -490,11 +620,13 @@
         window.location.href = 'buscar-viajes.html' + (params.toString() ? '?' + params.toString() : '');
     }
 
+    // ========== LOGOUT ==========
     function logout() {
         localStorage.clear();
         window.location.href = 'index.html';
     }
 
+    // ========== INICIALIZAR ==========
     async function cargarDatos() {
         await Promise.all([
             cargarViajes(),
@@ -502,33 +634,6 @@
             cargarReservasPendientes()
         ]);
     }
-
-    let popupCallback = null;
-
-    function showConfirmPopup(message, callback) {
-        const popup = document.getElementById("confirmPopup");
-        const text = document.getElementById("confirmPopupText");
-
-        text.textContent = message;
-        popupCallback = callback;
-
-        popup.classList.remove("hidden");
-    }
-
-    document.getElementById("popupYes").onclick = () => {
-        if (popupCallback) popupCallback(true);
-        closePopup();
-    };
-
-    document.getElementById("popupNo").onclick = () => {
-        if (popupCallback) popupCallback(false);
-        closePopup();
-    };
-
-    function closePopup() {
-        document.getElementById("confirmPopup").classList.add("hidden");
-    }
-
 
     cargarDatos();
 </script>
