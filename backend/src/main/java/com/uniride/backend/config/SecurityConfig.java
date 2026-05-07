@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/global/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/global/**", "/health", "/healthz").permitAll()
                         .requestMatchers("/", "/index.html", "/dashboard.html", "/buscar-viajes.html", 
                                        "/publicar-viaje.html", "/en-vivo.html", "/perfil.html", 
                                        "/**.css", "/**.js", "/**.ico").permitAll()
