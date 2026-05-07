@@ -289,9 +289,7 @@
 </main>
 
 <script>
-    const API_BASE = window.location.hostname.includes('localhost')
-        ? 'http://localhost:8080'
-        : window.location.origin;  // ← Esto es mejor, usa la URL actual
+    const API_BASE = 'https://uniride-backend.onrender.com';  // ← Esto es mejor, usa la URL actual
 
     const token = localStorage.getItem('uniride_token');
     const userName = localStorage.getItem('uniride_name') || localStorage.getItem('uniride_email')?.split('@')[0] || 'Usuario';

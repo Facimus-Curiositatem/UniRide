@@ -164,9 +164,7 @@
 
 <script>
     // ── FIX: API_BASE centralizado con detección de entorno ──────────────────
-    const API_BASE = window.location.hostname.includes('localhost')
-        ? 'http://localhost:8080'
-        : 'https://zany-space-orbit-5gxx6pv5jvpqcvwq9-8080.app.github.dev';
+    const API_BASE = 'https://uniride-backend.onrender.com';
 
     const API_URL = `${API_BASE}/api/auth`;
 
