@@ -1,30 +1,77 @@
 package com.uniride.backend.controller;
 
+import com.uniride.backend.dto.CreateTripRequest;
 import com.uniride.backend.dto.TripResponse;
 import com.uniride.backend.dto.TripSearchRequest;
+import com.uniride.backend.dto.UserStatsResponse;
 import com.uniride.backend.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/trips")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class TripController {
 
     private final TripService tripService;
 
-    // GET /api/trips/upcoming  → para el dashboard
     @GetMapping("/upcoming")
-    public ResponseEntity<List<TripResponse>> getUpcoming() {
+    public ResponseEntity<List<TripResponse>> getUpcomingTrips() {
         return ResponseEntity.ok(tripService.getUpcomingTrips());
     }
 
-    // POST /api/trips/search  → para buscar con filtros
     @PostMapping("/search")
-    public ResponseEntity<List<TripResponse>> search(@RequestBody TripSearchRequest request) {
+    public ResponseEntity<List<TripResponse>> searchTrips(@RequestBody TripSearchRequest request) {
         return ResponseEntity.ok(tripService.searchTrips(request));
+    }
+    
+    // NUEVO ENDPOINT: Estadísticas del usuario
+    @GetMapping("/stats")
+    public ResponseEntity<UserStatsResponse> getUserStats(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(tripService.getUserStats(email));
+    }
+
+    @GetMapping("/my-trips")
+    public ResponseEntity<List<TripResponse>> getMyTrips(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(tripService.getTripsByDriver(email));
+    }
+    
+    // ✅ NUEVO ENDPOINT: Crear viaje (POST /api/trips)
+    @PostMapping
+    public ResponseEntity<?> createTrip(@RequestBody CreateTripRequest request, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            TripResponse response = tripService.createTrip(request, email);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @PutMapping("/{tripId}/complete")
+    public ResponseEntity<?> completeTrip(@PathVariable Long tripId, Authentication authentication) {
+        tripService.completeTrip(tripId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/driver-trips")
+    public ResponseEntity<List<TripResponse>> getDriverTrips(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return ResponseEntity.ok(
+                tripService.getTripsByDriver(email)
+        );
     }
 }

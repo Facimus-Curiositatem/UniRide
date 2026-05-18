@@ -6,6 +6,9 @@ import com.uniride.backend.model.UserRole;
 import com.uniride.backend.repository.UserRepository;
 import com.uniride.backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;  
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
     public RegisterResponse register(RegisterRequest request) {
@@ -27,12 +31,37 @@ public class AuthService {
             throw new RuntimeException("El número de teléfono ya está registrado");
         }
 
+        // Validar email único
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("El correo institucional ya está registrado");
+        }
+
+        // Validar teléfono único
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new RuntimeException("El número de teléfono ya está registrado");
+        }
+
+        // Validación condicional para vehículos (si es DRIVER o BOTH)
+        if (request.getRol() == UserRole.CONDUCTOR || request.getRol() == UserRole.AMBOS) {
+            if (request.getVehiclePlate() == null || request.getVehiclePlate().isBlank()) {
+                throw new RuntimeException("La placa del vehículo es obligatoria para conductores");
+            }
+            if (request.getVehicleColor() == null || request.getVehicleColor().isBlank()) {
+                throw new RuntimeException("El color del vehículo es obligatorio para conductores");
+            }
+        }
+
+        // Crear usuario con todos los campos
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
-                .role(UserRole.PASSENGER)
+                .rol(request.getRol())
+                .vehiclePlate(request.getVehiclePlate())
+                .vehicleColor(request.getVehicleColor())
+                .rating(5.0)
+                .totalRatings(0)
                 .build();
 
         User saved = userRepository.save(user);
@@ -47,20 +76,10 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid credentials");
-        }
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .build();
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+    if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        throw new RuntimeException("Credenciales inválidas");
     }
 }

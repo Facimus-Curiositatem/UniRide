@@ -1,7 +1,7 @@
 package com.uniride.backend.model;
 
 public enum UserRole {
-    PASSENGER,
-    DRIVER,
-    ADMIN
+    PASAJERO,  // Solo pasajero
+    CONDUCTOR,     // Solo conductor
+    AMBOS        // Ambos (conductor y pasajero)
 }

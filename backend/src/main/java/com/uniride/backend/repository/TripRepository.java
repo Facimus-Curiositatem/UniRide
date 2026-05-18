@@ -1,4 +1,4 @@
-package com.uniride.backend.repository;
+package com.uniride.backend.repository;  // ← Esto debe ser repository, NO service
 
 import com.uniride.backend.model.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;

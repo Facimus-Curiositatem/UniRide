@@ -4,11 +4,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import com.uniride.backend.model.UserRole;
+import jakarta.validation.constraints.*;
+
 
 @Data
 public class RegisterRequest {
 
-    @NotBlank
+    @NotBlank(message = "El nombre completo es obligatorio")
+    @Size(min = 3, max = 255, message = "El nombre debe tener entre 3 y 255 caracteres")
     private String fullName;
 
     @Email
@@ -19,10 +23,12 @@ public class RegisterRequest {
     )
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^3\\d{9}$", message = "El teléfono debe ser colombiano: 3001234567")
     private String phone;
 
     @NotBlank

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>UniRide – Mi Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #0a1628; color: #fff; display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 260px; min-height: 100vh;
+            background: #0d1f35;
+            display: flex; flex-direction: column;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            position: fixed; top: 0; left: 0; height: 100vh;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 2rem; }
+        .logo-icon { width: 40px; height: 40px; background: #f5a623; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; color: #0d1f35; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; border-radius: 12px; color: #7a8fa6; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: #1e3a5a; color: #fff; }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .nav-bottom { margin-top: auto; }
+        .nav-item.logout:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+
+        .main { margin-left: 260px; flex: 1; padding: 2rem 2.5rem; }
+        .page-header { margin-bottom: 1.75rem; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
+        .page-header p { font-size: 0.9rem; color: #5a7a99; }
+
+        .profile-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; }
+        .card {
+            background: #0d1f35;
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .profile-avatar {
+            width: 80px; height: 80px;
+            background: #f5a623;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 2rem; color: #0d1f35;
+        }
+        .profile-info h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+        .profile-info .faculty { font-size: 0.85rem; color: #f5a623; margin-bottom: 0.5rem; }
+        .rating { display: flex; align-items: center; gap: 0.5rem; }
+        .rating-number { font-size: 1.3rem; font-weight: 800; color: #f5a623; }
+        .rating-stars { color: #f5a623; font-size: 0.9rem; letter-spacing: 2px; }
+        .rating-count { font-size: 0.75rem; color: #5a7a99; }
+
+        .vehicle-card { background: #0a1628; border-radius: 16px; padding: 1.25rem; margin: 1rem 0; border: 1px solid rgba(255,255,255,0.06); }
+        .vehicle-title { font-size: 0.8rem; font-weight: 700; color: #f5a623; text-transform: uppercase; margin-bottom: 1rem; }
+        .vehicle-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .vehicle-row:last-child { border-bottom: none; }
+        .vehicle-label { color: #5a7a99; font-size: 0.85rem; }
+        .vehicle-value { color: #fff; font-weight: 600; font-size: 0.85rem; }
+
+        .stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .stat-mini { background: #0a1628; border-radius: 14px; padding: 1rem; text-align: center; }
+        .stat-mini-number { font-size: 1.6rem; font-weight: 800; color: #f5a623; }
+        .stat-mini-label { font-size: 0.7rem; color: #5a7a99; margin-top: 0.25rem; }
+
+        /* Filtros de estado */
+        .status-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            color: #7a8fa6;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: #f5a623;
+            color: #0d1f35;
+            border-color: #f5a623;
+        }
+        .filter-btn:hover:not(.active) {
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
+        .trip-history-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .trip-history-item:last-child {
+            border-bottom: none;
+        }
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .trip-route {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        .trip-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+        .status-COMPLETED {
+            background: rgba(99,153,34,0.15);
+            color: #97c459;
+        }
+        .status-CONFIRMED {
+            background: rgba(53,130,221,0.15);
+            color: #85b7eb;
+        }
+        .status-PENDING {
+            background: rgba(245,166,35,0.15);
+            color: #f5a623;
+        }
+        .status-CANCELLED {
+            background: rgba(212,83,126,0.15);
+            color: #ed93b1;
+        }
+        .trip-date {
+            font-size: 0.7rem;
+            color: #5a7a99;
+        }
+        .trip-details {
+            font-size: 0.75rem;
+            color: #5a7a99;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .trip-driver {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #7a8fa6;
+        }
+        .driver-rating {
+            color: #f5a623;
+            font-size: 0.7rem;
+        }
+        .empty-history {
+            text-align: center;
+            padding: 2rem;
+            color: #5a7a99;
+            font-size: 0.85rem;
+        }
+
+        .review-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .review-item:last-child { border-bottom: none; }
+        .review-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .review-avatar { width: 40px; height: 40px; background: #1e3a5a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .review-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
+        .review-faculty { font-size: 0.7rem; color: #5a7a99; }
+        .review-stars { color: #f5a623; font-size: 0.75rem; margin-left: auto; }
+        .review-text { font-size: 0.85rem; color: #a0b4c8; line-height: 1.4; margin-left: 3rem; }
+
+        .badge { background: rgba(245,166,35,0.12); color: #f5a623; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+
+        @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .main { margin-left: 260px; } }
+
+        .trip-expanded {
+            width: 100%;
+            max-width: 720px;
+            padding: 1.8rem;
+        }
+
+        .trip-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .trip-title {
+            color: white;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .trip-status {
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .trip-status.confirmed {
+            background: rgba(46,204,113,.15);
+            color: #2ecc71;
+        }
+
+        .trip-line {
+            width: 1px;
+            height: 18px;
+            background: rgba(255,255,255,.08);
+            margin-left: 4px;
+        }
+
+        .trip-passengers {
+            margin-top: 1.4rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .trip-passengers-title {
+            color: #f5a623;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .passenger-item {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: .9rem;
+        }
+
+        .passenger-item strong {
+            color: white;
+            display: block;
+        }
+
+        .passenger-sub {
+            font-size: .8rem;
+            color: #5a7a99;
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">U</div>
+        <span class="logo-text">UniRide</span>
+    </div>
+    <nav class="nav">
+        <a class="nav-item" href="dashboard.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Inicio
+        </a>
+        <a class="nav-item" href="buscar-viajes.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
+            Buscar viajes
+        </a>
+        <a class="nav-item" href="publicar-viaje.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Publicar viaje
+        </a>
+        <a class="nav-item" href="en-vivo.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            En vivo
+        </a>
+        <a class="nav-item active" href="perfil.html">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Mi perfil
+        </a>
+        <div class="nav-bottom">
+            <a class="nav-item logout" href="index.html" onclick="logout()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Cerrar sesión
+            </a>
+        </div>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>Mi perfil</h1>
+        <p>Gestiona tu información y revisa tu reputación</p>
+    </div>
+
+    <div class="profile-grid">
+        <div>
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">U</div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">Usuario</h2>
+                        <div class="faculty" id="profile-faculty">Cargando...</div>
+                        <div class="rating">
+                            <span class="rating-number" id="profile-rating">--</span>
+                            <span class="rating-stars" id="profile-stars">☆☆☆☆☆</span>
+                            <span class="rating-count" id="profile-reviews">(0 reseñas)</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="profile-badges"></div>
+            </div>
+
+            <div class="card" id="vehicle-card" style="display: none;">
+                <div class="vehicle-title"> Vehículo registrado</div>
+                <div id="vehicle-info">
+                    <div class="vehicle-card">
+                        <div class="vehicle-row"><span class="vehicle-label">Placa</span><span class="vehicle-value" id="vehicle-plate">---</span></div>
+                        <div class="vehicle-row"><span class="vehicle-label">Color</span><span class="vehicle-value" id="vehicle-color">---</span></div>
+                    </div>
+                </div>
+                <div class="stats-mini">
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-trips">0</div><div class="stat-mini-label">Viajes completados</div></div>
+                    <div class="stat-mini"><div class="stat-mini-number" id="stat-earnings">$0</div><div class="stat-mini-label">Ganancia total</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <!-- Historial de viajes del usuario con filtros -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;"> Mis viajes</h3>
+
+                <!-- Filtros por estado -->
+                <div class="status-filters">
+                    <button class="filter-btn active" data-status="all">Todos</button>
+                    <button class="filter-btn" data-status="PENDING">Pendientes</button>
+                    <button class="filter-btn" data-status="CONFIRMED">Confirmados</button>
+                    <button class="filter-btn" data-status="COMPLETED">Completados</button>
+                </div>
+
+                <div id="trips-history-list">
+                    <div style="text-align: center; padding: 1rem; color: #5a7a99; font-size: 0.85rem;">Cargando historial...</div>
+                </div>
+            </div>
+
+            <!-- Reseñas recientes -->
+            <div class="card">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem;">Reseñas recientes</h3>
+                <div id="reviews-list">
+                    <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">No hay reseñas aún</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+        <div id="my-trips-container"></div>
+    </div>
+</main>
+
+<script>
+    const API_BASE = 'https://uniride-backend-0uyp.onrender.com';
+
+    const token = localStorage.getItem('uniride_token');
+    const userName = localStorage.getItem('uniride_name') || 'Usuario';
+
+    if (!token) window.location.href = 'index.html';
+
+    const initials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('profile-avatar').textContent = initials;
+    document.getElementById('profile-name').textContent = userName;
+
+    let todosLosViajes = []; // Guardar todos los viajes para filtrar
+    let filtroActual = 'all';
+
+    async function cargarPerfil() {
+        try {
+            const resStats = await fetch(`${API_BASE}/api/trips/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!resStats.ok) throw new Error('Error al cargar estadísticas');
+            const stats = await resStats.json();
+
+            const userRole = localStorage.getItem('uniride_rol') || 'PASAJERO';
+            const rating = stats.calificacion || 5.0;
+            const totalRatings = stats.totalRatings || 0;
+            const viajesCompletados = stats.viajesCompletados || 0;
+            const dineroAhorrado = stats.dineroAhorrado || 0;
+
+            document.getElementById('profile-rating').textContent = rating.toFixed(1);
+            const starsFull = Math.floor(rating);
+            const starsHalf = rating % 1 >= 0.5 ? 1 : 0;
+            const starsEmpty = 5 - starsFull - starsHalf;
+            const starsText = '★'.repeat(starsFull) + (starsHalf ? '½' : '') + '☆'.repeat(starsEmpty);
+            document.getElementById('profile-stars').textContent = starsText;
+            document.getElementById('profile-reviews').textContent = `(${totalRatings} reseñas)`;
+
+            document.getElementById('profile-faculty').innerHTML = getFacultadPorRol(userRole);
+
+            const badgesContainer = document.getElementById('profile-badges');
+            let badgesHtml = '';
+            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') badgesHtml += '<span class="badge"> Conductor activo</span> ';
+            if (userRole === 'PASAJERO') badgesHtml += '<span class="badge"> Pasajero frecuente</span> ';
+            if (viajesCompletados > 10) badgesHtml += '<span class="badge"> Viajero experto</span> ';
+            if (rating >= 4.8) badgesHtml += '<span class="badge"> Top rated</span> ';
+            badgesContainer.innerHTML = badgesHtml || '<span class="badge"> Nuevo usuario</span>';
+
+            const vehicleCard = document.getElementById('vehicle-card');
+            if (userRole === 'CONDUCTOR' || userRole === 'AMBOS') {
+                vehicleCard.style.display = 'block';
+                let vehiclePlate = localStorage.getItem('uniride_vehicle_plate');
+                let vehicleColor = localStorage.getItem('uniride_vehicle_color');
+                document.getElementById('vehicle-plate').textContent = vehiclePlate || 'No registrada';
+                document.getElementById('vehicle-color').textContent = vehicleColor || 'No registrado';
+            } else {
+                vehicleCard.style.display = 'none';
+            }
+
+            document.getElementById('stat-trips').textContent = viajesCompletados;
+            document.getElementById('stat-earnings').textContent = `$${Math.round(dineroAhorrado).toLocaleString('es-CO')}`;
+
+            await cargarHistorialViajes();
+            await cargarResenas();
+
+            // Configurar filtros
+            setupFilters();
+
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
+        }
+    }
+
+    function getFacultadPorRol(rol) {
+        switch(rol) {
+            case 'CONDUCTOR': return 'Conductor verificado • Vehículo registrado';
+            case 'AMBOS': return 'Conductor y pasajero • Comunidad activa';
+            case 'PASAJERO': return 'Pasajero frecuente • Explorando la ciudad';
+            default: return 'Miembro de la comunidad Javeriana';
+        }
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'COMPLETED': return 'Completado';
+            case 'CONFIRMED': return 'Confirmado';
+            case 'PENDING': return 'Pendiente';
+            default: return status;
+        }
+    }
+
+    function mostrarViajesFiltrados() {
+        const container = document.getElementById('trips-history-list');
+
+        let viajesFiltrados = todosLosViajes;
+        if (filtroActual !== 'all') {
+            viajesFiltrados = todosLosViajes.filter(v => v.status === filtroActual);
+        }
+
+        if (viajesFiltrados.length > 0) {
+            container.innerHTML = viajesFiltrados.map(viaje => {
+                const fecha = new Date(viaje.departure);
+                const fechaStr = fecha.toLocaleDateString('es-CO', {day:'2-digit', month:'short', year:'numeric'});
+                const horaStr = fecha.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+
+                const statusClass = `status-${viaje.status}`;
+                const statusText = getStatusText(viaje.status);
+
+                return `
+                    <div class="trip-history-item">
+                        <div class="trip-header">
+                            <span class="trip-route">${viaje.origin || '?'} → ${viaje.destination || '?'}</span>
+                            <span class="trip-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="trip-details">
+                            <span> ${fechaStr} - ${horaStr}</span>
+                            <span> $${Number(viaje.price || 0).toLocaleString('es-CO')}</span>
+
+                        </div>
+                        <div class="trip-driver">
+                            <span> Conductor: ${viaje.driverName || 'Conductor'}</span>
+                            ${viaje.driverRating ? `<span class="driver-rating">⭐ ${viaje.driverRating}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            const mensaje = filtroActual === 'all'
+                ? ' Aún no has realizado ningún viaje. ¡Busca un viaje y comienza a compartir!'
+                : ` No tienes viajes con estado "${getStatusText(filtroActual)}"`;
+            container.innerHTML = `<div class="empty-history">${mensaje}</div>`;
+        }
+    }
+
+    async function cargarHistorialViajes() {
+        const container = document.getElementById('trips-history-list');
+
+        try {
+            const res = await fetch(`${API_BASE}/api/bookings/my-trips`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (res.ok) {
+                todosLosViajes = await res.json();
+                console.log('Viajes encontrados:', todosLosViajes);
+                mostrarViajesFiltrados();
+            } else {
+                const errorText = await res.text();
+                console.error('Error response:', errorText);
+                container.innerHTML = `<div class="empty-history">❌Error ${res.status} al cargar historial</div>`;
+            }
+        } catch(e) {
+            console.error('Error cargando historial:', e);
+            container.innerHTML = '<div class="empty-history"> Error de conexión al cargar el historial</div>';
+        }
+    }
+
+    function setupFilters() {
+        const filters = document.querySelectorAll('.filter-btn');
+        filters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Actualizar clase active
+                filters.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Actualizar filtro
+                filtroActual = btn.dataset.status;
+                mostrarViajesFiltrados();
+            });
+        });
+    }
+
+    async function cargarResenas() {
+        const reviewsContainer = document.getElementById('reviews-list');
+
+        try {
+            const res = await fetch(`${API_BASE}/api/reviews/my`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const reviews = await res.json();
+                if (reviews.length > 0) {
+                    reviewsContainer.innerHTML = reviews.map(r => `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-avatar">${r.reviewerName?.charAt(0) || 'U'}</div>
+                                <div>
+                                    <div class="review-name">${r.reviewerName || 'Usuario'}</div>
+                                </div>
+                                <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                            </div>
+                            <div class="review-text">${r.comment || ''}</div>
+                        </div>
+                    `).join('');
+                    return;
+                }
+            }
+        } catch(e) {
+            console.warn('No se pudieron cargar reseñas:', e);
+        }
+
+        reviewsContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #5a7a99; font-size: 0.85rem;">
+                No hay reseñas aún. Completa viajes para recibir calificaciones.
+            </div>`;
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+
+    async function cargarMisViajes() {
+
+        try {
+
+            const res = await fetch(`${API_BASE}/api/trips/driver-trips`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const trips = await res.json();
+
+            renderMisViajes(trips);
+
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    function renderMisViajes(trips) {
+
+        const container = document.getElementById("my-trips-container");
+
+        if (!trips.length) {
+            container.innerHTML = `
+            <div class="card">
+                No has publicado viajes todavía
+            </div>
+        `;
+            return;
+        }
+
+        container.innerHTML = trips.map(trip => `
+
+        <div class="card" style="margin-top:1.5rem;">
+            <div class="preview-card trip-expanded">
+                <div class="trip-top">
+                    <div>
+                        <div class="preview-label">
+                            Tu viaje
+                        </div>
+                        <h3 class="trip-title">
+                            ${trip.origin} → ${trip.destination}
+                        </h3>
+                    </div>
+                    <span class="trip-status confirmed">
+                        ${trip.estado}
+                    </span>
+                </div>
+                <div class="preview-route">
+                    <div class="preview-stop">
+                        <div class="stop-dot gray"></div>
+                        <span style="color:#7a8fa6;">
+                            ${trip.origin}
+                        </span>
+                    </div>
+                    <div class="trip-line"></div>
+                    <div class="preview-stop">
+                        <div class="stop-dot yellow"></div>
+                        <span style="color:white;font-weight:600;">
+                            ${trip.destination}
+                        </span>
+                    </div>
+
+                </div>
+                <div class="preview-footer">
+                    <div style="display:flex;flex-direction:column;gap:.35rem;">
+
+                        <div class="preview-meta">
+                            ${formatDate(trip.departure)}
+                        </div>
+                        <div class="preview-meta">
+                            👥 ${trip.seats} cupos
+                        </div>
+
+                    </div>
+                    <div>
+                        <div class="preview-price">
+                            $${trip.price}
+                        </div>
+                        <div class="preview-price-label">
+                            por persona
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    `).join("");
+    }
+
+    function formatDate(dateString) {
+
+        const date = new Date(dateString);
+
+        return date.toLocaleString('es-CO', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    cargarPerfil();
+    cargarMisViajes();
+</script>
+</body>
+</html>
