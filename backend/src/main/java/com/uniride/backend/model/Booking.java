@@ -26,9 +26,9 @@ public class Booking {
     @JoinColumn(name = "passenger_id", nullable = false)
     private User passenger;
 
-    @Enumerated(EnumType.STRING)
+    @Builder.Default
     @Column(nullable = false)
-    private BookingStatus status; //PENDING,CONFIRMED, CANCELLED
+    private String status = "PENDING"; // PENDING, CONFIRMED, CANCELLED
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

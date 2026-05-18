@@ -2,6 +2,7 @@ package com.uniride.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,21 +37,23 @@ public class Trip {
     @Column(nullable = false)
     private Double price;
 
-    @Column(name = "only_women", nullable = false)
     @Builder.Default
+    @Column(nullable = false)
     private Boolean onlyWomen = false;
 
-    @Column(nullable = false)
     @Builder.Default
-    private String estado = "ACTIVE";
+    @Column(nullable = false)
+    private Boolean hasAC = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
+    @Column(nullable = false)
+    private String status = "ACTIVE"; // ACTIVE, FULL, CANCELLED
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        if (onlyWomen == null) onlyWomen = false;
-        if (estado == null) estado = "ACTIVE";
     }
 }

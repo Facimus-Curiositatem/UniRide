@@ -23,6 +23,14 @@ public class AuthService {
 
     public RegisterResponse register(RegisterRequest request) {
 
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("El correo institucional ya está registrado");
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new RuntimeException("El número de teléfono ya está registrado");
+        }
+
         // Validar email único
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El correo institucional ya está registrado");
@@ -63,11 +71,7 @@ public class AuthService {
                 .fullName(saved.getFullName())
                 .email(saved.getEmail())
                 .phone(saved.getPhone())
-                .rol(saved.getRol().name())
-                .vehiclePlate(saved.getVehiclePlate())
-                .vehicleColor(saved.getVehicleColor())
-                .rating(saved.getRating())
-                .totalRatings(saved.getTotalRatings())
+                .role(saved.getRole().name())
                 .build();
     }
 
@@ -78,19 +82,4 @@ public class AuthService {
     if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
         throw new RuntimeException("Credenciales inválidas");
     }
-    
-    String token = jwtUtil.generateToken(user.getEmail());
-    
-    return AuthResponse.builder()
-        .token(token)
-        .email(user.getEmail())
-        .fullName(user.getFullName())
-        .rol(user.getRol().name())
-        .phone(user.getPhone())
-        .rating(user.getRating())
-        .totalRatings(user.getTotalRatings())
-        .vehiclePlate(user.getVehiclePlate())   // ← AGREGAR
-        .vehicleColor(user.getVehicleColor())   // ← AGREGAR
-        .build();
-}
 }

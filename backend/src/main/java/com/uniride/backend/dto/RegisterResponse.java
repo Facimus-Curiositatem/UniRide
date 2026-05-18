@@ -10,9 +10,6 @@ public class RegisterResponse {
     private String fullName;
     private String email;
     private String phone;
-    private String rol;
-    private String vehiclePlate;
-    private String vehicleColor;
-    private Double rating;
-    private Integer totalRatings;
+    private String role;
+
 }
